@@ -1,5 +1,6 @@
 package com.example.TPO.DBMS.JobPost;
 
+import com.example.TPO.DBMS.Tpo.TPOUser;
 import jakarta.persistence.*;
 import com.example.TPO.DBMS.Applications.JobApplication;
 import lombok.AllArgsConstructor;
@@ -15,22 +16,49 @@ public class JobPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column(nullable = false)
     private String companyName;
+    @Column(nullable = false)
     private String jobDesignation;
-    private String location;
+    @Column(nullable = false)
+    private String location; @Column(nullable = false)
     private String jobType;
+    @Column(nullable = false)
     private String description;
+    @Column(nullable = false)
     private double packageAmount;
-
+    @Column(nullable = false)
     private double minPercentage;
+    @Column(nullable = false)
     private int backlogAllowance;
+    @Column(nullable = false)
     private String preferredCourse;
+    @Column(nullable = false)
     private String skillRequirements;
 
-    private String selectionRounds;
+    public List<JobApplication> getApplications() {
+        return applications;
+    }
 
-    public JobPost(Long id, String companyName, String jobDesignation, String location, String jobType, String description, double packageAmount, double minPercentage, int backlogAllowance, String preferredCourse, String skillRequirements, String selectionRounds, String modeOfRecruitment, String testPlatform, LocalDate applicationStartDate, LocalDate applicationEndDate, LocalDate selectionStartDate, LocalDate selectionEndDate, List<JobApplication> applications) {
+    public void setApplications(List<JobApplication> applications) {
+        this.applications = applications;
+    }
+
+    private String selectionRounds;
+    @ManyToOne
+    @JoinColumn(name = "created_by", nullable = false,referencedColumnName = "id")
+    private TPOUser createdBy;
+
+    public TPOUser getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(TPOUser createdBy) {
+        this.createdBy = createdBy;
+    }
+
+
+    public JobPost(Long id, String companyName, String jobDesignation, String location, String jobType, String description, double packageAmount, double minPercentage, int backlogAllowance, String preferredCourse, String skillRequirements, String selectionRounds, TPOUser createdBy, String modeOfRecruitment, String testPlatform, LocalDate applicationStartDate, LocalDate applicationEndDate, LocalDate selectionStartDate, LocalDate selectionEndDate) {
         this.id = id;
         this.companyName = companyName;
         this.jobDesignation = jobDesignation;
@@ -43,13 +71,13 @@ public class JobPost {
         this.preferredCourse = preferredCourse;
         this.skillRequirements = skillRequirements;
         this.selectionRounds = selectionRounds;
+        this.createdBy = createdBy;
         this.modeOfRecruitment = modeOfRecruitment;
         this.testPlatform = testPlatform;
         this.applicationStartDate = applicationStartDate;
         this.applicationEndDate = applicationEndDate;
         this.selectionStartDate = selectionStartDate;
         this.selectionEndDate = selectionEndDate;
-        this.applications = applications;
     }
 
     public JobPost() {
