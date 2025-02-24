@@ -11,6 +11,15 @@ public class JobApplicationDTO {
     private JobPostDTO jobPost;  // Using JobPostDTO instead of full JobPost entity
     private LocalDate applicationDate;
     private String status;  // Enum as String
+    private String designation;  // Added Designation field
+
+    public String getDesignation() {
+        return designation;
+    }
+
+    public void setDesignation(String designation) {
+        this.designation = designation;
+    }
 
     // Constructor
     public JobApplicationDTO(Long id, StudentDTO student, JobPostDTO jobPost, LocalDate applicationDate, String status) {

@@ -2,6 +2,7 @@ package com.example.TPO.JobApplication.JobApplicationService;
 
 import com.example.TPO.DBMS.Applications.ApplicationStatus;
 import com.example.TPO.DBMS.Applications.JobApplication;
+import com.example.TPO.DBMS.Filters.JobApplicationFilter;
 import com.example.TPO.DBMS.JobPost.JobPost;
 import com.example.TPO.DBMS.stud.Student;
 import com.example.TPO.JobApplication.JobApplicationDTO.JobApplicationMapper;
@@ -15,13 +16,22 @@ import com.example.TPO.JobApplication.JobApplicationDTO.JobApplicationDTO;
 import com.example.TPO.UserManagement.UserDTO.UserDTO;
 import com.example.TPO.Student.StudentDTO.StudentDTO;
 import com.example.TPO.Student.StudentDTO.StudentMapper;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class JobApplicationService {
@@ -89,6 +99,7 @@ public class JobApplicationService {
 
         return ResponseEntity.ok(jobApplicationDTO);
     }
+
     public ResponseEntity<?> updateApplication(long applicationId, JobApplicationDTO updatedJobApplicationDTO) {
         Optional<JobApplication> jobApplicationOptional = jobApplicationRepository.findById(applicationId);
         System.err.println(updatedJobApplicationDTO.getStatus());
@@ -126,5 +137,70 @@ public class JobApplicationService {
         JobApplicationDTO updatedDTO = JobApplicationMapper.toJobApplicationDTO(jobApplication);
         return ResponseEntity.ok(updatedDTO);
     }
+
+    public ResponseEntity<List<JobApplicationDTO>> filterJobApplications(JobApplicationFilter jobApplicationFilter) {
+        System.err.println(jobApplicationFilter.getStatus());
+        ApplicationStatus status=null;
+        if (jobApplicationFilter.getStatus() != null) {
+            try {
+                status = ApplicationStatus.valueOf(jobApplicationFilter.getStatus().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().body(Collections.emptyList());
+            }
+        }
+        List<JobApplication> filteredApplications = jobApplicationRepository.filterJobApplications(status, jobApplicationFilter.getLocation(), jobApplicationFilter.getMinSalary(), jobApplicationFilter.getMaxSalary());
+
+        List<JobApplicationDTO> filteredApplicationDTOs = filteredApplications.stream()
+                .map(JobApplicationMapper::toJobApplicationDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(filteredApplicationDTOs);
+    }
+    public ResponseEntity<byte[]> downloadExcel(JobApplicationFilter jobApplicationFilter) {
+        ResponseEntity<List<JobApplicationDTO>> response = filterJobApplications(jobApplicationFilter);
+
+        List<JobApplicationDTO> filteredApplications = response.getBody();
+        if (filteredApplications == null || filteredApplications.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+        }
+
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Job Applications");
+            Row headerRow = sheet.createRow(0);
+
+            // Define headers
+            String[] headers = {"ID", "Job Title", "Company", "Status", "Applied On"};
+            for (int i = 0; i < headers.length; i++) {
+                headerRow.createCell(i).setCellValue(headers[i]);
+            }
+
+            // Populate data rows
+            int rowNum = 1;
+            for (JobApplicationDTO jobApp : filteredApplications) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(jobApp.getId());
+                row.createCell(1).setCellValue(jobApp.getJobPost().getJobDesignation());
+                row.createCell(2).setCellValue(jobApp.getJobPost().getCompanyName());
+                row.createCell(3).setCellValue(jobApp.getStatus());
+                row.createCell(4).setCellValue(jobApp.getApplicationDate().toString());
+            }
+
+            // Convert to byte array
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            workbook.write(outputStream);
+            byte[] excelBytes = outputStream.toByteArray();
+
+            // Set response headers for download
+            HttpHeaders headersObj = new HttpHeaders();
+            headersObj.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headersObj.setContentDisposition(ContentDisposition.attachment().filename("JobApplications.xlsx").build());
+
+            return ResponseEntity.ok().headers(headersObj).body(excelBytes);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+
 
 }
