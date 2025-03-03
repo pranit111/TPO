@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.authentication.jaas.DefaultJaasAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -45,10 +46,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "register/user","register/TPO_USER", "/login","login/test","http://localhost:8080/api4/filter/Applications").permitAll()
+                        .requestMatchers( "register/user","register/TPO_USER", "tpo/login","stud/login","http://localhost:8080/api4/filter/Applications").permitAll()
                         .requestMatchers("/api/v1/**","/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user/**").hasRole("USER")
+
+
                         .requestMatchers("/api/v3/appointments/filter").hasRole("ADMIN")
                         .requestMatchers("/api/v2/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

@@ -37,11 +37,19 @@ public class UserController {
 
         }
     @CrossOrigin(origins = "http://localhost:4200")
-    @PostMapping("/login/test")
-    public String login(@RequestBody User user){
+    @PostMapping("/stud/login")
+    public ResponseEntity<?> studlogin(@RequestBody User user){
        service.verify(user);
-    System.out.println(user);
+
     return service.verify(user);
+
+
+    }
+    @PostMapping("/tpo/login")
+    public ResponseEntity<?> tpologin(@RequestBody User user){
+        service.verify(user);
+
+        return service.verify(user);
 
 
     }

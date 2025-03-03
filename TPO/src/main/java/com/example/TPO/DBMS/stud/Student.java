@@ -193,9 +193,48 @@ public class Student {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    public Student() {
+    }
+
     private String phoneNumber;
+
+    public String getAcademicyear() {
+        return academicyear;
+    }
+
+    public void setAcademicyear(String academicyear) {
+        this.academicyear = academicyear;
+    }
+
     private String address;
     private String department;
+    private String academicyear;
+
+    public Student(Long id, User user, String firstName, String middleName, String lastName, LocalDate dateOfBirth, Gender gender, String phoneNumber, String address, String department, String academicyear, double sscMarks, double hscMarks, double diplomaMarks, double sem1Marks, double sem2Marks, double sem3Marks, double sem4Marks, double sem5Marks, double sem6Marks, int noOfBacklogs, List<JobApplication> jobApplications) {
+        this.id = id;
+        this.user = user;
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.lastName = lastName;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.department = department;
+        this.academicyear = academicyear;
+        this.sscMarks = sscMarks;
+        this.hscMarks = hscMarks;
+        this.diplomaMarks = diplomaMarks;
+        this.sem1Marks = sem1Marks;
+        this.sem2Marks = sem2Marks;
+        this.sem3Marks = sem3Marks;
+        this.sem4Marks = sem4Marks;
+        this.sem5Marks = sem5Marks;
+        this.sem6Marks = sem6Marks;
+        this.noOfBacklogs = noOfBacklogs;
+        this.jobApplications = jobApplications;
+    }
+
     private double sscMarks;
     private double hscMarks;
     private double diplomaMarks;

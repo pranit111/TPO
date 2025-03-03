@@ -11,8 +11,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import com.example.TPO.Student.StudentRepository.StudentRepository;
 import com.example.TPO.DBMS.stud.Student;
+
 @RequestMapping("api1/")
 @RestController
+
+
 public class StudentController {
 
     @Autowired
@@ -25,6 +28,7 @@ public class StudentController {
     return studentService.getStudent(id);
 
     }
+
     @PostMapping("/Student")
     public ResponseEntity<String> createstud(@RequestBody Student student,  @RequestHeader("Authorization") String authHeader){
 
