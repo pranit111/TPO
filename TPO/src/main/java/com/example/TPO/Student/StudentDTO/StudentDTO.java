@@ -19,6 +19,23 @@ public class StudentDTO {
     private double sscMarks;
     private double hscMarks;
     private double diplomaMarks;
+
+    public double getAvgMarks() {
+        return avgMarks;
+    }
+
+    public void setAvgMarks(double avgMarks) {
+        this.avgMarks = avgMarks;
+    }
+
+    public String getGr_No() {
+        return Gr_No;
+    }
+
+    public void setGr_No(String gr_No) {
+        Gr_No = gr_No;
+    }
+
     private double sem1Marks;
     private double sem2Marks;
     private double sem3Marks;
@@ -26,12 +43,13 @@ public class StudentDTO {
     private double sem5Marks;
     private double sem6Marks;
     private int noOfBacklogs;
+    private double avgMarks;
+    private String Gr_No;
 
     // Constructor
-    public StudentDTO(Long id, UserDTO user, String firstName, String middleName, String lastName, LocalDate dateOfBirth,
-                      String gender, String phoneNumber, String address, String department, double sscMarks,
-                      double hscMarks, double diplomaMarks, double sem1Marks, double sem2Marks, double sem3Marks,
-                      double sem4Marks, double sem5Marks, double sem6Marks, int noOfBacklogs) {
+
+
+    public StudentDTO(Long id, UserDTO user, String firstName, String middleName, String lastName, LocalDate dateOfBirth, String gender, String phoneNumber, String address, String department, double sscMarks, double hscMarks, double diplomaMarks, double sem1Marks, double sem2Marks, double sem3Marks, double sem4Marks, double sem5Marks, double sem6Marks, int noOfBacklogs, double avgMarks, String gr_No) {
         this.id = id;
         this.user = user;
         this.firstName = firstName;
@@ -52,6 +70,8 @@ public class StudentDTO {
         this.sem5Marks = sem5Marks;
         this.sem6Marks = sem6Marks;
         this.noOfBacklogs = noOfBacklogs;
+        this.avgMarks = avgMarks;
+        Gr_No = gr_No;
     }
 
     // Getters & Setters

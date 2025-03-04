@@ -35,7 +35,9 @@ public class JobApplicationMapper {
                 student.getSem4Marks(),
                 student.getSem5Marks(),
                 student.getSem6Marks(),
-                student.getNoOfBacklogs()
+                student.getNoOfBacklogs(),
+                student.getAvgMarks(),
+                student.getGr_No()
         );
 
         // Convert JobPost entity to JobPostDTO

@@ -130,6 +130,7 @@ public class Student {
 
     public void setSem1Marks(double sem1Marks) {
         this.sem1Marks = sem1Marks;
+        updateCalculatedFields();
     }
 
     public double getSem2Marks() {
@@ -138,6 +139,7 @@ public class Student {
 
     public void setSem2Marks(double sem2Marks) {
         this.sem2Marks = sem2Marks;
+        updateCalculatedFields();
     }
 
     public double getSem3Marks() {
@@ -146,6 +148,7 @@ public class Student {
 
     public void setSem3Marks(double sem3Marks) {
         this.sem3Marks = sem3Marks;
+        updateCalculatedFields();
     }
 
     public double getSem4Marks() {
@@ -154,6 +157,7 @@ public class Student {
 
     public void setSem4Marks(double sem4Marks) {
         this.sem4Marks = sem4Marks;
+        updateCalculatedFields();
     }
 
     public double getSem5Marks() {
@@ -162,6 +166,7 @@ public class Student {
 
     public void setSem5Marks(double sem5Marks) {
         this.sem5Marks = sem5Marks;
+        updateCalculatedFields();
     }
 
     public double getSem6Marks() {
@@ -170,6 +175,7 @@ public class Student {
 
     public void setSem6Marks(double sem6Marks) {
         this.sem6Marks = sem6Marks;
+        updateCalculatedFields();
     }
 
     public int getNoOfBacklogs() {
@@ -206,11 +212,81 @@ public class Student {
         this.academicyear = academicyear;
     }
 
-    private String address;
-    private String department;
-    private String academicyear;
+    public String getImagename() {
+        return imagename;
+    }
 
-    public Student(Long id, User user, String firstName, String middleName, String lastName, LocalDate dateOfBirth, Gender gender, String phoneNumber, String address, String department, String academicyear, double sscMarks, double hscMarks, double diplomaMarks, double sem1Marks, double sem2Marks, double sem3Marks, double sem4Marks, double sem5Marks, double sem6Marks, int noOfBacklogs, List<JobApplication> jobApplications) {
+    public void setImagename(String imagename) {
+        this.imagename = imagename;
+    }
+
+    public String getImagetype() {
+        return imagetype;
+    }
+
+    public void setImagetype(String imagetype) {
+        this.imagetype = imagetype;
+    }
+
+    public byte[] getProfileimagedata() {
+        return profileimagedata;
+    }
+
+    public void setProfileimagedata(byte[] profileimagedata) {
+        this.profileimagedata = profileimagedata;
+    }
+
+    public String getResumename() {
+        return resumename;
+    }
+
+    public void setResumename(String resumename) {
+        this.resumename = resumename;
+    }
+
+    public byte[] getResume_file_data() {
+        return resume_file_data;
+    }
+
+    public String getGr_No() {
+        return Gr_No;
+    }
+
+    public void setGr_No(String gr_No) {
+        Gr_No = gr_No;
+    }
+
+    public double getAvgMarks() {
+        return avgMarks;
+    }
+
+    public void setAvgMarks(double avgMarks) {
+        this.avgMarks = avgMarks;
+    }
+
+    public void setResume_file_data(byte[] resume_file_data) {
+        this.resume_file_data = resume_file_data;
+    }
+    private void updateCalculatedFields() {
+        double sum = 0;
+        int count = 0;
+
+        double[] marks = {sem1Marks, sem2Marks, sem3Marks, sem4Marks, sem5Marks, sem6Marks};
+
+        for (double mark : marks) {
+            if (mark > 0) { // Exclude 0 values
+                sum += mark;
+                count++;
+            }
+        }
+
+        double avg = (count > 0) ? sum / count : 0; // Avoid division by zero
+        this.avgMarks = avg * 9.5; // Convert CGPA to Percentage
+    }
+
+
+
+    public Student(Long id, User user, String firstName, String middleName, String lastName, LocalDate dateOfBirth, Gender gender, String phoneNumber, String gr_No, String address, String department, String academicyear, double avgMarks, double sscMarks, double hscMarks, double diplomaMarks, double sem1Marks, double sem2Marks, double sem3Marks, double sem4Marks, double sem5Marks, double sem6Marks, int noOfBacklogs, String imagename, String imagetype, byte[] profileimagedata, String resumename, byte[] resume_file_data, List<JobApplication> jobApplications) {
         this.id = id;
         this.user = user;
         this.firstName = firstName;
@@ -219,9 +295,11 @@ public class Student {
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.phoneNumber = phoneNumber;
+        Gr_No = gr_No;
         this.address = address;
         this.department = department;
         this.academicyear = academicyear;
+        this.avgMarks = avgMarks;
         this.sscMarks = sscMarks;
         this.hscMarks = hscMarks;
         this.diplomaMarks = diplomaMarks;
@@ -232,14 +310,28 @@ public class Student {
         this.sem5Marks = sem5Marks;
         this.sem6Marks = sem6Marks;
         this.noOfBacklogs = noOfBacklogs;
+        this.imagename = imagename;
+        this.imagetype = imagetype;
+        this.profileimagedata = profileimagedata;
+        this.resumename = resumename;
+        this.resume_file_data = resume_file_data;
         this.jobApplications = jobApplications;
     }
 
+    private String Gr_No;
+    private String address;
+    private String department;
+    private String academicyear;
+
+    private double avgMarks;
     private double sscMarks;
     private double hscMarks;
     private double diplomaMarks;
 
     private double sem1Marks;
+
+
+
     private double sem2Marks;
     private double sem3Marks;
     private double sem4Marks;
@@ -247,10 +339,21 @@ public class Student {
     private double sem6Marks;
 
     private int noOfBacklogs;
+    private String imagename;
+    private String imagetype;
+    @Lob
+    private byte[] profileimagedata;
+    private String resumename;
+    @Lob
+    private byte[] resume_file_data;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL)
     private List<JobApplication> jobApplications;
-
+    @PrePersist
+    @PreUpdate
+    public void calculateAvgBeforeSave() {
+        updateCalculatedFields();
+    }
     // Getters & Setters
     public String getFirstName() {
         return firstName;
