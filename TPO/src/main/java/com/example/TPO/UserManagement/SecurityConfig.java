@@ -48,7 +48,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "register/user","register/TPO_USER", "tpo/login","stud/login","http://localhost:8080/api4/filter/Applications").permitAll()
+                        .requestMatchers( "register/user","register/TPO_USER", "tpo/login","stud/login","http://localhost:8080/api4/filter/Applications","verify/otp").permitAll()
                         .requestMatchers("/api/v1/**","/admin/**").hasRole("ADMIN")
 
 

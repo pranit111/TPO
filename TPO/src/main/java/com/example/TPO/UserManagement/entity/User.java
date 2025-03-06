@@ -13,12 +13,26 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public boolean isVerified() {
+        return isVerified;
+    }
+
+    public void setVerified(boolean verified) {
+        isVerified = verified;
+    }
+
     @Column(name = "Username",unique = true)
     private String username;
 
     public String getEmail() {
         return email;
     }
+    private boolean isVerified=false;
 
     public void setEmail(String email) {
         this.email = email;
@@ -63,9 +77,6 @@ public class User {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getUsername() {
         return username;
