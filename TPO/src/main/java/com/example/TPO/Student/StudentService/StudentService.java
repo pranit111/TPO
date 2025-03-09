@@ -82,6 +82,23 @@ StudentRepository studentRepository;
         StudentDTO StudentDTO = StudentMapper.toStudentDTO(student);
 
         return ResponseEntity.ok(StudentDTO);
+
+
+    }
+    public ResponseEntity<? extends Object> getstudprofile(String token) {
+        long id=jwtService.extractUserId(token);
+        Optional<Student> studentoptional = studentRepository.findByUserId(id);
+
+        if (studentoptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Student Found with ID: " + id);
+        }
+
+        Student student = studentoptional.get();
+        StudentDTO StudentDTO = StudentMapper.toStudentDTO(student);
+
+        return ResponseEntity.ok(StudentDTO);
+
+
     }
 
         public String updateStudent(Student student, String authToken) {

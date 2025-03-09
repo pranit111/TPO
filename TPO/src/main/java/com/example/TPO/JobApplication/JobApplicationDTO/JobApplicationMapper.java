@@ -26,6 +26,7 @@ public class JobApplicationMapper {
                 student.getPhoneNumber(),
                 student.getAddress(),
                 student.getDepartment(),
+                student.getAcademicyear(),
                 student.getSscMarks(),
                 student.getHscMarks(),
                 student.getDiplomaMarks(),
@@ -37,7 +38,8 @@ public class JobApplicationMapper {
                 student.getSem6Marks(),
                 student.getNoOfBacklogs(),
                 student.getAvgMarks(),
-                student.getGr_No()
+                student.getGr_No(),
+                student.getProfileimagedata()
         );
 
         // Convert JobPost entity to JobPostDTO

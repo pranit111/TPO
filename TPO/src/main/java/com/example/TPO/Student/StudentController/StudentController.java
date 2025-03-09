@@ -1,6 +1,7 @@
 package com.example.TPO.Student.StudentController;
 
 import com.example.TPO.Student.StudentService.StudentService;
+import com.example.TPO.UserManagement.Service.JWTService;
 import com.example.TPO.UserManagement.UserRepo.UserRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +18,15 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RequestMapping("api1/")
 @RestController
 
 
 public class StudentController {
-
+    @Autowired
+    JWTService jwtService;
     @Autowired
     StudentService studentService;
     @Autowired
@@ -33,7 +36,21 @@ public class StudentController {
 
     return studentService.getStudent(id);
 
-    }    private final ObjectMapper objectMapper;
+    }
+    @GetMapping("/Student/profile")
+    public ResponseEntity<?> getprofile(@RequestHeader("Authorization") String authHeader){
+        Map<String, Object> response = new HashMap<>();
+        if(authHeader.isEmpty()){
+            response.put("error","User Not Logged In");
+            new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);}
+        String token = authHeader.substring(7);
+
+
+        return studentService.getstudprofile(token);
+
+    }
+
+    private final ObjectMapper objectMapper;
     public StudentController(StudentService studentService, ObjectMapper objectMapper) {
         this.studentService = studentService;
         this.objectMapper = objectMapper;

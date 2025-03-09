@@ -27,6 +27,7 @@ public class StudentMapper {
                 student.getPhoneNumber(),
                 student.getAddress(),
                 student.getDepartment(),
+                student.getAcademicyear(),
                 student.getSscMarks(),
                 student.getHscMarks(),
                 student.getDiplomaMarks(),
@@ -38,7 +39,8 @@ public class StudentMapper {
                 student.getSem6Marks(),
                 student.getNoOfBacklogs(),
                 student.getAvgMarks(),
-                student.getGr_No()
+                student.getGr_No(),
+                student.getProfileimagedata()
         );
     }
 }

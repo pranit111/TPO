@@ -17,4 +17,11 @@ public class EmailService {
         message.setText("Your OTP is: " + otp + ". It is valid for 5 minutes.");
         mailSender.send(message);
     }
+    public void sendOTPEmailResetpass(String toEmail, String otp) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toEmail);
+        message.setSubject("Your OTP for Changing password ");
+        message.setText("Your OTP is: " + otp + ". It is valid for 5 minutes.");
+        mailSender.send(message);
+    }
 }

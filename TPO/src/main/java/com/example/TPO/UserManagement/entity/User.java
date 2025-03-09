@@ -26,7 +26,7 @@ public class User {
         isVerified = verified;
     }
 
-    @Column(name = "Username",unique = true)
+    @Column(name = "Username")
     private String username;
 
     public String getEmail() {

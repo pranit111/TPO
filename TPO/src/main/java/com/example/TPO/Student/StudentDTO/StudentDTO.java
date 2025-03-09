@@ -3,6 +3,7 @@ package com.example.TPO.Student.StudentDTO;
 import com.example.TPO.UserManagement.UserDTO.UserDTO;
 
 import java.time.LocalDate;
+import java.util.Base64;
 import java.util.List;
 
 public class StudentDTO {
@@ -37,6 +38,15 @@ public class StudentDTO {
     }
 
     private double sem1Marks;
+
+    public String getAcademicYear() {
+        return academicYear;
+    }
+
+    public void setAcademicYear(String academicYear) {
+        this.academicYear = academicYear;
+    }
+
     private double sem2Marks;
     private double sem3Marks;
     private double sem4Marks;
@@ -45,11 +55,20 @@ public class StudentDTO {
     private int noOfBacklogs;
     private double avgMarks;
     private String Gr_No;
-
+    private String profileImageBase64;
+    private String academicYear;
     // Constructor
 
 
-    public StudentDTO(Long id, UserDTO user, String firstName, String middleName, String lastName, LocalDate dateOfBirth, String gender, String phoneNumber, String address, String department, double sscMarks, double hscMarks, double diplomaMarks, double sem1Marks, double sem2Marks, double sem3Marks, double sem4Marks, double sem5Marks, double sem6Marks, int noOfBacklogs, double avgMarks, String gr_No) {
+    public String getProfileImageBase64() {
+        return profileImageBase64;
+    }
+
+    public void setProfileImageBase64(String profileImageBase64) {
+        this.profileImageBase64 = profileImageBase64;
+    }
+
+    public StudentDTO(Long id, UserDTO user, String firstName, String middleName, String lastName, LocalDate dateOfBirth, String gender, String phoneNumber, String address, String department,String academicYear, double sscMarks, double hscMarks, double diplomaMarks, double sem1Marks, double sem2Marks, double sem3Marks, double sem4Marks, double sem5Marks, double sem6Marks, int noOfBacklogs, double avgMarks, String gr_No, byte[] profileImage) {
         this.id = id;
         this.user = user;
         this.firstName = firstName;
@@ -60,6 +79,7 @@ public class StudentDTO {
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.department = department;
+        this.academicYear=academicYear;
         this.sscMarks = sscMarks;
         this.hscMarks = hscMarks;
         this.diplomaMarks = diplomaMarks;
@@ -71,7 +91,10 @@ public class StudentDTO {
         this.sem6Marks = sem6Marks;
         this.noOfBacklogs = noOfBacklogs;
         this.avgMarks = avgMarks;
-        Gr_No = gr_No;
+        this.Gr_No = gr_No;
+        if (profileImage != null) {
+            this.profileImageBase64 = Base64.getEncoder().encodeToString(profileImage);
+        }
     }
 
     // Getters & Setters
