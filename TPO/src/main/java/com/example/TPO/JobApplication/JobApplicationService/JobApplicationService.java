@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -47,32 +48,32 @@ public class JobApplicationService {
     private JobPostRepository jobPostRepository;
 
     //  Create Job Application
-    public ResponseEntity<String> createApplication(long postId, String token) {
+    public ResponseEntity<Map<String,String>> createApplication(long postId, String token) {
         Long userId = jwtService.extractUserId(token);
 
         // Get User
         Optional<User> userOptional = userRepo.findById(userId);
         if (userOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of( "error","User not found"));
         }
 
         // Get JobPost
         Optional<JobPost> jobPostOptional = jobPostRepository.findById(postId);
         if (jobPostOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Job Post found with ID: " + postId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of( "error","No Job Post found with ID: " + postId));
         }
 
         // Get Student Profile
         Optional<Student> studentOptional = studentRepository.findByUserId(userId);
         if (studentOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student profile not found for User ID: " + userId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of( "error","Student profile not found for User ID: " + userId));
         }
 
         // Check if application already exists for this user & job post
         boolean alreadyApplied = jobApplicationRepository.existsByStudentIdAndJobPostId(
                 studentOptional.get().getId(), postId);
         if (alreadyApplied) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("You have already applied for this job.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "You Already Had Applied For This Job"));
         }
 
         // Create Job Application
@@ -83,7 +84,7 @@ public class JobApplicationService {
         jobApplication.setJobPost(jobPostOptional.get());
         jobApplicationRepository.save(jobApplication);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Application submitted successfully");
+        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "Application submitted successfully"));
     }
 
     //  Get Job Application (Returns DTO)
@@ -99,7 +100,13 @@ public class JobApplicationService {
 
         return ResponseEntity.ok(jobApplicationDTO);
     }
+//gGet list of Application according to student
+    public ResponseEntity<List<JobApplicationDTO>> getApplications(String token) {
+        List<JobApplication> optionalJobApplication=jobApplicationRepository.findByStudentId(studentRepository.findByUserId(jwtService.extractUserId(token)).get().getId());
 
+        return ResponseEntity.ok(JobApplicationMapper.toJobApplicationDTOList(optionalJobApplication));
+
+    }
     public ResponseEntity<?> updateApplication(long applicationId, JobApplicationDTO updatedJobApplicationDTO) {
         Optional<JobApplication> jobApplicationOptional = jobApplicationRepository.findById(applicationId);
         System.err.println(updatedJobApplicationDTO.getStatus());
@@ -180,7 +187,7 @@ public class JobApplicationService {
                 Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(jobApp.getId());
                 row.createCell(1).setCellValue(jobApp.getJobPost().getJobDesignation());
-                row.createCell(2).setCellValue(jobApp.getJobPost().getCompanyName());
+                row.createCell(2).setCellValue(jobApp.getJobPost().getCompany().getName());
                 row.createCell(3).setCellValue(jobApp.getStatus());
                 row.createCell(4).setCellValue(jobApp.getApplicationDate().toString());
             }
@@ -200,7 +207,6 @@ public class JobApplicationService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-
 
 
 }

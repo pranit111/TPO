@@ -1,6 +1,7 @@
 package com.example.TPO.Tpo.TpoService;
 
 import com.example.TPO.DBMS.Tpo.TPOUser;
+import com.example.TPO.DBMS.Tpo.TPO_Role;
 import com.example.TPO.DBMS.stud.Student;
 import com.example.TPO.Tpo.TpoRepository.TpoRepository;
 import com.example.TPO.UserManagement.Service.JWTService;
@@ -8,6 +9,7 @@ import com.example.TPO.UserManagement.UserRepo.UserRepo;
 import com.example.TPO.UserManagement.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.Optional;
 
@@ -19,11 +21,12 @@ public class TpoService{
     TpoRepository tpoRepository;
     @Autowired
     JWTService jwtService;
-    public String  createTpoUser(TPOUser tpoUser , String authtoken){
-        {
-            Long userId = jwtService.extractUserId(authtoken);
+    public String  createTpoUser(String role , @RequestHeader("Authorization") String authHeader){
+        {   System.err.println(authHeader);
+            TPOUser tpoUser=new TPOUser();
+            Long userId = jwtService.extractUserId(authHeader);
             Optional<User> userOptional = userRepo.findById(userId);
-
+            System.err.println(userOptional.get().getUsername());
             if (userOptional.isEmpty()) {
                 return ("User not found with the provided token.");
             }
@@ -39,6 +42,7 @@ public class TpoService{
 
             // Associate user with the new student and save
             tpoUser.setUser(user);
+            tpoUser.setRole(TPO_Role.TPO_USER);
             tpoRepository.save(tpoUser);
             return ("Tpo User Saved");
         }

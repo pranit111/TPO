@@ -1,5 +1,6 @@
 package com.example.TPO.JobApplication.JobApplicationDTO;
 
+import com.example.TPO.DBMS.Applications.ApplicationStatus;
 import com.example.TPO.JobPost.JobPostDTO.JobPostDTO;
 import com.example.TPO.Student.StudentDTO.StudentDTO;
 
@@ -11,7 +12,27 @@ public class JobApplicationDTO {
     private JobPostDTO jobPost;  // Using JobPostDTO instead of full JobPost entity
     private LocalDate applicationDate;
     private String status;  // Enum as String
-    private String designation;  // Added Designation field
+    private String designation;
+// Applied, Shortlisted, Selected, Rejected
+    private LocalDate  InterviewDate ;
+
+    public LocalDate getInterviewDate() {
+        return InterviewDate;
+    }
+
+    public void setInterviewDate(LocalDate interviewDate) {
+        InterviewDate = interviewDate;
+    }
+
+    public String getFeedback() {
+        return Feedback;
+    }
+
+    public void setFeedback(String feedback) {
+        Feedback = feedback;
+    }
+
+    private String Feedback;// Added Designation field
 
     public String getDesignation() {
         return designation;
@@ -22,12 +43,17 @@ public class JobApplicationDTO {
     }
 
     // Constructor
-    public JobApplicationDTO(Long id, StudentDTO student, JobPostDTO jobPost, LocalDate applicationDate, String status) {
+
+
+    public JobApplicationDTO(Long id, StudentDTO student, JobPostDTO jobPost, LocalDate applicationDate, String status, String designation, LocalDate interviewDate, String feedback) {
         this.id = id;
         this.student = student;
         this.jobPost = jobPost;
         this.applicationDate = applicationDate;
         this.status = status;
+        this.designation = designation;
+        this.InterviewDate = interviewDate;
+        this.Feedback = feedback;
     }
 
     // Getters & Setters

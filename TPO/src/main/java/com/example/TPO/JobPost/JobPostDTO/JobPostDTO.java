@@ -1,12 +1,13 @@
 package com.example.TPO.JobPost.JobPostDTO;
 
 import com.example.TPO.DBMS.Applications.ApplicationStatus;
+import com.example.TPO.DBMS.Company.Company;
 
 import java.time.LocalDate;
 
 public class JobPostDTO {
     private Long id;
-    private String companyName;
+    private Company company;
     private String jobDesignation;
     private String location;
     private String jobType;
@@ -16,9 +17,53 @@ public class JobPostDTO {
     private int backlogAllowance;
     private String preferredCourse;
 
+    private boolean aptitude;
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public LocalDate getAptitudeDate() {
+        return aptitudeDate;
+    }
+
+    public void setAptitudeDate(LocalDate aptitudeDate) {
+        this.aptitudeDate = aptitudeDate;
+    }
+
+    public boolean isAptitude() {
+        return aptitude;
+    }
+
+    public void setAptitude(boolean aptitude) {
+        this.aptitude = aptitude;
+    }
+
+    private LocalDate aptitudeDate;
+    private String status;
     private String skillRequirements;
     private String selectionRounds;
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
+    public ApplicationStatus getApplicationStatus() {
+        return applicationStatus;
+    }
+
+    public void setApplicationStatus(ApplicationStatus applicationStatus) {
+        this.applicationStatus = applicationStatus;
+    }
+
     private String modeOfRecruitment;
     private String testPlatform;
     private LocalDate applicationStartDate;
@@ -27,13 +72,13 @@ public class JobPostDTO {
     private LocalDate selectionEndDate;
     private ApplicationStatus applicationStatus;
     // Constructor
-    public JobPostDTO(Long id, String companyName, String jobDesignation, String location, String jobType,
+    public JobPostDTO(Long id, Company company, String jobDesignation, String location, String jobType,
                       String description, double packageAmount, double minPercentage, int backlogAllowance,
                       String preferredCourse, String skillRequirements, String selectionRounds,
                       String modeOfRecruitment, String testPlatform, LocalDate applicationStartDate,
-                      LocalDate applicationEndDate, LocalDate selectionStartDate, LocalDate selectionEndDate) {
+                      LocalDate applicationEndDate, LocalDate selectionStartDate, LocalDate selectionEndDate,LocalDate aptitudeDate,String status,boolean aptitude) {
         this.id = id;
-        this.companyName = companyName;
+        this.company = company;
         this.jobDesignation = jobDesignation;
         this.location = location;
         this.jobType = jobType;
@@ -50,6 +95,9 @@ public class JobPostDTO {
         this.applicationEndDate = applicationEndDate;
         this.selectionStartDate = selectionStartDate;
         this.selectionEndDate = selectionEndDate;
+        this.aptitude=aptitude;
+        this.aptitudeDate=aptitudeDate;
+        this.status=status;
     }
 
     // Getters & Setters
@@ -58,8 +106,7 @@ public class JobPostDTO {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public String getCompanyName() { return companyName; }
-    public void setCompanyName(String companyName) { this.companyName = companyName; }
+
 
     public String getJobDesignation() { return jobDesignation; }
     public void setJobDesignation(String jobDesignation) { this.jobDesignation = jobDesignation; }

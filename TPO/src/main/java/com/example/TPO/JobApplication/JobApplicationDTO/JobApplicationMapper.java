@@ -8,6 +8,9 @@ import com.example.TPO.Student.StudentDTO.StudentDTO;
 import com.example.TPO.UserManagement.UserDTO.UserDTO;
 import com.example.TPO.UserManagement.entity.User;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class JobApplicationMapper {
     public static JobApplicationDTO toJobApplicationDTO(JobApplication jobApplication) {
         if (jobApplication == null) return null;
@@ -27,26 +30,15 @@ public class JobApplicationMapper {
                 student.getAddress(),
                 student.getDepartment(),
                 student.getAcademicyear(),
-                student.getSscMarks(),
-                student.getHscMarks(),
-                student.getDiplomaMarks(),
-                student.getSem1Marks(),
-                student.getSem2Marks(),
-                student.getSem3Marks(),
-                student.getSem4Marks(),
-                student.getSem5Marks(),
-                student.getSem6Marks(),
-                student.getNoOfBacklogs(),
-                student.getAvgMarks(),
-                student.getGr_No(),
-                student.getProfileimagedata()
+                student.getGr_No()
+
         );
 
         // Convert JobPost entity to JobPostDTO
         JobPost jobPost = jobApplication.getJobPost();
         JobPostDTO jobPostDTO = new JobPostDTO(
                 jobPost.getId(),
-                jobPost.getCompanyName(),
+                jobPost.getCompany(),
                 jobPost.getJobDesignation(),
                 jobPost.getLocation(),
                 jobPost.getJobType(),
@@ -62,7 +54,11 @@ public class JobApplicationMapper {
                 jobPost.getApplicationStartDate(),
                 jobPost.getApplicationEndDate(),
                 jobPost.getSelectionStartDate(),
-                jobPost.getSelectionEndDate()
+                jobPost.getSelectionEndDate(),
+                jobPost.getAptitudedate(),
+                jobPost.getStatus(),
+                jobPost.getAptitude()
+
         );
 
         return new JobApplicationDTO(
@@ -70,7 +66,15 @@ public class JobApplicationMapper {
                 studentDTO,
                 jobPostDTO,
                 jobApplication.getApplicationDate(),
-                jobApplication.getStatus().toString()
+                jobApplication.getStatus().toString(),
+                jobApplication.getJobPost().getJobDesignation(),
+                jobApplication.getInterviewDate(),
+                jobApplication.getFeedback()
         );
+    }
+    public static List<JobApplicationDTO> toJobApplicationDTOList(List<JobApplication> jobApplications) {
+        return jobApplications.stream()
+                .map(JobApplicationMapper::toJobApplicationDTO)
+                .collect(Collectors.toList());
     }
 }

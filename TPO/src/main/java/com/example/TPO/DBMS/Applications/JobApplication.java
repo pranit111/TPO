@@ -24,12 +24,14 @@ public class JobApplication {
         this.id = id;
     }
 
-    public JobApplication(Long id, Student student, JobPost jobPost, LocalDate applicationDate, ApplicationStatus status) {
+    public JobApplication(Long id, Student student, JobPost jobPost, LocalDate applicationDate, ApplicationStatus status, LocalDate interviewDate, String feedback) {
         this.id = id;
         this.student = student;
         this.jobPost = jobPost;
         this.applicationDate = applicationDate;
         this.status = status;
+        this.InterviewDate = interviewDate;
+        this.Feedback = feedback;
     }
 
     public Student getStudent() {
@@ -78,8 +80,26 @@ public class JobApplication {
 
     private LocalDate applicationDate;
 
+
+    public LocalDate getInterviewDate() {
+        return InterviewDate;
+    }
+
+    public void setInterviewDate(LocalDate interviewDate) {
+        InterviewDate = interviewDate;
+    }
+
+    public String getFeedback() {
+        return Feedback;
+    }
+
+    public void setFeedback(String feedback) {
+        Feedback = feedback;
+    }
+
     @Enumerated(EnumType.STRING)
     private ApplicationStatus status; // Applied, Shortlisted, Selected, Rejected
-
+    private LocalDate  InterviewDate ;
+    private String Feedback;
     // Getters & Setters
 }

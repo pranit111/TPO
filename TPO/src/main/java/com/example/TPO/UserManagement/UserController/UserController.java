@@ -6,6 +6,7 @@ import com.example.TPO.UserManagement.Service.OTPService;
 import com.example.TPO.UserManagement.Service.Service;
 import com.example.TPO.UserManagement.UserRepo.UserRepo;
 import com.example.TPO.UserManagement.entity.User;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +40,7 @@ public class UserController {
 
     @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/register/user")
-    public ResponseEntity<Map<String, String>> registerUser(@RequestBody User user) {
+    public ResponseEntity<Map<String, String>> registerUser(@RequestBody User user) throws MessagingException {
         System.out.println(user.getUsername());
         Map<String, String> response = new HashMap<>();
 
@@ -115,7 +116,7 @@ public class UserController {
 
 
     @PostMapping("/forgot/password")
-    public ResponseEntity<Map<String, String>> resetPassword(@RequestBody Map<String, String> req) {
+    public ResponseEntity<Map<String, String>> resetPassword(@RequestBody Map<String, String> req) throws MessagingException {
         String email = req.get("email");
         Map<String, String> response = new HashMap<>();
 
@@ -124,7 +125,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(response);
         }
 
-        System.err.println(email);
+
         Optional<User> optionalUser = Userrepo.findByEmail(email);
 
         if (optionalUser.isEmpty()) {
@@ -180,7 +181,7 @@ public class UserController {
 
         @GetMapping("/getuser")
         public Map<String, String> userdata(@RequestHeader("Authorization") String header) {
-            System.out.println(header);
+
 
             if (header != null && header.startsWith("Bearer ")) {
                 String token = header.substring(7).trim();

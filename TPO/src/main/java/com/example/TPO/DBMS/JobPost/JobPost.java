@@ -1,5 +1,6 @@
 package com.example.TPO.DBMS.JobPost;
 
+import com.example.TPO.DBMS.Company.Company;
 import com.example.TPO.DBMS.Tpo.TPOUser;
 import jakarta.persistence.*;
 import com.example.TPO.DBMS.Applications.JobApplication;
@@ -16,8 +17,9 @@ public class JobPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
-    private String companyName;
+    @ManyToOne
+    @JoinColumn(name = "company_id", nullable = false)  // Establishing Foreign Key
+    private Company company;
     @Column(nullable = false)
     private String jobDesignation;
     @Column(nullable = false)
@@ -35,6 +37,9 @@ public class JobPost {
     private String preferredCourse;
     @Column(nullable = false)
     private String skillRequirements;
+    private String Status;
+
+    private Boolean aptitude;
 
     public List<JobApplication> getApplications() {
         return applications;
@@ -58,9 +63,18 @@ public class JobPost {
     }
 
 
-    public JobPost(Long id, String companyName, String jobDesignation, String location, String jobType, String description, double packageAmount, double minPercentage, int backlogAllowance, String preferredCourse, String skillRequirements, String selectionRounds, TPOUser createdBy, String modeOfRecruitment, String testPlatform, LocalDate applicationStartDate, LocalDate applicationEndDate, LocalDate selectionStartDate, LocalDate selectionEndDate) {
+
+
+    public JobPost() {
+    }
+
+
+
+    private String modeOfRecruitment;
+
+    public JobPost(Long id, Company company, String jobDesignation, String location, String jobType, String description, double packageAmount, double minPercentage, int backlogAllowance, String preferredCourse, String skillRequirements, String status, Boolean aptitude, String selectionRounds, TPOUser createdBy, String modeOfRecruitment, String testPlatform, double minimumSsc, double minimumHsc, LocalDate aptitudedate, LocalDate applicationStartDate, LocalDate applicationEndDate, LocalDate selectionStartDate, LocalDate selectionEndDate) {
         this.id = id;
-        this.companyName = companyName;
+        this.company = company;
         this.jobDesignation = jobDesignation;
         this.location = location;
         this.jobType = jobType;
@@ -70,22 +84,66 @@ public class JobPost {
         this.backlogAllowance = backlogAllowance;
         this.preferredCourse = preferredCourse;
         this.skillRequirements = skillRequirements;
+        Status = status;
+        this.aptitude = aptitude;
         this.selectionRounds = selectionRounds;
         this.createdBy = createdBy;
         this.modeOfRecruitment = modeOfRecruitment;
         this.testPlatform = testPlatform;
+        this.minimumSsc = minimumSsc;
+        this.minimumHsc = minimumHsc;
+        this.aptitudedate = aptitudedate;
         this.applicationStartDate = applicationStartDate;
         this.applicationEndDate = applicationEndDate;
         this.selectionStartDate = selectionStartDate;
         this.selectionEndDate = selectionEndDate;
     }
 
-    public JobPost() {
-    }
-
-    private String modeOfRecruitment;
     private String testPlatform;
 
+    public String getStatus() {
+        return Status;
+    }
+
+    public void setStatus(String status) {
+        Status = status;
+    }
+
+    public double getMinimumHsc() {
+        return minimumHsc;
+    }
+
+    public void setMinimumHsc(double minimumHsc) {
+        this.minimumHsc = minimumHsc;
+    }
+
+    public Boolean getAptitude() {
+        return aptitude;
+    }
+
+    public void setAptitude(Boolean aptitude) {
+        this.aptitude = aptitude;
+    }
+
+    public LocalDate getAptitudedate() {
+        return aptitudedate;
+    }
+
+    public void setAptitudedate(LocalDate aptitudedate) {
+        this.aptitudedate = aptitudedate;
+    }
+
+    public double getMinimumSsc() {
+        return minimumSsc;
+    }
+
+    public void setMinimumSsc(double minimumSsc) {
+        this.minimumSsc = minimumSsc;
+    }
+
+    private double minimumSsc;
+    private double minimumHsc;
+    private LocalDate aptitudedate;
     private LocalDate applicationStartDate;
     private LocalDate applicationEndDate;
     private LocalDate selectionStartDate;
@@ -99,12 +157,12 @@ public class JobPost {
         this.id = id;
     }
 
-    public String getCompanyName() {
-        return companyName;
+    public Company getCompany() {
+        return company;
     }
 
-    public void setCompanyName(String companyName) {
-        this.companyName = companyName;
+    public void setCompany(Company company) {
+        this.company = company;
     }
 
     public String getJobDesignation() {

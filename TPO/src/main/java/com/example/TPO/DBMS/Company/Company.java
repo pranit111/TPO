@@ -13,6 +13,104 @@ public class Company {
     private Long id;
 
     private String name;
+
+    public Company(Long id, String name, String industryType, String email, String contactNumber, String location, String website, LocalDate associatedSince, Boolean isActive, TPOUser tpoCoordinator) {
+        this.id = id;
+        this.name = name;
+        this.industryType = industryType;
+        this.email = email;
+        this.contactNumber = contactNumber;
+        this.location = location;
+        this.website = website;
+        this.associatedSince = associatedSince;
+        this.isActive = isActive;
+        this.tpoCoordinator = tpoCoordinator;
+    }
+
+    public Company() {
+
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public TPOUser getTpoCoordinator() {
+        return tpoCoordinator;
+    }
+
+    public void setTpoCoordinator(TPOUser tpoCoordinator) {
+        this.tpoCoordinator = tpoCoordinator;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getIndustryType() {
+        return industryType;
+    }
+
+    public void setIndustryType(String industryType) {
+        this.industryType = industryType;
+    }
+
+    public String getContactNumber() {
+        return contactNumber;
+    }
+
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public LocalDate getAssociatedSince() {
+        return associatedSince;
+    }
+
+    public void setAssociatedSince(LocalDate associatedSince) {
+        this.associatedSince = associatedSince;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
     private String industryType;
     private String email;
     private String contactNumber;
@@ -24,6 +122,8 @@ public class Company {
     @ManyToOne
     @JoinColumn(name = "tpo_coordinator_id")
     private TPOUser tpoCoordinator;  // TPO Staff managing the company
+
+
 
     // Getters and Setters
 }

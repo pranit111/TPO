@@ -96,6 +96,25 @@ public class StudentDTO {
             this.profileImageBase64 = Base64.getEncoder().encodeToString(profileImage);
         }
     }
+    public StudentDTO(Long id, UserDTO user, String firstName, String middleName, String lastName, LocalDate dateOfBirth, String gender, String phoneNumber, String address, String department,String academicYear,String gr_No) {
+        this.id = id;
+        this.user = user;
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.lastName = lastName;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
+        this.phoneNumber = phoneNumber;
+        this.address = address;
+        this.department = department;
+        this.academicYear=academicYear;
+        this.Gr_No = gr_No;
+        this.sscMarks = sscMarks;
+        this.hscMarks = hscMarks;
+        this.diplomaMarks = diplomaMarks;
+        this.avgMarks = avgMarks;
+
+    }
 
     // Getters & Setters
     public Long getId() { return id; }

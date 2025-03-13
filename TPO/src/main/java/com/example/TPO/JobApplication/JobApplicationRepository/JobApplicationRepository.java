@@ -18,4 +18,7 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication,L
                                                @Param("location") String location,
                                                @Param("minSalary") Long minSalary,
                                                @Param("maxSalary") Long maxSalary);
+    List<JobApplication> findByStudentId(Long studentId);
+
+
 }

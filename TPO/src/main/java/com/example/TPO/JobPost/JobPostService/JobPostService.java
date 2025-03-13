@@ -1,21 +1,29 @@
 package com.example.TPO.JobPost.JobPostService;
 
+import com.example.TPO.Companies.CompaniesRepository.CompaniesRepository;
+import com.example.TPO.DBMS.Company.Company;
 import com.example.TPO.DBMS.JobPost.JobPost;
 import com.example.TPO.DBMS.Tpo.TPOUser;
+import com.example.TPO.DBMS.stud.Student;
 import com.example.TPO.JobPost.JobPostDTO.JobPostDTO;
+import com.example.TPO.JobPost.JobPostDTO.JobPostMapper;
 import com.example.TPO.JobPost.JobPostRepository.JobPostRepository;
+import com.example.TPO.Student.StudentRepository.StudentRepository;
 import com.example.TPO.Tpo.TpoRepository.TpoRepository;
 import com.example.TPO.UserManagement.Service.JWTService;
 import com.example.TPO.UserManagement.UserRepo.UserRepo;
 import com.example.TPO.UserManagement.entity.User;
 import jakarta.transaction.Transactional;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class JobPostService {
@@ -24,12 +32,20 @@ public class JobPostService {
     @Autowired
     TpoRepository tpoRepository;
     @Autowired
+    StudentRepository studentRepository;
+    @Autowired
     JWTService jwtService;
     @Autowired
     UserRepo userRepo;
+    @Autowired
+    CompaniesRepository companiesRepository;
+
     public ResponseEntity<String> createPost(JobPost jobPost, String token) {
         try {
+            Company company = companiesRepository.findById(jobPost.getCompany().getId())
+                    .orElseThrow(() -> new RuntimeException("Company not found"));
             // Extract user ID from JWT token
+            jobPost.setCompany(company);
             Long userId = jwtService.extractUserId(token);
             if (userId == null) {
                 return ResponseEntity.status(401).body("Invalid or expired token");
@@ -45,7 +61,7 @@ public class JobPostService {
 
             // Set TPOUser in JobPost
             jobPost.setCreatedBy(tpoUser);
-
+            System.err.println( jobPost.getCompany().getId());
             // Save JobPost
             jobPostRepository.save(jobPost);
 
@@ -87,5 +103,59 @@ public class JobPostService {
         jobPostRepository.save(jobPost);
 
         return ResponseEntity.ok("Job post updated successfully.");
+    }
+
+    public List<JobPostDTO> getAllJobPosts() {
+        List<JobPost> jobPosts = jobPostRepository.findAll();
+        return JobPostMapper.toJobPostDTOList(jobPosts);
+    }
+
+    public List<JobPostDTO> getEligiblePosts(String Token) {
+        Optional<Student> optionalStudent = studentRepository.findByUserId(jwtService.extractUserId(Token));
+
+        if (!optionalStudent.isPresent()) {
+            throw new RuntimeException("Student not found"); // Handle missing student scenario
+        }
+
+        Student student = optionalStudent.get();
+        List<JobPost> allJobPosts = jobPostRepository.findAll();
+
+        List<JobPost> eligibleJobPosts = allJobPosts.stream()
+                .filter(jobPost -> isStudentEligibleForJob(student, jobPost))
+                .collect(Collectors.toList());
+
+        return JobPostMapper.toJobPostDTOList(eligibleJobPosts);
+    }
+
+    private boolean isStudentEligibleForJob(Student student, JobPost jobPost) {
+        Double requiredSsc = jobPost.getMinimumSsc();
+        Double requiredHsc = jobPost.getMinimumHsc();
+        Double requiredDiploma = jobPost.getMinimumHsc(); // Possible typo? Should be `getMinimumDiploma()` if exists
+        Double requiredMinAvg = jobPost.getMinPercentage();
+
+        Double studentSsc = student.getSscMarks();
+        Double studentHsc = student.getHscMarks();
+        Double studentDiploma = student.getDiplomaMarks();
+        Double studentMinAvg = student.getAvgMarks();
+
+        // Ensure student meets all required criteria (SSC, HSC/Diploma, and Min Percentage)
+        boolean sscEligible = requiredSsc == null || (studentSsc != null && studentSsc >= requiredSsc);
+        boolean hscEligible = requiredHsc == null || (studentHsc != null && studentHsc >= requiredHsc);
+        boolean diplomaEligible = requiredDiploma == null || (studentDiploma != null && studentDiploma >= requiredDiploma);
+        boolean avgEligible = requiredMinAvg == null || (studentMinAvg != null && studentMinAvg >= requiredMinAvg);
+
+        // Student must satisfy SSC & (HSC or Diploma) & Minimum Percentage
+        return sscEligible && (hscEligible || diplomaEligible) && avgEligible;
+    }
+
+    public ResponseEntity<?> getEligiblePost(String authHeader, Long postId) {
+        System.err.println(authHeader);
+        Optional<Student> optstud= studentRepository.findByUserId(jwtService.extractUserId(authHeader));
+        Optional<JobPost> jobPost=jobPostRepository.findById(postId);
+        JobPostDTO jobPostDTO=JobPostMapper.toJobPostDTO(jobPost.get());
+        if(isStudentEligibleForJob(optstud.get(),jobPost.get())){
+            return ResponseEntity.ok(jobPostDTO);
+        }
+        return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error POST Cannot be fetched");
     }
 }
