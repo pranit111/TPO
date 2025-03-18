@@ -1,5 +1,7 @@
 package com.example.TPO.UserManagement.Service;
 
+import com.example.TPO.DBMS.stud.Student;
+import com.example.TPO.Student.StudentRepository.StudentRepository;
 import com.example.TPO.UserManagement.UserRepo.UserRepo;
 import com.example.TPO.UserManagement.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +52,8 @@ public class Service implements UserDetailsService {
 
     @Autowired
     JWTService jwtService;
-
+    @Autowired
+    StudentRepository studentRepository;
     public ResponseEntity<Map<String, Object>> verify(User user) {
         Map<String, Object> responseBody = new HashMap<>();
 
@@ -81,9 +84,12 @@ public class Service implements UserDetailsService {
 
             // Generate JWT token
             String token = jwtService.generateToken(dbUser.getEmail(), dbUser.getId());
+            Optional<Student> studentOptional = studentRepository.findByUserId(dbUser.getId());
+            responseBody.put("HasProfile", studentOptional.isPresent() ? "Yes" : "No");
 
             // Create JSON response
             responseBody.put("status", "success");
+            responseBody.put("name", "success");
             responseBody.put("message", "Login successful");
             responseBody.put("token", "Bearer " + token); // Add Bearer prefix
             responseBody.put("userId", dbUser.getId());

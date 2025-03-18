@@ -1,10 +1,13 @@
 package com.example.TPO.Student.StudentController;
 
+import com.example.TPO.DBMS.Filters.JobApplicationFilter;
+import com.example.TPO.Student.StudentDTO.StudentBasicDTO;
 import com.example.TPO.Student.StudentService.StudentService;
 import com.example.TPO.UserManagement.Service.JWTService;
 import com.example.TPO.UserManagement.UserRepo.UserRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,9 +37,18 @@ public class StudentController {
     @GetMapping("/Student/{id}")
     public ResponseEntity<?> getstud(@PathVariable long id ){
 
-    return studentService.getStudent(id);
 
+    return studentService.getStudent(id);
     }
+    @GetMapping("/Students/")
+    public ResponseEntity<?> getstuds(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            return studentService.getStudents(token);
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR OCCURRED");
+    }
+
     @GetMapping("/Student/profile")
     public ResponseEntity<?> getprofile(@RequestHeader("Authorization") String authHeader){
         Map<String, Object> response = new HashMap<>();
@@ -83,20 +95,56 @@ public class StudentController {
         response.put("message", "Authorization header missing or invalid");
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
-    @PutMapping("/Updatestudent")
-    public ResponseEntity<String> updateStudent(@RequestBody Student student, @RequestHeader("Authorization") String authToken) {
-        String token = authToken.substring(7);
-        String response = studentService.updateStudent(student, token);
+    @PutMapping("/Student")
+    public ResponseEntity<?> updateStudent(
+            @RequestBody Student student,
+            @RequestHeader("Authorization") String authHeader) {
 
-        if (response.equals("Student not found.")) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        Map<String, Object> response = new HashMap<>();
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            response.put("status", "error");
+            response.put("message", "Authorization header missing or invalid");
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
-        return ResponseEntity.ok(response);
-    }
-//    @GetMapping("/GetProfile")
-//    public ResponseEntity<?> getprofile(@RequestHeader("Authorization") String authToken){
-//        String token = authToken.substring(7);
-//        studentService.getStudprofile(token);
-//    }
 
+        String token = authHeader.substring(7);
+        String updateResponse = studentService.updateStudent(student, token);
+
+        if (updateResponse.equals("Student not found.")) {
+            response.put("status", "error");
+            response.put("message", updateResponse);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        response.put("status", "success");
+        response.put("message", "Student updated successfully");
+        response.put("student", student); // Optional: return updated student details
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/Student/Search")
+    public Page<StudentBasicDTO> searchStudents(
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String department,
+            @RequestParam(required = false) String academicYear,
+            @RequestParam(required = false) Double minAvgMarks,
+            @RequestParam(required = false) Double maxAvgMarks,
+            @RequestParam(required = false) Integer yearOfPassing,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        return studentService.searchStudents(firstName, department,academicYear, minAvgMarks, maxAvgMarks, yearOfPassing, page, size);
+    }
+    @PostMapping("/Student/Search/Download")
+    public ResponseEntity<?> downloadfilteredstud( @RequestParam(required = false) String firstName,
+                                                   @RequestParam(required = false) String department,
+                                                   @RequestParam(required = false) String academicYear,
+                                                   @RequestParam(required = false) Double minAvgMarks,
+                                                   @RequestParam(required = false) Double maxAvgMarks,
+                                                   @RequestParam(required = false) Integer yearOfPassing,
+                                                   @RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "10") int size){
+        return studentService.downloadExcel(firstName, department,academicYear, minAvgMarks, maxAvgMarks, yearOfPassing, page, size);
+    }
 }

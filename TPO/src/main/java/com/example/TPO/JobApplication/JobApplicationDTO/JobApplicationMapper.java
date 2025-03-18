@@ -30,7 +30,11 @@ public class JobApplicationMapper {
                 student.getAddress(),
                 student.getDepartment(),
                 student.getAcademicyear(),
-                student.getGr_No()
+                student.getGr_No(),
+                student.getSscMarks(),
+                student.getHscMarks(),
+                student.getDiplomaMarks(),
+                student.getAvgMarks()
 
         );
 

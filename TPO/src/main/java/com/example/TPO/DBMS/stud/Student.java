@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.List;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) // Add this annotation
@@ -33,6 +34,9 @@ public class Student {
 
 
     private String firstName;
+
+
+
     private String middleName;
     private String lastName;
 
@@ -295,7 +299,7 @@ public class Student {
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.phoneNumber = phoneNumber;
-        Gr_No = gr_No;
+        this.Gr_No = gr_No;
         this.address = address;
         this.department = department;
         this.academicyear = academicyear;
@@ -317,6 +321,7 @@ public class Student {
         this.resume_file_data = resume_file_data;
         this.jobApplications = jobApplications;
     }
+
 
     private String Gr_No;
     private String address;
@@ -353,6 +358,7 @@ public class Student {
     @PreUpdate
     public void calculateAvgBeforeSave() {
         updateCalculatedFields();
+        setYearOfPassing();
     }
     // Getters & Setters
     public String getFirstName() {
@@ -362,4 +368,28 @@ public class Student {
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
-}
+
+    public int getYearOfPassing() {
+        return yearOfPassing;
+    }
+
+
+
+    // This field won't be saved in the database
+    private int yearOfPassing;
+
+    public void setYearOfPassing() {
+        this.yearOfPassing= calculateYearOfPassing();
+    }
+
+    private int calculateYearOfPassing() {
+        int currentYear = Year.now().getValue();
+
+        switch (this.academicyear) {
+            case "FE": return currentYear + 3; // First Year -> Pass in 4 years (FE -> SE -> TE -> BE)
+            case "SE": return currentYear + 2; // Second Year -> Pass in 3 years (SE -> TE -> BE)
+            case "TE": return currentYear + 1; // Third Year -> Pass in 2 years (TE -> BE)
+            case "BE": return currentYear;     // Final Year -> Pass this year
+            default: return 0; // Handle unexpected values
+        }
+}}

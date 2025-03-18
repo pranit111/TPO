@@ -96,7 +96,7 @@ public class StudentDTO {
             this.profileImageBase64 = Base64.getEncoder().encodeToString(profileImage);
         }
     }
-    public StudentDTO(Long id, UserDTO user, String firstName, String middleName, String lastName, LocalDate dateOfBirth, String gender, String phoneNumber, String address, String department,String academicYear,String gr_No) {
+    public StudentDTO(Long id, UserDTO user, String firstName, String middleName, String lastName, LocalDate dateOfBirth, String gender, String phoneNumber, String address, String department,String academicYear,String gr_No, double sscMarks, double hscMarks, double diplomaMarks,double avgMarks) {
         this.id = id;
         this.user = user;
         this.firstName = firstName;

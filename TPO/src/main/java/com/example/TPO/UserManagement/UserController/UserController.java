@@ -41,7 +41,7 @@ public class UserController {
     @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/register/user")
     public ResponseEntity<Map<String, String>> registerUser(@RequestBody User user) throws MessagingException {
-        System.out.println(user.getUsername());
+
         Map<String, String> response = new HashMap<>();
 
         Optional<User> existingUserOpt = Userrepo.findByEmail(user.getEmail());
@@ -106,6 +106,7 @@ public class UserController {
 
     @PostMapping("/stud/login")
     public ResponseEntity<Map<String, Object>> studLogin(@RequestBody User user) {
+
         return service.verify(user);
     }
 
