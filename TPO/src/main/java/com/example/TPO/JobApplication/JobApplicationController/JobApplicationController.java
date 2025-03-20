@@ -1,11 +1,14 @@
 package com.example.TPO.JobApplication.JobApplicationController;
 
+import com.example.TPO.DBMS.Applications.ApplicationStatus;
 import com.example.TPO.DBMS.Applications.JobApplication;
 import com.example.TPO.DBMS.Filters.JobApplicationFilter;
 import com.example.TPO.JobApplication.JobApplicationDTO.JobApplicationDTO;
 import com.example.TPO.JobApplication.JobApplicationService.JobApplicationService;
+import com.example.TPO.Student.StudentDTO.StudentBasicDTO;
 import org.aspectj.weaver.patterns.IToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -57,5 +60,21 @@ public ResponseEntity<Map<String,String >> createapplication(@RequestParam long 
     public ResponseEntity<?> downloadfilteredapp(@RequestBody JobApplicationFilter jobApplicationFilter){
     return jobApplicationService.downloadExcel(jobApplicationFilter);
 }
+    @GetMapping("/Application/Search")
+    public Page<JobApplicationDTO> searchStudents(
+            @RequestParam(required = false) ApplicationStatus status,
+            @RequestParam(required = false) String location ,
+            @RequestParam(required = false) Long minsalary,
+            @RequestParam(required = false) Long maxsalary,
+            @RequestParam(required = false) String student,
+            @RequestParam(required = false) String department,
+            @RequestParam(required = false) String jobtype,
+            @RequestParam(required = false) String designation,
 
+
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+                System.err.println(status);
+        return jobApplicationService.searchApplicaion(status, location,minsalary, maxsalary, student,department,jobtype,designation,page,size);
+    }
 }

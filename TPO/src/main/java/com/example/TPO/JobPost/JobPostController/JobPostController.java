@@ -4,6 +4,7 @@ import com.example.TPO.DBMS.JobPost.JobPost;
 import com.example.TPO.JobPost.JobPostDTO.JobPostDTO;
 import com.example.TPO.JobPost.JobPostService.JobPostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,7 +47,24 @@ public class JobPostController {
              token = authHeader.substring(7);}
 
         return jobPostService.getEligiblePost(token, post_id); // Reuse existing logic
-    }}
+    }
+
+    @GetMapping("Post/Search")
+    public Page<JobPostDTO> searchJobPosts(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String company,
+            @RequestParam(required = false) String position,
+            @RequestParam(required = false) String jobType,
+            @RequestParam(required = false) Double minSalary,
+            @RequestParam(required = false) Double maxSalary,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        System.out.println("Searching Job Posts - Status: " + status + ", Company: " + company);
+
+        return jobPostService.searchPost(status, company, position, jobType, minSalary, maxSalary, page, size);
+    }
+}
 
 
 

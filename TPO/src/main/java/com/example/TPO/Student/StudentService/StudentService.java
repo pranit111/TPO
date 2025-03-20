@@ -127,11 +127,11 @@ public class StudentService {
         }
 
         Student existingStudent = existingStudentOpt.get();
-        System.out.println(student.getAcademicyear());
+        System.out.println( student.getGrNo());
         // Update only non-null fields
         if (student.getProfileimagedata() != null) existingStudent.setProfileimagedata(student.getProfileimagedata());
         if (student.getFirstName() != null) existingStudent.setFirstName(student.getFirstName());
-        if (student.getGr_No() != null) existingStudent.setGr_No(student.getGr_No());
+        if (student.getGrNo() != null) existingStudent.setGrNo(student.getGrNo());
         if (student.getAcademicyear() != null) existingStudent.setAcademicyear(student.getAcademicyear());
         if (student.getMiddleName() != null) existingStudent.setMiddleName(student.getMiddleName());
         if (student.getLastName() != null) existingStudent.setLastName(student.getLastName());

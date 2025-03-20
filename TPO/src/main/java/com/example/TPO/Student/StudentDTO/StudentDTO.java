@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.Base64;
 import java.util.List;
 
-public class StudentDTO {
+public class  StudentDTO {
     private Long id;
     private UserDTO user; // Nested UserDTO
     private String firstName;

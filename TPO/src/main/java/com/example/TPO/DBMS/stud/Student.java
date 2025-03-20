@@ -3,6 +3,7 @@ package com.example.TPO.DBMS.stud;
 import com.example.TPO.DBMS.Applications.JobApplication;
 import com.example.TPO.UserManagement.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 
@@ -34,8 +35,6 @@ public class Student {
 
 
     private String firstName;
-
-
 
     private String middleName;
     private String lastName;
@@ -252,13 +251,9 @@ public class Student {
         return resume_file_data;
     }
 
-    public String getGr_No() {
-        return Gr_No;
-    }
 
-    public void setGr_No(String gr_No) {
-        Gr_No = gr_No;
-    }
+
+
 
     public double getAvgMarks() {
         return avgMarks;
@@ -299,7 +294,7 @@ public class Student {
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.phoneNumber = phoneNumber;
-        this.Gr_No = gr_No;
+        this.grNo =gr_No;
         this.address = address;
         this.department = department;
         this.academicyear = academicyear;
@@ -322,8 +317,17 @@ public class Student {
         this.jobApplications = jobApplications;
     }
 
+    @JsonProperty("gr_No") // Ensure correct mapping from JSON request
+    private String grNo;
 
-    private String Gr_No;
+    public String getGrNo() {
+        return grNo;
+    }
+
+    public void setGrNo(String grNo) {
+        this.grNo = grNo;  // Corrected to update the instance variable
+    }
+
     private String address;
     private String department;
     private String academicyear;

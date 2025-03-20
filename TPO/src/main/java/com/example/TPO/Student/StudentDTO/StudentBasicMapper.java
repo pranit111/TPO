@@ -13,7 +13,7 @@ public class StudentBasicMapper {
                 student.getLastName(),
                 student.getGender().toString(),
                 student.getDateOfBirth(),
-                student.getGr_No(),
+                student.getGrNo(),
                 student.getSscMarks(),
                 student.getHscMarks(),
                 student.getDiplomaMarks(),

@@ -81,7 +81,11 @@ public class Service implements UserDetailsService {
             }
 
             User dbUser = optionalUser.get();
+            if(!dbUser.isVerified()){        responseBody.put("status", "error");
+                responseBody.put("message", "User not verified");
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(responseBody);
 
+            }
             // Generate JWT token
             String token = jwtService.generateToken(dbUser.getEmail(), dbUser.getId());
             Optional<Student> studentOptional = studentRepository.findByUserId(dbUser.getId());

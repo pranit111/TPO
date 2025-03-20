@@ -1,10 +1,14 @@
 package com.example.TPO.JobPost.JobPostService;
 
 import com.example.TPO.Companies.CompaniesRepository.CompaniesRepository;
+import com.example.TPO.DBMS.Applications.ApplicationStatus;
+import com.example.TPO.DBMS.Applications.JobApplication;
 import com.example.TPO.DBMS.Company.Company;
 import com.example.TPO.DBMS.JobPost.JobPost;
 import com.example.TPO.DBMS.Tpo.TPOUser;
 import com.example.TPO.DBMS.stud.Student;
+import com.example.TPO.JobApplication.JobApplicationDTO.JobApplicationDTO;
+import com.example.TPO.JobApplication.JobApplicationDTO.JobApplicationMapper;
 import com.example.TPO.JobPost.JobPostDTO.JobPostDTO;
 import com.example.TPO.JobPost.JobPostDTO.JobPostMapper;
 import com.example.TPO.JobPost.JobPostRepository.JobPostRepository;
@@ -16,6 +20,9 @@ import com.example.TPO.UserManagement.entity.User;
 import jakarta.transaction.Transactional;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -157,5 +164,19 @@ public class JobPostService {
             return ResponseEntity.ok(jobPostDTO);
         }
         return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("Error POST Cannot be fetched");
+    }
+    public Page<JobPostDTO> searchPost(String status,
+                                                   String company,
+                                                    String position,
+                                                    String jobType,
+                                                    Double minSalary,
+                                                    Double maxSalary,
+
+                                                    int page,
+                                                    int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<JobPost> jobPostPage = jobPostRepository.searchJobApplications(status,company,position,jobType,minSalary,maxSalary,pageable);
+
+        return jobPostPage.map(JobPostMapper::toJobPostDTO);
     }
 }

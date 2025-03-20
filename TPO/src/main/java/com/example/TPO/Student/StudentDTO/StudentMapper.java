@@ -39,7 +39,7 @@ public class StudentMapper {
                 student.getSem6Marks(),
                 student.getNoOfBacklogs(),
                 student.getAvgMarks(),
-                student.getGr_No(),
+                student.getGrNo(),
                 student.getProfileimagedata()
         );
     }
