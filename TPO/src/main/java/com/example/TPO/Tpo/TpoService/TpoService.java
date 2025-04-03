@@ -8,9 +8,12 @@ import com.example.TPO.UserManagement.Service.JWTService;
 import com.example.TPO.UserManagement.UserRepo.UserRepo;
 import com.example.TPO.UserManagement.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestHeader;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -21,6 +24,8 @@ public class TpoService{
     TpoRepository tpoRepository;
     @Autowired
     JWTService jwtService;
+    @Autowired
+    private PasswordEncoder encoder;
     public String  createTpoUser(String role , @RequestHeader("Authorization") String authHeader){
         {   System.err.println(authHeader);
             TPOUser tpoUser=new TPOUser();
@@ -47,5 +52,24 @@ public class TpoService{
             return ("Tpo User Saved");
         }
 
+    }
+
+    public Map<String, String> updateUser(Long id, boolean status, User updatedUser) {
+        return tpoRepository.findById(id)
+                .map(tpoUser -> {
+                    tpoUser.setRole(TPO_Role.valueOf(updatedUser.getRole().toUpperCase()));
+                    User user = tpoUser.getUser();
+                    if (updatedUser.getEmail() != null) {
+                        user.setEmail(updatedUser.getEmail());
+                    }
+                    if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+                        user.setPassword(encoder.encode(updatedUser.getPassword()));
+                    }
+                   user.setVerified(status);
+
+                    tpoRepository.save(tpoUser);
+                    return Collections.singletonMap("message", "User updated successfully");
+                })
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

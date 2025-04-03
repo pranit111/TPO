@@ -6,14 +6,18 @@ import com.example.TPO.DBMS.Filters.JobApplicationFilter;
 import com.example.TPO.JobApplication.JobApplicationDTO.JobApplicationDTO;
 import com.example.TPO.JobApplication.JobApplicationService.JobApplicationService;
 import com.example.TPO.Student.StudentDTO.StudentBasicDTO;
+import lombok.Data;
 import org.aspectj.weaver.patterns.IToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,11 +74,28 @@ public ResponseEntity<Map<String,String >> createapplication(@RequestParam long 
             @RequestParam(required = false) String department,
             @RequestParam(required = false) String jobtype,
             @RequestParam(required = false) String designation,
-
-
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
                 System.err.println(status);
-        return jobApplicationService.searchApplicaion(status, location,minsalary, maxsalary, student,department,jobtype,designation,page,size);
+        return jobApplicationService.searchApplicaion(status, location,minsalary, maxsalary, student,department,jobtype,designation,fromDate,toDate,page,size);
+    }
+    @PostMapping("/Application/Search/Download")
+    public ResponseEntity<?> searchStudentsDownload(
+            @RequestParam(required = false) ApplicationStatus status,
+            @RequestParam(required = false) String location ,
+            @RequestParam(required = false) Long minsalary,
+            @RequestParam(required = false) Long maxsalary,
+            @RequestParam(required = false) String student,
+            @RequestParam(required = false) String department,
+            @RequestParam(required = false) String jobtype,
+            @RequestParam(required = false) String designation,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate toDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        System.err.println(status);
+        return jobApplicationService.SearchdownloadExcel(status, location,minsalary, maxsalary, student,department,jobtype,designation,fromDate,toDate,page,size);
     }
 }

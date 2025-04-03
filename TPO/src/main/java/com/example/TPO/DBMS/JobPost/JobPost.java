@@ -84,7 +84,7 @@ public class JobPost {
         this.backlogAllowance = backlogAllowance;
         this.preferredCourse = preferredCourse;
         this.skillRequirements = skillRequirements;
-        Status = status;
+        this.Status = status;
         this.aptitude = aptitude;
         this.selectionRounds = selectionRounds;
         this.createdBy = createdBy;

@@ -5,22 +5,31 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="92d2fda3-dbe2-47a3-a8e1-c6fb5107c4d1" name="Changes" comment="DBMS Setup 1">
+      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/Logs/Logs.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Logs/LogsController/LogsController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Logs/LogsRepository/LogsRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Logs/LogsService/LogsService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/TPODTO/TPOUserDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/TPODTO/TPOUserMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/UserRepo/OpenAPIConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/Tpo/TPO_Role.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/Tpo/TPO_Role.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/stud/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/stud/Student.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Companies/CompaniesService/CompaniesService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Companies/CompaniesService/CompaniesService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/Applications/ApplicationStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/Applications/ApplicationStatus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPost.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPost.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationController/JobApplicationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationController/JobApplicationController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationDTO/JobApplicationMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationDTO/JobApplicationMapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationRepository/JobApplicationRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationRepository/JobApplicationRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationService/JobApplicationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationService/JobApplicationService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostController/JobPostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostController/JobPostController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostRepository/JobPostRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostRepository/JobPostRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostService/JobPostService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostService/JobPostService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentDTO/StudentBasicMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentDTO/StudentBasicMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentDTO/StudentDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentDTO/StudentDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentDTO/StudentMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentDTO/StudentMapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentService/StudentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentService/StudentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/MailConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/MailConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/TpoController/TpoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/TpoController/TpoController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/TpoService/TpoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/TpoService/TpoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/CorsConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/CorsConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/SecurityConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/Service/Service.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/Service/Service.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/UserController/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/UserController/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +40,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Enum" />
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -74,9 +84,9 @@
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/ASUS/OneDrive/Desktop/TPO_2.0/TPO&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.maven.repository.indices&quot;
   }
 }</component>
@@ -120,5 +130,15 @@
     <MESSAGE value="initial" />
     <MESSAGE value="DBMS Setup 1" />
     <option name="LAST_COMMIT_MESSAGE" value="DBMS Setup 1" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.NullPointerException" package="java.lang" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

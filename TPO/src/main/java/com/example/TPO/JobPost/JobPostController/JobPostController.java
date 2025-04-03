@@ -16,18 +16,18 @@ import java.util.Map;
 public class JobPostController {
     @Autowired
     JobPostService jobPostService;
-    @PostMapping("/post/job")
+    @PostMapping("Post")
     public ResponseEntity<? > createpost(@RequestBody JobPost jobPost, @RequestHeader("Authorization") String authHeader){
         String token = authHeader.substring(7);
 
         return  jobPostService.createPost(jobPost,token);
 
     }
-    @PutMapping("Update/job")
+    @PutMapping("Post")
     public ResponseEntity<?> update(@RequestParam long p_id ,@RequestBody JobPostDTO updatedjobPost){
         return  jobPostService.updateJobPost(p_id,updatedjobPost);
     }
-    @GetMapping("/all")
+    @GetMapping("Posts")
     public ResponseEntity<List<JobPostDTO>> getAllJobPosts() {
         return ResponseEntity.ok(jobPostService.getAllJobPosts());
     }
@@ -64,6 +64,22 @@ public class JobPostController {
 
         return jobPostService.searchPost(status, company, position, jobType, minSalary, maxSalary, page, size);
     }
+    @PostMapping("Post/Search/Download")
+    public ResponseEntity<?> searchJobPostsDownload(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String company,
+            @RequestParam(required = false) String position,
+            @RequestParam(required = false) String jobType,
+            @RequestParam(required = false) Double minSalary,
+            @RequestParam(required = false) Double maxSalary,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+
+
+        return jobPostService.SearchdownloadExcel(status, company, position, jobType, minSalary, maxSalary, page, size);
+    }
+
 }
 
 

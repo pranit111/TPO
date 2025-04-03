@@ -1,5 +1,7 @@
 package com.example.TPO.UserManagement.UserController;
 
+import com.example.TPO.DBMS.Tpo.TPOUser;
+import com.example.TPO.Tpo.TpoRepository.TpoRepository;
 import com.example.TPO.UserManagement.Service.EmailService;
 import com.example.TPO.UserManagement.Service.JWTService;
 import com.example.TPO.UserManagement.Service.OTPService;
@@ -31,6 +33,8 @@ public class UserController {
     Service service;
     @Autowired
     OTPService otpService;
+    @Autowired
+    TpoRepository tpoRepository;
     @Autowired
     EmailService emailService;
     @Autowired
@@ -109,10 +113,17 @@ public class UserController {
 
         return service.verify(user);
     }
-
     @PostMapping("/tpo/login")
     public ResponseEntity<Map<String, Object>> tpoLogin(@RequestBody User user) {
-        return service.verify(user);
+        // Get the response from the authentication service
+        return service.verify_tpo(user);
+    }
+
+    // Helper method to generate TPO verification token
+    private String generateTpoVerificationToken(String userId) {
+        // You could use your existing jwtService or create a specialized token
+        // This is a placeholder - implement your token generation logic here
+        return "TPO_" + userId + "_" + System.currentTimeMillis();
     }
 
 

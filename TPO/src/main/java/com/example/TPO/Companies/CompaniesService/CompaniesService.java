@@ -38,18 +38,20 @@ CompaniesRepository companiesRepository;
     public CompanyDTO updateCompany(Long id, CompanyDTO companyDTO) {
         return companiesRepository.findById(id)
                 .map(existing -> {
-                    existing.setName(companyDTO.getName());
-                    existing.setIndustryType(companyDTO.getIndustryType());
-                    existing.setEmail(companyDTO.getEmail());
-                    existing.setContactNumber(companyDTO.getContactNumber());
-                    existing.setLocation(companyDTO.getLocation());
-                    existing.setWebsite(companyDTO.getWebsite());
-                    existing.setAssociatedSince(companyDTO.getAssociatedSince());
-                    existing.setActive(companyDTO.getActive());
+                    if (companyDTO.getName() != null) existing.setName(companyDTO.getName());
+                    if (companyDTO.getIndustryType() != null) existing.setIndustryType(companyDTO.getIndustryType());
+                    if (companyDTO.getEmail() != null) existing.setEmail(companyDTO.getEmail());
+                    if (companyDTO.getContactNumber() != null) existing.setContactNumber(companyDTO.getContactNumber());
+                    if (companyDTO.getLocation() != null) existing.setLocation(companyDTO.getLocation());
+                    if (companyDTO.getWebsite() != null) existing.setWebsite(companyDTO.getWebsite());
+                    if (companyDTO.getAssociatedSince() != null) existing.setAssociatedSince(companyDTO.getAssociatedSince());
+                    if (companyDTO.getActive() != null) existing.setActive(companyDTO.getActive());
+
                     return CompanyDTO.fromEntity(companiesRepository.save(existing));
                 })
                 .orElseThrow(() -> new RuntimeException("Company not found"));
     }
+
 
     public void deleteCompany(Long id) {
         companiesRepository.deleteById(id);

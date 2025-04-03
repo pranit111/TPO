@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 public interface JobApplicationRepository extends JpaRepository<JobApplication,Long> {
@@ -31,7 +33,9 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication,L
             "AND (:studentName IS NULL OR LOWER(CONCAT(s.firstName, ' ', s.lastName)) LIKE LOWER(CONCAT('%', :studentName, '%'))) " +
             "AND (:department IS NULL OR LOWER(s.department) LIKE LOWER(CONCAT('%', :department, '%'))) " +
             "AND (:jobType IS NULL OR LOWER(jp.jobType) LIKE LOWER(CONCAT('%', :jobType, '%'))) " +
-            "AND (:jobDesignation IS NULL OR LOWER(jp.jobDesignation) LIKE LOWER(CONCAT('%', :jobDesignation, '%')))")
+            "AND (:jobDesignation IS NULL OR LOWER(jp.jobDesignation) LIKE LOWER(CONCAT('%', :jobDesignation, '%'))) " +
+            "AND (:fromDate IS NULL OR ja.applicationDate >= :fromDate) " +
+            "AND (:toDate IS NULL OR ja.applicationDate <= :toDate)")
     Page<JobApplication> searchJobApplications(@Param("status") ApplicationStatus status,
                                                @Param("location") String location,
                                                @Param("minSalary") Long minSalary,
@@ -40,6 +44,8 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication,L
                                                @Param("department") String department,
                                                @Param("jobType") String jobType,
                                                @Param("jobDesignation") String jobDesignation,
+                                               @Param("fromDate") LocalDate fromDate,
+                                               @Param("toDate") LocalDate toDate,
                                                Pageable pageable);
 
 }

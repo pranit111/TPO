@@ -34,10 +34,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -129,9 +126,13 @@ public class JobApplicationService {
         }
 
         // ✅ Update Application Date (if provided)
-        if (updatedJobApplicationDTO.getApplicationDate() != null) {
-            jobApplication.setApplicationDate(updatedJobApplicationDTO.getApplicationDate());
+        if (updatedJobApplicationDTO.getInterviewDate() != null) {
+            jobApplication.setInterviewDate(updatedJobApplicationDTO.getInterviewDate());
         }
+        if (updatedJobApplicationDTO.getFeedback() != null) {
+            jobApplication.setFeedback(updatedJobApplicationDTO.getFeedback());
+        }
+
 
         // ✅ Update Job Post (if changed)
         if (updatedJobApplicationDTO.getJobPost() != null) {
@@ -222,11 +223,69 @@ public class JobApplicationService {
                                             String department,
                                              String jobType,
                                         String jobDesignation,
+                                                LocalDate fromdate,LocalDate toDate,
                                                 int page,
                                                 int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<JobApplication> jobApplicationspage = jobApplicationRepository.searchJobApplications(status,location,minSalary,maxSalary,studentName,department,jobType,jobDesignation,pageable);
+        Page<JobApplication> jobApplicationspage = jobApplicationRepository.searchJobApplications(status,location,minSalary,maxSalary,studentName,department,jobType,jobDesignation,fromdate,toDate,pageable);
 
         return jobApplicationspage.map(JobApplicationMapper::toJobApplicationDTO);
+    }
+    public ResponseEntity<byte[]> SearchdownloadExcel(ApplicationStatus status,
+                                                      String location,
+                                                      Long minSalary,
+                                                      Long maxSalary,
+                                                      String studentName,
+                                                      String department,
+                                                      String jobType,
+                                                      String jobDesignation,
+                                                      LocalDate fromdate,LocalDate toDate, int page,
+                                                      int size) {
+        Page<JobApplicationDTO> response = searchApplicaion(status,location,minSalary,maxSalary,studentName,department,jobType,jobDesignation,fromdate,toDate,page,size);
+
+        List<JobApplicationDTO> filteredApplications = response.getContent();
+        if (filteredApplications == null || filteredApplications.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+        }
+
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Job Applications");
+            Row headerRow = sheet.createRow(0);
+
+            // Define headers
+            String[] headers = {"ID","Student", "Job Title", "Company", "Status", "Applied On","Interview Date"};
+            for (int i = 0; i < headers.length; i++) {
+                headerRow.createCell(i).setCellValue(headers[i]);
+            }
+
+            // Populate data rows
+            int rowNum = 1;
+            for (JobApplicationDTO jobApp : filteredApplications) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(jobApp.getId());
+                row.createCell(1).setCellValue(jobApp.getStudent().getFirstName()+" "+jobApp.getStudent().getLastName());
+                row.createCell(2).setCellValue(jobApp.getJobPost().getJobDesignation());
+                row.createCell(3).setCellValue(jobApp.getJobPost().getCompany().getName());
+                row.createCell(4).setCellValue(jobApp.getStatus());
+                row.createCell(5).setCellValue(jobApp.getApplicationDate().toString());
+                row.createCell(6).setCellValue(jobApp.getInterviewDate() != null ? jobApp.getInterviewDate().toString() : "");
+
+
+            }
+
+            // Convert to byte array
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            workbook.write(outputStream);
+            byte[] excelBytes = outputStream.toByteArray();
+
+            // Set response headers for download
+            HttpHeaders headersObj = new HttpHeaders();
+            headersObj.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headersObj.setContentDisposition(ContentDisposition.attachment().filename("JobApplications.xlsx").build());
+
+            return ResponseEntity.ok().headers(headersObj).body(excelBytes);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 }

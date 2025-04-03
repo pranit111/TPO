@@ -19,14 +19,20 @@ import com.example.TPO.UserManagement.UserRepo.UserRepo;
 import com.example.TPO.UserManagement.entity.User;
 import jakarta.transaction.Transactional;
 import org.apache.poi.ss.formula.functions.T;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -178,5 +184,63 @@ public class JobPostService {
         Page<JobPost> jobPostPage = jobPostRepository.searchJobApplications(status,company,position,jobType,minSalary,maxSalary,pageable);
 
         return jobPostPage.map(JobPostMapper::toJobPostDTO);
+    }
+    public ResponseEntity<byte[]> SearchdownloadExcel(String status,
+                                                      String company,
+                                                      String position,
+                                                      String jobType,
+                                                      Double minSalary,
+                                                      Double maxSalary,
+
+                                                      int page,
+                                                      int size) {
+        Page<JobPostDTO> response = searchPost(status,company,position,jobType,minSalary,maxSalary,page,size);
+
+        List<JobPostDTO> filteredPost = response.getContent();
+        if (filteredPost == null || filteredPost.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+        }
+
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Job Post");
+            Row headerRow = sheet.createRow(0);
+
+            // Define headers
+            String[] headers = {"ID", "Company", "Designation", "Location", "Status", "Package", "Backlog Allowance", "Minimum Percentage"};
+            for (int i = 0; i < headers.length; i++) {
+                headerRow.createCell(i).setCellValue(headers[i]);
+            }
+
+// Populate data rows
+            int rowNum = 1;
+            int generatedId = 1; // Start ID from 1
+
+            for (JobPostDTO jobpost : filteredPost) {
+                Row row = sheet.createRow(rowNum++);
+
+                row.createCell(0).setCellValue(generatedId++); // Auto-increment ID
+                row.createCell(1).setCellValue(jobpost.getCompany().getName());
+                row.createCell(2).setCellValue(jobpost.getJobDesignation());
+                row.createCell(3).setCellValue(jobpost.getLocation());
+                row.createCell(4).setCellValue(jobpost.getStatus());
+                row.createCell(5).setCellValue(jobpost.getPackageAmount());
+                row.createCell(6).setCellValue(jobpost.getBacklogAllowance());
+                row.createCell(7).setCellValue(jobpost.getMinPercentage());
+            }
+
+            // Convert to byte array
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            workbook.write(outputStream);
+            byte[] excelBytes = outputStream.toByteArray();
+
+            // Set response headers for download
+            HttpHeaders headersObj = new HttpHeaders();
+            headersObj.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headersObj.setContentDisposition(ContentDisposition.attachment().filename("JobPost.xlsx").build());
+
+            return ResponseEntity.ok().headers(headersObj).body(excelBytes);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 }

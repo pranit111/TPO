@@ -5,6 +5,7 @@ import com.example.TPO.DBMS.Filters.JobApplicationFilter;
 import com.example.TPO.DBMS.stud.Student;
 import com.example.TPO.JobApplication.JobApplicationDTO.JobApplicationDTO;
 import com.example.TPO.JobApplication.JobApplicationDTO.JobApplicationMapper;
+import com.example.TPO.Logs.LogsService.LogsService;
 import com.example.TPO.Student.StudentDTO.StudentBasicDTO;
 import com.example.TPO.Student.StudentDTO.StudentBasicMapper;
 import com.example.TPO.Student.StudentDTO.StudentDTO;
@@ -43,7 +44,8 @@ public class StudentService {
     UserRepo userRepo;
     @Autowired
     JWTService jwtService;
-
+    @Autowired
+    LogsService logsService;
     public void createstudent(Student student, String authtoken, MultipartFile prof_img, MultipartFile resume) throws IOException {
         Long userId = jwtService.extractUserId(authtoken);
         Optional<User> userOptional = userRepo.findById(userId);
@@ -120,15 +122,78 @@ public class StudentService {
 
     public String updateStudent(Student student, String authToken) {
         Optional<User> userOptional = userRepo.findById(jwtService.extractUserId(authToken));
-        Optional<Student> existingStudentOpt = studentRepository.findByUserId(userOptional.get().getId());
+        if (userOptional.isEmpty()) {
+            return "User not found.";
+        }
 
+        Optional<Student> existingStudentOpt = studentRepository.findByUserId(userOptional.get().getId());
         if (existingStudentOpt.isEmpty()) {
             return "Student not found.";
         }
 
         Student existingStudent = existingStudentOpt.get();
-        System.out.println( student.getGrNo());
-        // Update only non-null fields
+        boolean marksUpdated = false;
+        StringBuilder changes = new StringBuilder("Updated Marks: ");
+
+        // Check if any marks have changed
+        if (student.getSscMarks() != 0 && student.getSscMarks() != existingStudent.getSscMarks()) {
+            changes.append("SSC Marks: ").append(existingStudent.getSscMarks()).append(" → ").append(student.getSscMarks()).append("; ");
+            existingStudent.setSscMarks(student.getSscMarks());
+            marksUpdated = true;
+        }
+        if (student.getHscMarks() != 0 && student.getHscMarks() != existingStudent.getHscMarks()) {
+            changes.append("HSC Marks: ").append(existingStudent.getHscMarks()).append(" → ").append(student.getHscMarks()).append("; ");
+            existingStudent.setHscMarks(student.getHscMarks());
+            marksUpdated = true;
+        }
+        if (student.getDiplomaMarks() != 0 && student.getDiplomaMarks() != existingStudent.getDiplomaMarks()) {
+            changes.append("Diploma Marks: ").append(existingStudent.getDiplomaMarks()).append(" → ").append(student.getDiplomaMarks()).append("; ");
+            existingStudent.setDiplomaMarks(student.getDiplomaMarks());
+            marksUpdated = true;
+        }
+        if (student.getSem1Marks() != 0 && student.getSem1Marks() != existingStudent.getSem1Marks()) {
+            changes.append("Sem1 Marks: ").append(existingStudent.getSem1Marks()).append(" → ").append(student.getSem1Marks()).append("; ");
+            existingStudent.setSem1Marks(student.getSem1Marks());
+            marksUpdated = true;
+        }
+        if (student.getSem2Marks() != 0 && student.getSem2Marks() != existingStudent.getSem2Marks()) {
+            changes.append("Sem2 Marks: ").append(existingStudent.getSem2Marks()).append(" → ").append(student.getSem2Marks()).append("; ");
+            existingStudent.setSem2Marks(student.getSem2Marks());
+            marksUpdated = true;
+        }
+        if (student.getSem3Marks() != 0 && student.getSem3Marks() != existingStudent.getSem3Marks()) {
+            changes.append("Sem3 Marks: ").append(existingStudent.getSem3Marks()).append(" → ").append(student.getSem3Marks()).append("; ");
+            existingStudent.setSem3Marks(student.getSem3Marks());
+            marksUpdated = true;
+        }
+        if (student.getSem4Marks() != 0 && student.getSem4Marks() != existingStudent.getSem4Marks()) {
+            changes.append("Sem4 Marks: ").append(existingStudent.getSem4Marks()).append(" → ").append(student.getSem4Marks()).append("; ");
+            existingStudent.setSem4Marks(student.getSem4Marks());
+            marksUpdated = true;
+        }
+        if (student.getSem5Marks() != 0 && student.getSem5Marks() != existingStudent.getSem5Marks()) {
+            changes.append("Sem5 Marks: ").append(existingStudent.getSem5Marks()).append(" → ").append(student.getSem5Marks()).append("; ");
+            existingStudent.setSem5Marks(student.getSem5Marks());
+            marksUpdated = true;
+        }
+        if (student.getSem6Marks() != 0 && student.getSem6Marks() != existingStudent.getSem6Marks()) {
+            changes.append("Sem6 Marks: ").append(existingStudent.getSem6Marks()).append(" → ").append(student.getSem6Marks()).append("; ");
+            existingStudent.setSem6Marks(student.getSem6Marks());
+            marksUpdated = true;
+        }
+
+        // If any marks were updated, log the changes
+        if (marksUpdated) {
+            logsService.saveLog(
+                    "Marks Updated",
+                    userOptional.get().getUsername(),
+                    "Student",
+                    String.valueOf(existingStudent.getId()),
+                    changes.toString()
+            );
+        }
+
+        // Update other non-null fields
         if (student.getProfileimagedata() != null) existingStudent.setProfileimagedata(student.getProfileimagedata());
         if (student.getFirstName() != null) existingStudent.setFirstName(student.getFirstName());
         if (student.getGrNo() != null) existingStudent.setGrNo(student.getGrNo());
@@ -140,15 +205,6 @@ public class StudentService {
         if (student.getPhoneNumber() != null) existingStudent.setPhoneNumber(student.getPhoneNumber());
         if (student.getAddress() != null) existingStudent.setAddress(student.getAddress());
         if (student.getDepartment() != null) existingStudent.setDepartment(student.getDepartment());
-        if (student.getSscMarks() != 0) existingStudent.setSscMarks(student.getSscMarks());
-        if (student.getHscMarks() != 0) existingStudent.setHscMarks(student.getHscMarks());
-        if (student.getDiplomaMarks() != 0) existingStudent.setDiplomaMarks(student.getDiplomaMarks());
-        if (student.getSem1Marks() != 0) existingStudent.setSem1Marks(student.getSem1Marks());
-        if (student.getSem2Marks() != 0) existingStudent.setSem2Marks(student.getSem2Marks());
-        if (student.getSem3Marks() != 0) existingStudent.setSem3Marks(student.getSem3Marks());
-        if (student.getSem4Marks() != 0) existingStudent.setSem4Marks(student.getSem4Marks());
-        if (student.getSem5Marks() != 0) existingStudent.setSem5Marks(student.getSem5Marks());
-        if (student.getSem6Marks() != 0) existingStudent.setSem6Marks(student.getSem6Marks());
         if (student.getNoOfBacklogs() >= 0) existingStudent.setNoOfBacklogs(student.getNoOfBacklogs());
 
         studentRepository.save(existingStudent);
@@ -261,7 +317,7 @@ public class StudentService {
             // Set response headers for download
             HttpHeaders headersObj = new HttpHeaders();
             headersObj.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            headersObj.setContentDisposition(ContentDisposition.attachment().filename("JobApplications.xlsx").build());
+            headersObj.setContentDisposition(ContentDisposition.attachment().filename("Student_List.xlsx").build());
 
             return ResponseEntity.ok().headers(headersObj).body(excelBytes);
         } catch (IOException e) {
