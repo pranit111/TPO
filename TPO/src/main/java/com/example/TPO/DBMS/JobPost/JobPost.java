@@ -37,7 +37,9 @@ public class JobPost {
     private String preferredCourse;
     @Column(nullable = false)
     private String skillRequirements;
-    private String Status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private JobPostStatus Status;
 
     private Boolean aptitude;
 
@@ -72,7 +74,7 @@ public class JobPost {
 
     private String modeOfRecruitment;
 
-    public JobPost(Long id, Company company, String jobDesignation, String location, String jobType, String description, double packageAmount, double minPercentage, int backlogAllowance, String preferredCourse, String skillRequirements, String status, Boolean aptitude, String selectionRounds, TPOUser createdBy, String modeOfRecruitment, String testPlatform, double minimumSsc, double minimumHsc, LocalDate aptitudedate, LocalDate applicationStartDate, LocalDate applicationEndDate, LocalDate selectionStartDate, LocalDate selectionEndDate) {
+    public JobPost(Long id, Company company, String jobDesignation, String location, String jobType, String description, double packageAmount, double minPercentage, int backlogAllowance, String preferredCourse, String skillRequirements, JobPostStatus status, Boolean aptitude, String selectionRounds, TPOUser createdBy, String modeOfRecruitment, String testPlatform, double minimumSsc, double minimumHsc, LocalDate aptitudedate, LocalDate applicationStartDate, LocalDate applicationEndDate, LocalDate selectionStartDate, LocalDate selectionEndDate) {
         this.id = id;
         this.company = company;
         this.jobDesignation = jobDesignation;
@@ -99,15 +101,17 @@ public class JobPost {
         this.selectionEndDate = selectionEndDate;
     }
 
-    private String testPlatform;
-
-    public String getStatus() {
+    public JobPostStatus getStatus() {
         return Status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(JobPostStatus status) {
         Status = status;
     }
+
+    private String testPlatform;
+
+
 
     public double getMinimumHsc() {
         return minimumHsc;

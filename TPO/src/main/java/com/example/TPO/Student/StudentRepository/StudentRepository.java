@@ -32,4 +32,6 @@ public interface StudentRepository extends JpaRepository<Student,Long> {
                                  Pageable pageable);
 
     List<Student> findTop100ByOrderByIdDesc();
+    @Query("SELECT s FROM Student s ORDER BY FUNCTION('RAND')") // ✅ Fetch random students
+    Page<Student> findRandomStudents(Pageable pageable);
 }

@@ -8,6 +8,7 @@ import com.example.TPO.DBMS.stud.Student;
 import com.example.TPO.JobApplication.JobApplicationDTO.JobApplicationMapper;
 import com.example.TPO.JobApplication.JobApplicationRepository.JobApplicationRepository;
 import com.example.TPO.JobPost.JobPostRepository.JobPostRepository;
+import com.example.TPO.Logs.LogsService.LogsService;
 import com.example.TPO.Student.StudentDTO.StudentBasicDTO;
 import com.example.TPO.Student.StudentDTO.StudentBasicMapper;
 import com.example.TPO.Student.StudentRepository.StudentRepository;
@@ -49,7 +50,8 @@ public class JobApplicationService {
     private JWTService jwtService;
     @Autowired
     private JobPostRepository jobPostRepository;
-
+@Autowired
+    LogsService logsService;
     //  Create Job Application
     public ResponseEntity<Map<String,String>> createApplication(long postId, String token) {
         Long userId = jwtService.extractUserId(token);
@@ -110,29 +112,50 @@ public class JobApplicationService {
         return ResponseEntity.ok(JobApplicationMapper.toJobApplicationDTOList(optionalJobApplication));
 
     }
-    public ResponseEntity<?> updateApplication(long applicationId, JobApplicationDTO updatedJobApplicationDTO) {
+    public ResponseEntity<?> updateApplication(long applicationId, JobApplicationDTO updatedJobApplicationDTO, String authheader) {
         Optional<JobApplication> jobApplicationOptional = jobApplicationRepository.findById(applicationId);
-        System.err.println(updatedJobApplicationDTO.getStatus());
+        String authToken="";
+        if (authheader  != null && authheader.startsWith("Bearer ")) {
+            authToken = authheader.substring(7);}
+
         if (jobApplicationOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Application Found with ID: " + applicationId);
         }
 
         JobApplication jobApplication = jobApplicationOptional.get();
+        Optional<User> userOptional = userRepo.findById(jwtService.extractUserId(authToken));
 
-        // ✅ Update Status
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found.");
+        }
+
+        User user = userOptional.get();
+        boolean statusUpdated = false;
+        StringBuilder changes = new StringBuilder();
+
+        // ✅ Update Status and Log Changes
         if (updatedJobApplicationDTO.getStatus() != null) {
-
-            jobApplication.setStatus(ApplicationStatus.valueOf(updatedJobApplicationDTO.getStatus()));
+            ApplicationStatus newStatus = ApplicationStatus.valueOf(updatedJobApplicationDTO.getStatus());
+            if (!jobApplication.getStatus().equals(newStatus)) {
+                changes.append("Status changed from ")
+                        .append(jobApplication.getStatus())
+                        .append(" to ")
+                        .append(newStatus)
+                        .append("; ");
+                jobApplication.setStatus(newStatus);
+                statusUpdated = true;
+            }
         }
 
         // ✅ Update Application Date (if provided)
         if (updatedJobApplicationDTO.getInterviewDate() != null) {
             jobApplication.setInterviewDate(updatedJobApplicationDTO.getInterviewDate());
         }
+
+        // ✅ Update Feedback
         if (updatedJobApplicationDTO.getFeedback() != null) {
             jobApplication.setFeedback(updatedJobApplicationDTO.getFeedback());
         }
-
 
         // ✅ Update Job Post (if changed)
         if (updatedJobApplicationDTO.getJobPost() != null) {
@@ -140,17 +163,30 @@ public class JobApplicationService {
             if (jobPostOptional.isPresent()) {
                 jobApplication.setJobPost(jobPostOptional.get());
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Job Post not found with ID: " + updatedJobApplicationDTO.getJobPost().getId());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Job Post not found with ID: " + updatedJobApplicationDTO.getJobPost().getId());
             }
         }
 
         // ✅ Save the updated application
         jobApplicationRepository.save(jobApplication);
 
-        // ✅ Convert updated application to DTO
+        // ✅ Log the status update
+        if (statusUpdated) {
+            logsService.saveLog(
+                    "Application Status Updated",
+                    user.getUsername(),
+                    "JobApplication",
+                    String.valueOf(jobApplication.getId()),
+                    changes.toString()
+            );
+        }
+
+        // ✅ Convert updated application to DTO and return response
         JobApplicationDTO updatedDTO = JobApplicationMapper.toJobApplicationDTO(jobApplication);
         return ResponseEntity.ok(updatedDTO);
     }
+
 
     public ResponseEntity<List<JobApplicationDTO>> filterJobApplications(JobApplicationFilter jobApplicationFilter) {
         System.err.println(jobApplicationFilter.getStatus());

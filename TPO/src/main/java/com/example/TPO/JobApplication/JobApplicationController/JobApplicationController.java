@@ -53,8 +53,8 @@ public ResponseEntity<Map<String,String >> createapplication(@RequestParam long 
 
 }
 @PutMapping("/Application")
-    public ResponseEntity<?> updateapplication(@RequestParam long application_id,@RequestBody JobApplicationDTO jobApplicationDTO){
-    return jobApplicationService.updateApplication(application_id,jobApplicationDTO);
+    public ResponseEntity<?> updateapplication(@RequestParam long application_id,@RequestBody JobApplicationDTO jobApplicationDTO,@RequestHeader("Authorization") String authHeader){
+    return jobApplicationService.updateApplication(application_id,jobApplicationDTO,authHeader);
 }
 @PostMapping("filter/Applications")
     public ResponseEntity<?> filterapplications(@RequestBody JobApplicationFilter jobApplicationFilter){

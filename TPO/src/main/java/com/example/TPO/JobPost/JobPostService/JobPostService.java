@@ -222,7 +222,7 @@ public class JobPostService {
                 row.createCell(1).setCellValue(jobpost.getCompany().getName());
                 row.createCell(2).setCellValue(jobpost.getJobDesignation());
                 row.createCell(3).setCellValue(jobpost.getLocation());
-                row.createCell(4).setCellValue(jobpost.getStatus());
+                row.createCell(4).setCellValue(jobpost.getStatus().toString());
                 row.createCell(5).setCellValue(jobpost.getPackageAmount());
                 row.createCell(6).setCellValue(jobpost.getBacklogAllowance());
                 row.createCell(7).setCellValue(jobpost.getMinPercentage());

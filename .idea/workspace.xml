@@ -5,31 +5,25 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="92d2fda3-dbe2-47a3-a8e1-c6fb5107c4d1" name="Changes" comment="DBMS Setup 1">
-      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/Logs/Logs.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Logs/LogsController/LogsController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Logs/LogsRepository/LogsRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Logs/LogsService/LogsService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/TPODTO/TPOUserDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/TPODTO/TPOUserMapper.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/UserRepo/OpenAPIConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPostStatus.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/Placements/Placement.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Placements/PlacementContoller/PlacementController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Placements/PlacementRepository/PlacementRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Placements/PlacementService/PlacementService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Placements/PlacementsDTO/PlacementDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Placements/PlacementsDTO/PlacementMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardData.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Companies/CompaniesService/CompaniesService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Companies/CompaniesService/CompaniesService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/Applications/ApplicationStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/Applications/ApplicationStatus.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPost.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPost.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationController/JobApplicationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationController/JobApplicationController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationRepository/JobApplicationRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationRepository/JobApplicationRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationService/JobApplicationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationService/JobApplicationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostController/JobPostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostController/JobPostController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostDTO/JobPostDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostDTO/JobPostDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostService/JobPostService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostService/JobPostService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentService/StudentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentService/StudentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/TpoController/TpoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/TpoController/TpoController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/TpoService/TpoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/TpoService/TpoService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/CorsConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/CorsConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Logs/LogsController/LogsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Logs/LogsController/LogsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentRepository/StudentRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentRepository/StudentRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/Service/Service.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/Service/Service.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/UserController/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/UserController/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,9 +33,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Enum" />
         <option value="Interface" />
         <option value="Class" />
+        <option value="Enum" />
       </list>
     </option>
   </component>
@@ -65,6 +59,9 @@
     &quot;accountId&quot;: &quot;6f42eb2c-e036-4821-a4b1-08ed1782fc68&quot;
   }
 }</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardService.java" root0="FORCE_HIGHLIGHTING" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
 }</component>
@@ -137,6 +134,10 @@
         <breakpoint enabled="true" type="java-exception">
           <properties class="java.lang.NullPointerException" package="java.lang" />
           <option name="timeStamp" value="1" />
+        </breakpoint>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="org.hibernate.tool.schema.spi.CommandAcceptanceException" package="org.hibernate.tool.schema.spi" />
+          <option name="timeStamp" value="2" />
         </breakpoint>
       </breakpoints>
     </breakpoint-manager>

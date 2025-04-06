@@ -2,6 +2,7 @@ package com.example.TPO.JobPost.JobPostDTO;
 
 import com.example.TPO.DBMS.Applications.ApplicationStatus;
 import com.example.TPO.DBMS.Company.Company;
+import com.example.TPO.DBMS.JobPost.JobPostStatus;
 
 import java.time.LocalDate;
 
@@ -15,17 +16,19 @@ public class JobPostDTO {
     private double packageAmount;
     private double minPercentage;
     private int backlogAllowance;
+
+    public JobPostStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(JobPostStatus status) {
+        this.status = status;
+    }
+
     private String preferredCourse;
 
     private boolean aptitude;
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 
     public LocalDate getAptitudeDate() {
         return aptitudeDate;
@@ -44,7 +47,7 @@ public class JobPostDTO {
     }
 
     private LocalDate aptitudeDate;
-    private String status;
+    private JobPostStatus status;
     private String skillRequirements;
     private String selectionRounds;
 
@@ -76,7 +79,7 @@ public class JobPostDTO {
                       String description, double packageAmount, double minPercentage, int backlogAllowance,
                       String preferredCourse, String skillRequirements, String selectionRounds,
                       String modeOfRecruitment, String testPlatform, LocalDate applicationStartDate,
-                      LocalDate applicationEndDate, LocalDate selectionStartDate, LocalDate selectionEndDate,LocalDate aptitudeDate,String status,boolean aptitude) {
+                      LocalDate applicationEndDate, LocalDate selectionStartDate, LocalDate selectionEndDate,LocalDate aptitudeDate,JobPostStatus status,boolean aptitude) {
         this.id = id;
         this.company = company;
         this.jobDesignation = jobDesignation;
