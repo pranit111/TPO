@@ -61,7 +61,8 @@ public class JobApplicationMapper {
                 jobPost.getSelectionEndDate(),
                 jobPost.getAptitudedate(),
                 jobPost.getStatus(),
-                jobPost.getAptitude()
+                jobPost.getAptitude(),
+                jobPost.getPortalLink()
 
         );
 
@@ -72,7 +73,10 @@ public class JobApplicationMapper {
                 jobApplication.getApplicationDate(),
                 jobApplication.getStatus().toString(),
                 jobApplication.getJobPost().getJobDesignation(),
+                jobApplication.getInterviewTime(),
+                jobApplication.getInterviewLocation(),
                 jobApplication.getInterviewDate(),
+
                 jobApplication.getFeedback()
         );
     }

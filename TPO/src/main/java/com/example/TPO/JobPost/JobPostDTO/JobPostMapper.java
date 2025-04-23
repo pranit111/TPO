@@ -30,7 +30,8 @@ public class JobPostMapper {
                 jobPost.getSelectionEndDate(),
                 jobPost.getAptitudedate(),
                 jobPost.getStatus(),
-                jobPost.getAptitude()
+                jobPost.getAptitude(),
+                jobPost.getPortalLink()
 
         );
     }

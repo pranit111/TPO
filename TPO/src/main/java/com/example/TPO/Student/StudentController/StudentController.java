@@ -8,8 +8,7 @@ import com.example.TPO.UserManagement.UserRepo.UserRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -72,7 +71,12 @@ public class StudentController {
             @RequestPart(value = "student") String studentData,
             @RequestHeader("Authorization") String authHeader,
             @RequestPart MultipartFile prof_img,
-            @RequestPart MultipartFile resume
+            @RequestPart MultipartFile resume,
+            @RequestPart MultipartFile ssc_result,
+            @RequestPart(required = false) MultipartFile hsc_result,
+            @RequestPart(required = false) MultipartFile diploma_result
+
+
     ) throws IOException {
 
         Map<String, Object> response = new HashMap<>();
@@ -83,7 +87,7 @@ public class StudentController {
             // Convert studentData from JSON string to Student object
             Student student = objectMapper.readValue(studentData, Student.class);
 
-            studentService.createstudent(student, token, prof_img, resume);
+            studentService.createstudent(student, token, prof_img, resume,ssc_result,hsc_result,diploma_result);
 
             response.put("status", "success");
             response.put("message", "Student saved successfully");
@@ -97,8 +101,8 @@ public class StudentController {
     }
     @PutMapping("/Student")
     public ResponseEntity<?> updateStudent(
-            @RequestBody Student student,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestPart Student student,
+            @RequestHeader("Authorization") String authHeader,@RequestPart( required = false) MultipartFile profile_img,@RequestPart( required = false) MultipartFile resume) throws IOException {
 
         Map<String, Object> response = new HashMap<>();
 
@@ -109,7 +113,7 @@ public class StudentController {
         }
 
         String token = authHeader.substring(7);
-        String updateResponse = studentService.updateStudent(student, token);
+        String updateResponse = studentService.updateStudent(student, token,profile_img,resume);
 
         if (updateResponse.equals("Student not found.")) {
             response.put("status", "error");
@@ -146,5 +150,60 @@ public class StudentController {
                                                    @RequestParam(defaultValue = "0") int page,
                                                    @RequestParam(defaultValue = "10") int size){
         return studentService.downloadExcel(firstName, department,academicYear, minAvgMarks, maxAvgMarks, yearOfPassing, page, size);
+    }@GetMapping("/pdf/{id}")
+    public ResponseEntity<byte[]> getPdf(@PathVariable Long id) {
+        Optional<Student> optional = studentRepository.findById(id);
+        if (optional.isEmpty() || optional.get().getResume_file_data() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        byte[] pdfBytes = optional.get().getResume_file_data();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDisposition(ContentDisposition.inline().filename("document.pdf").build());
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfBytes);
     }
+    @GetMapping("/pdf/results/{id}/{res}")
+    public ResponseEntity<byte[]> getResultPdf(@PathVariable Long id, @PathVariable String res) {
+        Optional<Student> optional = studentRepository.findById(id);
+
+        if (optional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Student student = optional.get();
+        byte[] pdfBytes = null;
+
+        switch (res.toLowerCase()) {
+            case "ssc":
+                pdfBytes = student.getSsc_result();
+                break;
+            case "hsc":
+                pdfBytes = student.getHsc_result();
+                break;
+            case "diploma":
+                pdfBytes = student.getDiploma_result();
+                break;
+            default:
+                return ResponseEntity.badRequest().body(null); // Invalid res path variable
+        }
+
+        if (pdfBytes == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDisposition(ContentDisposition.inline().filename(res + "_result.pdf").build());
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfBytes);
+    }
+
+
 }

@@ -8,6 +8,7 @@ import com.example.TPO.DBMS.stud.Student;
 import com.example.TPO.JobApplication.JobApplicationDTO.JobApplicationMapper;
 import com.example.TPO.JobApplication.JobApplicationRepository.JobApplicationRepository;
 import com.example.TPO.JobPost.JobPostRepository.JobPostRepository;
+import com.example.TPO.JobPost.JobPostService.JobPostService;
 import com.example.TPO.Logs.LogsService.LogsService;
 import com.example.TPO.Student.StudentDTO.StudentBasicDTO;
 import com.example.TPO.Student.StudentDTO.StudentBasicMapper;
@@ -52,6 +53,8 @@ public class JobApplicationService {
     private JobPostRepository jobPostRepository;
 @Autowired
     LogsService logsService;
+@Autowired
+    JobPostService jobPostService;
     //  Create Job Application
     public ResponseEntity<Map<String,String>> createApplication(long postId, String token) {
         Long userId = jwtService.extractUserId(token);
@@ -80,6 +83,8 @@ public class JobApplicationService {
         if (alreadyApplied) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "You Already Had Applied For This Job"));
         }
+        //Check Eligibilty
+
 
         // Create Job Application
         JobApplication jobApplication = new JobApplication();
@@ -150,6 +155,12 @@ public class JobApplicationService {
         // ✅ Update Application Date (if provided)
         if (updatedJobApplicationDTO.getInterviewDate() != null) {
             jobApplication.setInterviewDate(updatedJobApplicationDTO.getInterviewDate());
+        }
+        if (updatedJobApplicationDTO.getInterviewLocation() != null) {
+            jobApplication.setInterviewLocation(updatedJobApplicationDTO.getInterviewLocation());
+        }
+        if (updatedJobApplicationDTO.getInterviewTime() != null) {
+            jobApplication.setInterviewTime(updatedJobApplicationDTO.getInterviewTime());
         }
 
         // ✅ Update Feedback
@@ -301,7 +312,7 @@ public class JobApplicationService {
                 row.createCell(0).setCellValue(jobApp.getId());
                 row.createCell(1).setCellValue(jobApp.getStudent().getFirstName()+" "+jobApp.getStudent().getLastName());
                 row.createCell(2).setCellValue(jobApp.getJobPost().getJobDesignation());
-                row.createCell(3).setCellValue(jobApp.getJobPost().getCompany().getName());
+                row.createCell(3).setCellValue(jobApp.getJobPost().getCompany().getName()+" "+(jobApp.getJobPost().getCompany().isMnc()?"MNC":" "));
                 row.createCell(4).setCellValue(jobApp.getStatus());
                 row.createCell(5).setCellValue(jobApp.getApplicationDate().toString());
                 row.createCell(6).setCellValue(jobApp.getInterviewDate() != null ? jobApp.getInterviewDate().toString() : "");

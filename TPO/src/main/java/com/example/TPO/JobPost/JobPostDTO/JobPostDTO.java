@@ -71,15 +71,25 @@ public class JobPostDTO {
     private String testPlatform;
     private LocalDate applicationStartDate;
     private LocalDate applicationEndDate;
+
+    public String getPortalLink() {
+        return portalLink;
+    }
+
+    public void setPortalLink(String portalLink) {
+        this.portalLink = portalLink;
+    }
+
     private LocalDate selectionStartDate;
     private LocalDate selectionEndDate;
     private ApplicationStatus applicationStatus;
+    private String portalLink;
     // Constructor
     public JobPostDTO(Long id, Company company, String jobDesignation, String location, String jobType,
                       String description, double packageAmount, double minPercentage, int backlogAllowance,
                       String preferredCourse, String skillRequirements, String selectionRounds,
                       String modeOfRecruitment, String testPlatform, LocalDate applicationStartDate,
-                      LocalDate applicationEndDate, LocalDate selectionStartDate, LocalDate selectionEndDate,LocalDate aptitudeDate,JobPostStatus status,boolean aptitude) {
+                      LocalDate applicationEndDate, LocalDate selectionStartDate, LocalDate selectionEndDate,LocalDate aptitudeDate,JobPostStatus status,boolean aptitude,String portalLink) {
         this.id = id;
         this.company = company;
         this.jobDesignation = jobDesignation;
@@ -101,6 +111,7 @@ public class JobPostDTO {
         this.aptitude=aptitude;
         this.aptitudeDate=aptitudeDate;
         this.status=status;
+        this.portalLink=portalLink;
     }
 
     // Getters & Setters

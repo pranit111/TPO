@@ -5,6 +5,7 @@ import com.example.TPO.JobPost.JobPostDTO.JobPostDTO;
 import com.example.TPO.Student.StudentDTO.StudentDTO;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 public class JobApplicationDTO {
     private Long id;
@@ -13,6 +14,25 @@ public class JobApplicationDTO {
     private LocalDate applicationDate;
     private String status;  // Enum as String
     private String designation;
+
+    public LocalTime getInterviewTime() {
+        return interviewTime;
+    }
+
+    public void setInterviewTime(LocalTime interviewTime) {
+        this.interviewTime = interviewTime;
+    }
+
+    public String getInterviewLocation() {
+        return interviewLocation;
+    }
+
+    public void setInterviewLocation(String interviewLocation) {
+        this.interviewLocation = interviewLocation;
+    }
+
+    private LocalTime interviewTime;
+    private String interviewLocation;
 // Applied, Shortlisted, Selected, Rejected
     private LocalDate  InterviewDate ;
 
@@ -45,13 +65,15 @@ public class JobApplicationDTO {
     // Constructor
 
 
-    public JobApplicationDTO(Long id, StudentDTO student, JobPostDTO jobPost, LocalDate applicationDate, String status, String designation, LocalDate interviewDate, String feedback) {
+    public JobApplicationDTO(Long id, StudentDTO student, JobPostDTO jobPost, LocalDate applicationDate, String status, String designation, LocalTime interviewTime, String interviewLocation, LocalDate interviewDate, String feedback) {
         this.id = id;
         this.student = student;
         this.jobPost = jobPost;
         this.applicationDate = applicationDate;
         this.status = status;
         this.designation = designation;
+        this.interviewTime = interviewTime;
+        this.interviewLocation = interviewLocation;
         this.InterviewDate = interviewDate;
         this.Feedback = feedback;
     }

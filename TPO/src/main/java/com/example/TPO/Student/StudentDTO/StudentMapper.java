@@ -40,7 +40,15 @@ public class StudentMapper {
                 student.getNoOfBacklogs(),
                 student.getAvgMarks(),
                 student.getGrNo(),
-                student.getProfileimagedata()
+                student.getProfileimagedata(),
+                student.isSem1KT(),
+                student.isSem2KT(),
+                student.isSem3KT(),
+                student.isSem4KT(),
+                student.isSem5KT(),
+                student.isSem6KT(),
+                student.getYearOfPassing(),
+                student.isResults_verified()
         );
     }
 }

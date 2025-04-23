@@ -46,6 +46,8 @@ CompaniesRepository companiesRepository;
                     if (companyDTO.getWebsite() != null) existing.setWebsite(companyDTO.getWebsite());
                     if (companyDTO.getAssociatedSince() != null) existing.setAssociatedSince(companyDTO.getAssociatedSince());
                     if (companyDTO.getActive() != null) existing.setActive(companyDTO.getActive());
+                    if (companyDTO.getMnc() != null) existing.setMnc(companyDTO.getMnc());
+                    if (companyDTO.getHr_Name() != null) existing.setHr_Name(companyDTO.getHr_Name());
 
                     return CompanyDTO.fromEntity(companiesRepository.save(existing));
                 })

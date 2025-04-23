@@ -1,6 +1,7 @@
 package com.example.TPO.DBMS.JobPost;
 
 public enum JobPostStatus {
+    UPCOMING,
     OPEN,
     CLOSED,
     SELECTION_IN_PROGRESS,

@@ -2,6 +2,8 @@ package com.example.TPO.DBMS.JobPost;
 
 import com.example.TPO.DBMS.Company.Company;
 import com.example.TPO.DBMS.Tpo.TPOUser;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import com.example.TPO.DBMS.Applications.JobApplication;
 import lombok.AllArgsConstructor;
@@ -18,12 +20,14 @@ public class JobPost {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "company_id", nullable = false)  // Establishing Foreign Key
+    @JoinColumn(name = "company_id", nullable = true)
+    // Establishing Foreign Key
     private Company company;
     @Column(nullable = false)
     private String jobDesignation;
     @Column(nullable = false)
-    private String location; @Column(nullable = false)
+    private String location;
+    @Column(nullable = false)
     private String jobType;
     @Column(nullable = false)
     private String description;
@@ -36,6 +40,7 @@ public class JobPost {
     @Column(nullable = false)
     private String preferredCourse;
     @Column(nullable = false)
+    @JsonProperty("skillsRequirements")
     private String skillRequirements;
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -47,6 +52,7 @@ public class JobPost {
         return applications;
     }
 
+    public String PortalLink;
     public void setApplications(List<JobApplication> applications) {
         this.applications = applications;
     }
@@ -65,16 +71,20 @@ public class JobPost {
     }
 
 
+    public String getPortalLink() {
+        return PortalLink;
+    }
 
+    public void setPortalLink(String portalLink) {
+        PortalLink = portalLink;
+    }
 
     public JobPost() {
     }
 
-
-
     private String modeOfRecruitment;
 
-    public JobPost(Long id, Company company, String jobDesignation, String location, String jobType, String description, double packageAmount, double minPercentage, int backlogAllowance, String preferredCourse, String skillRequirements, JobPostStatus status, Boolean aptitude, String selectionRounds, TPOUser createdBy, String modeOfRecruitment, String testPlatform, double minimumSsc, double minimumHsc, LocalDate aptitudedate, LocalDate applicationStartDate, LocalDate applicationEndDate, LocalDate selectionStartDate, LocalDate selectionEndDate) {
+    public JobPost(Long id, Company company, String jobDesignation, String location, String jobType, String description, double packageAmount, double minPercentage, int backlogAllowance, String preferredCourse, String skillRequirements, JobPostStatus status, Boolean aptitude, String portalLink, String selectionRounds, TPOUser createdBy, String modeOfRecruitment, String testPlatform, double minimumSsc, double minimumHsc, LocalDate aptitudedate, LocalDate applicationStartDate, LocalDate applicationEndDate, LocalDate selectionStartDate, LocalDate selectionEndDate) {
         this.id = id;
         this.company = company;
         this.jobDesignation = jobDesignation;
@@ -88,6 +98,7 @@ public class JobPost {
         this.skillRequirements = skillRequirements;
         this.Status = status;
         this.aptitude = aptitude;
+        this.PortalLink = portalLink;
         this.selectionRounds = selectionRounds;
         this.createdBy = createdBy;
         this.modeOfRecruitment = modeOfRecruitment;
@@ -102,6 +113,7 @@ public class JobPost {
     }
 
     public JobPostStatus getStatus() {
+        updateStatus(); // Auto-update status before returning
         return Status;
     }
 
@@ -110,8 +122,6 @@ public class JobPost {
     }
 
     private String testPlatform;
-
-
 
     public double getMinimumHsc() {
         return minimumHsc;
@@ -297,10 +307,67 @@ public class JobPost {
         this.selectionEndDate = selectionEndDate;
     }
 
-
-@Deprecated
+    @Deprecated
     @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
     private List<JobApplication> applications;
 
-    // Getters & Setters
+    /**
+     * Automatically updates the job post status based on current date and configured dates
+     * This method is called by lifecycle events and getter methods to ensure status is always current
+     */
+  public void updateStatus() {
+        LocalDate today = LocalDate.now();
+
+        // Respect admin-set terminal statuses
+        if (Status == JobPostStatus.CLOSED || Status == JobPostStatus.ON_HOLD || Status == JobPostStatus.CANCELLED) {
+            return;
+        }
+
+        // If job is marked as FILLED, handle expiration
+        if (Status == JobPostStatus.FILLED) {
+            if (selectionEndDate != null && today.isAfter(selectionEndDate)) {
+                this.Status = JobPostStatus.EXPIRED;
+            }
+            return; // if not expired, keep as FILLED
+        }
+
+        // Check if required dates are set
+        if (applicationStartDate == null || applicationEndDate == null ||
+                selectionStartDate == null || selectionEndDate == null) {
+            return;
+        }
+
+        // Auto-update based on timeline
+        if (today.isBefore(applicationStartDate)) {
+            this.Status = JobPostStatus.UPCOMING;
+        } else if ((today.isEqual(applicationStartDate) || today.isAfter(applicationStartDate)) &&
+                (today.isBefore(applicationEndDate) || today.isEqual(applicationEndDate))) {
+            this.Status = JobPostStatus.OPEN;
+        } else if (today.isAfter(applicationEndDate) &&
+                (today.isBefore(selectionStartDate) || today.isEqual(selectionStartDate))) {
+            this.Status = JobPostStatus.CLOSED;
+        } else if (today.isAfter(selectionStartDate) &&
+                (today.isBefore(selectionEndDate) || today.isEqual(selectionEndDate))) {
+            this.Status = JobPostStatus.SELECTION_IN_PROGRESS;
+        } else if (today.isAfter(selectionEndDate)) {
+            this.Status = JobPostStatus.EXPIRED;
+        }
+    }
+
+    /**
+     * JPA lifecycle method to update status whenever the entity is loaded
+     */
+    @PostLoad
+    public void onLoad() {
+        updateStatus();
+    }
+
+    /**
+     * JPA lifecycle method to update status before persisting
+     */
+    @PrePersist
+    @PreUpdate
+    public void beforeSave() {
+        updateStatus();
+    }
 }

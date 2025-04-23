@@ -21,6 +21,8 @@ public class  StudentDTO {
     private double hscMarks;
     private double diplomaMarks;
 
+
+
     public double getAvgMarks() {
         return avgMarks;
     }
@@ -57,6 +59,23 @@ public class  StudentDTO {
     private String Gr_No;
     private String profileImageBase64;
     private String academicYear;
+
+    public int getYearOfPassing() {
+        return yearOfPassing;
+    }
+
+    public void setYearOfPassing(int yearOfPassing) {
+        this.yearOfPassing = yearOfPassing;
+    }
+
+    private boolean sem1KT;
+    private boolean sem2KT;
+    private boolean sem3KT;
+    private boolean sem4KT;
+    private boolean sem5KT;
+    private boolean sem6KT;
+    private int yearOfPassing;
+    private boolean result_verified;
     // Constructor
 
 
@@ -68,7 +87,63 @@ public class  StudentDTO {
         this.profileImageBase64 = profileImageBase64;
     }
 
-    public StudentDTO(Long id, UserDTO user, String firstName, String middleName, String lastName, LocalDate dateOfBirth, String gender, String phoneNumber, String address, String department,String academicYear, double sscMarks, double hscMarks, double diplomaMarks, double sem1Marks, double sem2Marks, double sem3Marks, double sem4Marks, double sem5Marks, double sem6Marks, int noOfBacklogs, double avgMarks, String gr_No, byte[] profileImage) {
+    public boolean isResult_verified() {
+        return result_verified;
+    }
+
+    public void setResult_verified(boolean result_verified) {
+        this.result_verified = result_verified;
+    }
+
+    public boolean isSem1KT() {
+        return sem1KT;
+    }
+
+    public void setSem1KT(boolean sem1KT) {
+        this.sem1KT = sem1KT;
+    }
+
+    public boolean isSem2KT() {
+        return sem2KT;
+    }
+
+    public void setSem2KT(boolean sem2KT) {
+        this.sem2KT = sem2KT;
+    }
+
+    public boolean isSem3KT() {
+        return sem3KT;
+    }
+
+    public void setSem3KT(boolean sem3KT) {
+        this.sem3KT = sem3KT;
+    }
+
+    public boolean isSem4KT() {
+        return sem4KT;
+    }
+
+    public void setSem4KT(boolean sem4KT) {
+        this.sem4KT = sem4KT;
+    }
+
+    public boolean isSem5KT() {
+        return sem5KT;
+    }
+
+    public void setSem5KT(boolean sem5KT) {
+        this.sem5KT = sem5KT;
+    }
+
+    public boolean isSem6KT() {
+        return sem6KT;
+    }
+
+    public void setSem6KT(boolean sem6KT) {
+        this.sem6KT = sem6KT;
+    }
+
+    public StudentDTO(Long id, UserDTO user, String firstName, String middleName, String lastName, LocalDate dateOfBirth, String gender, String phoneNumber, String address, String department, String academicYear, double sscMarks, double hscMarks, double diplomaMarks, double sem1Marks, double sem2Marks, double sem3Marks, double sem4Marks, double sem5Marks, double sem6Marks, int noOfBacklogs, double avgMarks, String gr_No, byte[] profileImage, boolean sem1KT, boolean sem2KT, boolean sem3KT, boolean sem4KT, boolean sem5KT, boolean sem6KT,int yearOfPassing,boolean result_verified) {
         this.id = id;
         this.user = user;
         this.firstName = firstName;
@@ -92,6 +167,14 @@ public class  StudentDTO {
         this.noOfBacklogs = noOfBacklogs;
         this.avgMarks = avgMarks;
         this.Gr_No = gr_No;
+        this.sem1KT=sem1KT;
+        this.sem2KT=sem2KT;
+        this.sem3KT=sem3KT;
+        this.sem4KT=sem4KT;
+        this.sem5KT=sem5KT;
+        this.sem6KT=sem6KT;
+        this.yearOfPassing=yearOfPassing;
+        this.result_verified=result_verified;
         if (profileImage != null) {
             this.profileImageBase64 = Base64.getEncoder().encodeToString(profileImage);
         }

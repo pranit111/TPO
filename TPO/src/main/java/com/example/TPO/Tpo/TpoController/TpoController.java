@@ -99,6 +99,31 @@ TPOUserMapper tpoUserMapper;
         response.put("error", "Invalid or missing authorization token");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
+    @PostMapping("/create-admin")
+    public ResponseEntity<Map<String, String>> createInitialAdmin(@RequestBody User user) {
+        Map<String, String> response = new HashMap<>();
+
+        // Check if admin already exists
+        Optional<User> existing = userRepo.findByEmail(user.getEmail());
+        if (existing.isPresent()) {
+            response.put("error", "Admin user already exists.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
+        // Set up user
+        user.setPassword(encoder.encode(user.getPassword()));
+        user.setVerified(true); // auto-verify
+        User savedUser = userRepo.save(user);
+
+        // Set up TPO role
+        TPOUser tpoUser = new TPOUser();
+        tpoUser.setUser(savedUser);
+        tpoUser.setRole(TPO_Role.ADMIN); // set role as ADMIN
+        tpoRepository.save(tpoUser);
+
+        response.put("message", "Initial admin user created successfully.");
+        return ResponseEntity.ok(response);
+    }
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
         Optional<TPOUser> user = tpoRepository.findById(id);

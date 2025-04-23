@@ -85,13 +85,31 @@ public class CompanyDTO {
     private String location;
     private String website;
     private LocalDate associatedSince;
-    private Boolean isActive;
 
+    public Boolean getMnc() {
+        return mnc;
+    }
+
+    public void setMnc(Boolean mnc) {
+        this.mnc = mnc;
+    }
+
+    public String getHr_Name() {
+        return hr_Name;
+    }
+
+    public void setHr_Name(String hr_Name) {
+        this.hr_Name = hr_Name;
+    }
+
+    private Boolean isActive;
+    private Boolean mnc;
+    private String hr_Name;
     // Constructors
     public CompanyDTO() {}
 
-    public CompanyDTO(Long id, String name, String industryType, String email, String contactNumber,
-                      String location, String website, LocalDate associatedSince, Boolean isActive) {
+
+    public CompanyDTO(Long id, String name, String industryType, String email, String contactNumber, String location, String website, LocalDate associatedSince, Boolean isActive, Boolean mnc, String hr_Name) {
         this.id = id;
         this.name = name;
         this.industryType = industryType;
@@ -101,6 +119,8 @@ public class CompanyDTO {
         this.website = website;
         this.associatedSince = associatedSince;
         this.isActive = isActive;
+        this.mnc = mnc;
+        this.hr_Name = hr_Name;
     }
 
     // Convert to DTO from Entity
@@ -114,7 +134,9 @@ public class CompanyDTO {
                 company.getLocation(),
                 company.getWebsite(),
                 company.getAssociatedSince(),
-                company.getActive()
+                company.getActive(),
+                company.isMnc(),
+                company.getHr_Name()
         );
     }
 
@@ -130,6 +152,7 @@ public class CompanyDTO {
         company.setWebsite(this.website);
         company.setAssociatedSince(this.associatedSince);
         company.setActive(this.isActive);
+        company.setMnc(this.mnc);
         return company;
     }
 

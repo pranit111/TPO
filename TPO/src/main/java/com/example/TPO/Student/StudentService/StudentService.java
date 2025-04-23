@@ -15,9 +15,8 @@ import com.example.TPO.UserManagement.Service.JWTService;
 import com.example.TPO.UserManagement.UserDTO.UserDTO;
 import com.example.TPO.UserManagement.UserRepo.UserRepo;
 import com.example.TPO.UserManagement.entity.User;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.common.usermodel.HyperlinkType;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -46,7 +45,7 @@ public class StudentService {
     JWTService jwtService;
     @Autowired
     LogsService logsService;
-    public void createstudent(Student student, String authtoken, MultipartFile prof_img, MultipartFile resume) throws IOException {
+    public void createstudent(Student student, String authtoken, MultipartFile prof_img, MultipartFile resume, MultipartFile ssc_result, MultipartFile hsc_result, MultipartFile diploma_result) throws IOException {
         Long userId = jwtService.extractUserId(authtoken);
         Optional<User> userOptional = userRepo.findById(userId);
 
@@ -70,10 +69,23 @@ public class StudentService {
             throw new RuntimeException("Invalid file type for profile image.");
         }
 
+
         if (!resume.getContentType().equals("application/pdf")) {
             throw new RuntimeException("Resume must be a PDF file.");
         }
-
+        if (ssc_result != null && !ssc_result.isEmpty()) {
+            student.setSsc_result(ssc_result.getBytes());
+        }
+        if (hsc_result != null && !hsc_result.isEmpty()) {
+            student.setHsc_result(hsc_result.getBytes());
+        } else {
+            student.setHsc_result(null); // Explicitly set to null if not provided
+        }
+        if (diploma_result != null && !diploma_result.isEmpty()) {
+            student.setDiploma_result(diploma_result.getBytes());
+        } else {
+            student.setDiploma_result(null); // Explicitly set to null if not provided
+        }
         // Set profile image data
         student.setProfileimagedata(prof_img.getBytes());
         student.setImagename(prof_img.getOriginalFilename());
@@ -120,7 +132,7 @@ public class StudentService {
 
     }
 
-    public String updateStudent(Student student, String authToken) {
+    public String updateStudent(Student student, String authToken,MultipartFile profile_img,MultipartFile resume) throws IOException {
         Optional<User> userOptional = userRepo.findById(jwtService.extractUserId(authToken));
         if (userOptional.isEmpty()) {
             return "User not found.";
@@ -133,9 +145,17 @@ public class StudentService {
 
         Student existingStudent = existingStudentOpt.get();
         boolean marksUpdated = false;
+        boolean ktStatusUpdated = false;
         StringBuilder changes = new StringBuilder("Updated Marks: ");
+        StringBuilder ktChanges = new StringBuilder("Updated KT Status: ");
 
         // Check if any marks have changed
+        if(profile_img!=null){
+            student.setProfileimagedata(profile_img.getBytes());
+        }
+        if(resume!=null){
+            student.setResume_file_data(resume.getBytes());
+        }
         if (student.getSscMarks() != 0 && student.getSscMarks() != existingStudent.getSscMarks()) {
             changes.append("SSC Marks: ").append(existingStudent.getSscMarks()).append(" → ").append(student.getSscMarks()).append("; ");
             existingStudent.setSscMarks(student.getSscMarks());
@@ -182,6 +202,38 @@ public class StudentService {
             marksUpdated = true;
         }
 
+        // Check if any KT status has changed
+        if (student.isSem1KT() != existingStudent.isSem1KT()) {
+            ktChanges.append("Sem1 KT: ").append(existingStudent.isSem1KT()).append(" → ").append(student.isSem1KT()).append("; ");
+            existingStudent.setSem1KT(student.isSem1KT());
+            ktStatusUpdated = true;
+        }
+        if (student.isSem2KT() != existingStudent.isSem2KT()) {
+            ktChanges.append("Sem2 KT: ").append(existingStudent.isSem2KT()).append(" → ").append(student.isSem2KT()).append("; ");
+            existingStudent.setSem2KT(student.isSem2KT());
+            ktStatusUpdated = true;
+        }
+        if (student.isSem3KT() != existingStudent.isSem3KT()) {
+            ktChanges.append("Sem3 KT: ").append(existingStudent.isSem3KT()).append(" → ").append(student.isSem3KT()).append("; ");
+            existingStudent.setSem3KT(student.isSem3KT());
+            ktStatusUpdated = true;
+        }
+        if (student.isSem4KT() != existingStudent.isSem4KT()) {
+            ktChanges.append("Sem4 KT: ").append(existingStudent.isSem4KT()).append(" → ").append(student.isSem4KT()).append("; ");
+            existingStudent.setSem4KT(student.isSem4KT());
+            ktStatusUpdated = true;
+        }
+        if (student.isSem5KT() != existingStudent.isSem5KT()) {
+            ktChanges.append("Sem5 KT: ").append(existingStudent.isSem5KT()).append(" → ").append(student.isSem5KT()).append("; ");
+            existingStudent.setSem5KT(student.isSem5KT());
+            ktStatusUpdated = true;
+        }
+        if (student.isSem6KT() != existingStudent.isSem6KT()) {
+            ktChanges.append("Sem6 KT: ").append(existingStudent.isSem6KT()).append(" → ").append(student.isSem6KT()).append("; ");
+            existingStudent.setSem6KT(student.isSem6KT());
+            ktStatusUpdated = true;
+        }
+
         // If any marks were updated, log the changes
         if (marksUpdated) {
             logsService.saveLog(
@@ -190,6 +242,17 @@ public class StudentService {
                     "Student",
                     String.valueOf(existingStudent.getId()),
                     changes.toString()
+            );
+        }
+
+        // If any KT status was updated, log the changes
+        if (ktStatusUpdated) {
+            logsService.saveLog(
+                    "KT Status Updated",
+                    userOptional.get().getUsername(),
+                    "Student",
+                    String.valueOf(existingStudent.getId()),
+                    ktChanges.toString()
             );
         }
 
@@ -210,7 +273,6 @@ public class StudentService {
         studentRepository.save(existingStudent);
         return "Student updated successfully.";
     }
-
     public void getStudprofile(String token) {
     }
 
@@ -236,10 +298,10 @@ public class StudentService {
                                                    String department, String academicYear, double sscMarks, double hscMarks,
                                                    double diplomaMarks, double sem1Marks, double sem2Marks, double sem3Marks,
                                                    double sem4Marks, double sem5Marks, double sem6Marks, int noOfBacklogs,
-                                                   double avgMarks, String gr_No, byte[] profileImage) {
+                                                   double avgMarks, String gr_No, byte[] profileImage ,boolean sem1KT, boolean sem2KT, boolean sem3KT, boolean sem4KT, boolean sem5KT, boolean sem6KT,int batch,boolean result_verified) {
         return new StudentDTO(id, user, firstName, middleName, lastName, dateOfBirth, gender, phoneNumber, address,
                 department, academicYear, sscMarks, hscMarks, diplomaMarks, sem1Marks, sem2Marks,
-                sem3Marks, sem4Marks, sem5Marks, sem6Marks, noOfBacklogs, avgMarks, gr_No, profileImage);
+                sem3Marks, sem4Marks, sem5Marks, sem6Marks, noOfBacklogs, avgMarks, gr_No, profileImage,sem1KT,sem2KT,sem3KT,sem4KT,sem5KT,sem6KT,batch,result_verified);
     }
 
     public StudentDTO createStudentWithBasicDetails(Long id, UserDTO user, String firstName, String middleName, String lastName,
@@ -279,9 +341,9 @@ public class StudentService {
 
             // Define headers
             String[] headers = {
-                    "First Name", "Middle Name", "Last Name", "Gender", "Date of Birth",
+                    "First Name", "Middle Name", "Last Name", "Gender","Department", "Date of Birth",
                     "GR No", "SSC Marks", "HSC Marks", "Diploma Marks", "Average Marks",
-                    "No. of Backlogs", "Email", "Phone No", "Year of Passing", "Academic Year"
+                    "No. of Backlogs", "Email", "Phone No", "Year of Passing", "Academic Year","No of Kt ","sem1","sem2","sem3","sem4","sem5","sem6","CV "
             };
 
             for (int i = 0; i < headers.length; i++) {
@@ -296,17 +358,40 @@ public class StudentService {
                 row.createCell(1).setCellValue(basicDTO.getMiddleName());
                 row.createCell(2).setCellValue(basicDTO.getLastName());
                 row.createCell(3).setCellValue(basicDTO.getGender());
-                row.createCell(4).setCellValue(basicDTO.getDateOfBirth());
-                row.createCell(5).setCellValue(basicDTO.getGrNo());
-                row.createCell(6).setCellValue(basicDTO.getSscMarks());
-                row.createCell(7).setCellValue(basicDTO.getHscMarks());
-                row.createCell(8).setCellValue(basicDTO.getDiplomaMarks());
-                row.createCell(9).setCellValue(basicDTO.getAvgMarks());
-                row.createCell(10).setCellValue(basicDTO.getNoOfBacklogs());
-                row.createCell(11).setCellValue(basicDTO.getEmail());
-                row.createCell(12).setCellValue(basicDTO.getPhoneNo());
-                row.createCell(13).setCellValue(basicDTO.getYearOfpassing());
-                row.createCell(14).setCellValue(basicDTO.getAcademicYear());
+                row.createCell(4).setCellValue(basicDTO.getDepartment());
+                row.createCell(5).setCellValue(basicDTO.getDateOfBirth());
+                row.createCell(6).setCellValue(basicDTO.getGrNo());
+                row.createCell(7).setCellValue(basicDTO.getSscMarks());
+                row.createCell(8).setCellValue(basicDTO.getHscMarks());
+                row.createCell(9).setCellValue(basicDTO.getDiplomaMarks());
+                row.createCell(10).setCellValue(basicDTO.getAvgMarks());
+                row.createCell(11).setCellValue(basicDTO.getNoOfBacklogs());
+                row.createCell(12).setCellValue(basicDTO.getEmail());
+                row.createCell(13).setCellValue(basicDTO.getPhoneNo());
+                row.createCell(14).setCellValue(basicDTO.getYearOfpassing());
+                row.createCell(15).setCellValue(basicDTO.getAcademicYear());
+                row.createCell(16).setCellValue(basicDTO.getNoOfBacklogs());
+                row.createCell(17).setCellValue( basicDTO.isSem1KT() ? "KT" : String.valueOf(basicDTO.getSem1Marks()<1?"NA":basicDTO.getSem1Marks()));
+                row.createCell(18).setCellValue(basicDTO.isSem2KT() ? "KT" : String.valueOf(basicDTO.getSem2Marks()<1?"NA":basicDTO.getSem2Marks()));
+                row.createCell(19).setCellValue(basicDTO.isSem3KT() ? "KT" : String.valueOf(basicDTO.getSem3Marks()));
+                row.createCell(20).setCellValue(basicDTO.isSem4KT() ? "KT" : String.valueOf(basicDTO.getSem4Marks()));
+                row.createCell(21).setCellValue(basicDTO.isSem5KT() ? "KT" : String.valueOf(basicDTO.getSem5Marks()));
+                row.createCell(22).setCellValue(basicDTO.isSem6KT() ? "KT" : String.valueOf(basicDTO.getSem6Marks()));
+                CreationHelper createHelper = workbook.getCreationHelper();
+                Cell cell = row.createCell(23);
+                Hyperlink link = createHelper.createHyperlink(HyperlinkType.URL);
+                link.setAddress("http://localhost:4200/download/cv/"+basicDTO.getId()+"/ignore");
+                cell.setHyperlink(link);
+                cell.setCellValue( basicDTO.getFirstName()+ "'CV");
+
+// Optional: Add hyperlink styling
+                CellStyle hyperlinkStyle = workbook.createCellStyle();
+                Font hyperlinkFont = workbook.createFont();
+                hyperlinkFont.setUnderline(Font.U_SINGLE);
+                hyperlinkFont.setColor(IndexedColors.BLUE.getIndex());
+                hyperlinkStyle.setFont(hyperlinkFont);
+                cell.setCellStyle(hyperlinkStyle);
+
             }
 
             // Convert to byte array

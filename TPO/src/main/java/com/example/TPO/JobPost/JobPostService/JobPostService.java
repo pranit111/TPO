@@ -5,6 +5,7 @@ import com.example.TPO.DBMS.Applications.ApplicationStatus;
 import com.example.TPO.DBMS.Applications.JobApplication;
 import com.example.TPO.DBMS.Company.Company;
 import com.example.TPO.DBMS.JobPost.JobPost;
+import com.example.TPO.DBMS.JobPost.JobPostStatus;
 import com.example.TPO.DBMS.Tpo.TPOUser;
 import com.example.TPO.DBMS.stud.Student;
 import com.example.TPO.JobApplication.JobApplicationDTO.JobApplicationDTO;
@@ -35,6 +36,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -53,39 +55,38 @@ public class JobPostService {
     @Autowired
     CompaniesRepository companiesRepository;
 
-    public ResponseEntity<String> createPost(JobPost jobPost, String token) {
+    public ResponseEntity<Map<String, String>> createPost(JobPost jobPost, String token) {
         try {
             Company company = companiesRepository.findById(jobPost.getCompany().getId())
                     .orElseThrow(() -> new RuntimeException("Company not found"));
-            // Extract user ID from JWT token
-            jobPost.setCompany(company);
+
             Long userId = jwtService.extractUserId(token);
             if (userId == null) {
-                return ResponseEntity.status(401).body("Invalid or expired token");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
+                        "status", "error",
+                        "message", "Invalid or expired token"
+                ));
             }
 
-            // Fetch User, throw exception if not found
             User user = userRepo.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            // Fetch TPOUser, handle case if not found
             TPOUser tpoUser = tpoRepository.findByUser(user)
                     .orElseThrow(() -> new RuntimeException("TPO User not found for this user"));
 
-            // Set TPOUser in JobPost
+            jobPost.setCompany(company);
             jobPost.setCreatedBy(tpoUser);
-            System.err.println( jobPost.getCompany().getId());
-            // Save JobPost
             jobPostRepository.save(jobPost);
 
-            // Return success response
-            return ResponseEntity.ok("Job post created successfully");
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "message", "Job post created successfully"
+            ));
         } catch (Exception e) {
-            // Log the error (consider using a logger)
-            System.err.println("Error creating job post: " + e.getMessage());
-
-            // Return appropriate error response
-            return ResponseEntity.status(500).body("Internal Server Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "status", "error",
+                    "message", "Internal Server Error: " + e.getMessage()
+            ));
         }
     }
 
@@ -98,7 +99,7 @@ public class JobPostService {
 
         JobPost jobPost = jobPostOptional.get();
 
-        // Updating fields only if they are not null
+        // Update all fields if provided
         if (jobPostDTO.getJobDesignation() != null) {
             jobPost.setJobDesignation(jobPostDTO.getJobDesignation());
         }
@@ -108,8 +109,65 @@ public class JobPostService {
         if (jobPostDTO.getLocation() != null) {
             jobPost.setLocation(jobPostDTO.getLocation());
         }
+        if (jobPostDTO.getJobType() != null) {
+            jobPost.setJobType(jobPostDTO.getJobType());
+        }
+        if (jobPostDTO.getStatus() != null) {
+            jobPost.setStatus(jobPostDTO.getStatus());
+        }
         if (jobPostDTO.getPackageAmount() != 0) {
             jobPost.setPackageAmount(jobPostDTO.getPackageAmount());
+        }
+        if (jobPostDTO.getMinPercentage() != 0) {
+            jobPost.setMinPercentage(jobPostDTO.getMinPercentage());
+        }
+        if (jobPostDTO.getBacklogAllowance() != 0) {
+            jobPost.setBacklogAllowance(jobPostDTO.getBacklogAllowance());
+        }
+        if (jobPostDTO.getPreferredCourse() != null) {
+            jobPost.setPreferredCourse(jobPostDTO.getPreferredCourse());
+        }
+        if (jobPostDTO.getSkillRequirements() != null) {
+            jobPost.setSkillRequirements(jobPostDTO.getSkillRequirements());
+        }
+        if (jobPostDTO.getSelectionRounds() != null) {
+            jobPost.setSelectionRounds(jobPostDTO.getSelectionRounds());
+        }
+        if (jobPostDTO.getModeOfRecruitment() != null) {
+            jobPost.setModeOfRecruitment(jobPostDTO.getModeOfRecruitment());
+        }
+        if (jobPostDTO.getTestPlatform() != null) {
+            jobPost.setTestPlatform(jobPostDTO.getTestPlatform());
+        }
+        if (jobPostDTO.getApplicationStartDate() != null) {
+            jobPost.setApplicationStartDate(jobPostDTO.getApplicationStartDate());
+        }
+        if (jobPostDTO.getApplicationEndDate() != null) {
+            jobPost.setApplicationEndDate(jobPostDTO.getApplicationEndDate());
+        }
+        if (jobPostDTO.getSelectionStartDate() != null) {
+            jobPost.setSelectionStartDate(jobPostDTO.getSelectionStartDate());
+        }
+        if (jobPostDTO.getSelectionEndDate() != null) {
+            jobPost.setSelectionEndDate(jobPostDTO.getSelectionEndDate());
+        }
+        if (jobPostDTO.getAptitudeDate() != null) {
+            jobPost.setAptitudedate(jobPostDTO.getAptitudeDate());
+        }
+        if (jobPostDTO.isAptitude()) {
+
+            jobPost.setAptitude(jobPostDTO.isAptitude());
+
+
+        }
+        if (jobPostDTO.isAptitude()==false) {
+
+            jobPost.setAptitude(jobPostDTO.isAptitude());
+
+
+        }
+        if (jobPostDTO.getPortalLink() != null) {
+            jobPost.setPortalLink(jobPostDTO.getPortalLink());
         }
 
 
@@ -117,6 +175,7 @@ public class JobPostService {
 
         return ResponseEntity.ok("Job post updated successfully.");
     }
+
 
     public List<JobPostDTO> getAllJobPosts() {
         List<JobPost> jobPosts = jobPostRepository.findAll();
@@ -135,6 +194,10 @@ public class JobPostService {
 
         List<JobPost> eligibleJobPosts = allJobPosts.stream()
                 .filter(jobPost -> isStudentEligibleForJob(student, jobPost))
+                .filter(jobPost -> jobPost.getStatus() != JobPostStatus.CANCELLED &&
+                        jobPost.getStatus() != JobPostStatus.ON_HOLD &&
+                        jobPost.getStatus() != JobPostStatus.EXPIRED &&  jobPost.getStatus() != JobPostStatus.UPCOMING)
+
                 .collect(Collectors.toList());
 
         return JobPostMapper.toJobPostDTOList(eligibleJobPosts);
@@ -145,7 +208,8 @@ public class JobPostService {
         Double requiredHsc = jobPost.getMinimumHsc();
         Double requiredDiploma = jobPost.getMinimumHsc(); // Possible typo? Should be `getMinimumDiploma()` if exists
         Double requiredMinAvg = jobPost.getMinPercentage();
-
+        Double reqbacklogAllowance= ((double) jobPost.getBacklogAllowance());
+        Double studbacklog= ((double) student.getNoOfBacklogs());
         Double studentSsc = student.getSscMarks();
         Double studentHsc = student.getHscMarks();
         Double studentDiploma = student.getDiplomaMarks();
@@ -154,12 +218,38 @@ public class JobPostService {
         // Ensure student meets all required criteria (SSC, HSC/Diploma, and Min Percentage)
         boolean sscEligible = requiredSsc == null || (studentSsc != null && studentSsc >= requiredSsc);
         boolean hscEligible = requiredHsc == null || (studentHsc != null && studentHsc >= requiredHsc);
+        boolean backlog = reqbacklogAllowance == null || (studbacklog != null && studbacklog <= reqbacklogAllowance);
         boolean diplomaEligible = requiredDiploma == null || (studentDiploma != null && studentDiploma >= requiredDiploma);
         boolean avgEligible = requiredMinAvg == null || (studentMinAvg != null && studentMinAvg >= requiredMinAvg);
 
         // Student must satisfy SSC & (HSC or Diploma) & Minimum Percentage
-        return sscEligible && (hscEligible || diplomaEligible) && avgEligible;
+        return sscEligible && (hscEligible || diplomaEligible) && avgEligible&& backlog;
     }
+    public ResponseEntity<?> getPostTpo(String authHeader, Long postId) {
+
+        Optional<User> userOptional = userRepo.findById(jwtService.extractUserId(authHeader));
+
+        if (userOptional.isPresent()) {
+            TPOUser tpoUser = userOptional.get().getTpoUser();
+
+            if (tpoUser != null) {
+                Optional<JobPost> jobPostOptional = jobPostRepository.findById(postId);
+
+                if (jobPostOptional.isPresent()) {
+
+                    return ResponseEntity.ok(JobPostMapper.toJobPostDTO( jobPostOptional.get()));
+                } else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found");
+                }
+            } else {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not a TPO user");
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user");
+    }
+
+
 
     public ResponseEntity<?> getEligiblePost(String authHeader, Long postId) {
         System.err.println(authHeader);

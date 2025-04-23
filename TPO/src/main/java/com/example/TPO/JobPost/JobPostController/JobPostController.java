@@ -5,6 +5,7 @@ import com.example.TPO.JobPost.JobPostDTO.JobPostDTO;
 import com.example.TPO.JobPost.JobPostService.JobPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,15 +18,25 @@ public class JobPostController {
     @Autowired
     JobPostService jobPostService;
     @PostMapping("Post")
-    public ResponseEntity<? > createpost(@RequestBody JobPost jobPost, @RequestHeader("Authorization") String authHeader){
+    public ResponseEntity<Map<String, String>> createPost(
+            @RequestBody JobPost jobPost,
+            @RequestHeader("Authorization") String authHeader) {
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
+                    "status", "error",
+                    "message", "Missing or invalid Authorization header"
+            ));
+        }
+
         String token = authHeader.substring(7);
-
-        return  jobPostService.createPost(jobPost,token);
-
+        return jobPostService.createPost(jobPost, token);
     }
+
+
     @PutMapping("Post")
-    public ResponseEntity<?> update(@RequestParam long p_id ,@RequestBody JobPostDTO updatedjobPost){
-        return  jobPostService.updateJobPost(p_id,updatedjobPost);
+    public ResponseEntity<?> update(@RequestParam long post_id ,@RequestBody JobPostDTO updatedjobPost){
+        return  jobPostService.updateJobPost(post_id,updatedjobPost);
     }
     @GetMapping("Posts")
     public ResponseEntity<List<JobPostDTO>> getAllJobPosts() {
@@ -47,6 +58,12 @@ public class JobPostController {
              token = authHeader.substring(7);}
 
         return jobPostService.getEligiblePost(token, post_id); // Reuse existing logic
+    }
+    @GetMapping("Post/tpo")
+    public ResponseEntity<?> getpostpo( @RequestHeader("Authorization") String authHeader,
+                                        @RequestParam Long post_id){
+        String token = authHeader.substring(7);
+        return jobPostService.getPostTpo(token,post_id);
     }
 
     @GetMapping("Post/Search")

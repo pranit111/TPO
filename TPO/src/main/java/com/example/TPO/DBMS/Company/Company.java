@@ -12,11 +12,31 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    public String getHr_Name() {
+        return hr_Name;
+    }
 
-    public Company(Long id, String name, String industryType, String email, String contactNumber, String location, String website, LocalDate associatedSince, Boolean isActive, TPOUser tpoCoordinator) {
+    public void setHr_Name(String hr_Name) {
+        this.hr_Name = hr_Name;
+    }
+
+    public boolean isMnc() {
+        return Mnc;
+    }
+
+    public void setMnc(boolean mnc) {
+        Mnc = mnc;
+    }
+
+    private String name;
+    private boolean Mnc;
+    private String hr_Name;
+
+    public Company(Long id, String name, boolean mnc, String hr_Name, String industryType, String email, String contactNumber, String location, String website, LocalDate associatedSince, Boolean isActive, TPOUser tpoCoordinator) {
         this.id = id;
         this.name = name;
+        Mnc = mnc;
+        this.hr_Name = hr_Name;
         this.industryType = industryType;
         this.email = email;
         this.contactNumber = contactNumber;
