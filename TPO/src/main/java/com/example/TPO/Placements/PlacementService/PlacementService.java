@@ -10,6 +10,7 @@ import com.example.TPO.Placements.PlacementsDTO.PlacementMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,5 +53,17 @@ public class PlacementService {
 
     public void deletePlacement(Long id) {
         placementRepository.deleteById(id);
+    }
+
+    public ResponseEntity<byte[]> downloadofferletter(Long id) {
+        Optional<Placement> placement=placementRepository.findById(id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDisposition(ContentDisposition.inline().filename("document.pdf").build());
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(placement.get().getOfferLetterUrl());
+
     }
 }

@@ -6,6 +6,7 @@ import com.example.TPO.Placements.PlacementsDTO.PlacementDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,6 +38,11 @@ public class PlacementController {
     public Page<PlacementDTO> getAllPlacements(Pageable pageable) {
         return placementService.getAllPlacements(pageable);
     }
+    @GetMapping("/offerletter/{id}")
+    public ResponseEntity<byte[]> getOfferLetter(@PathVariable Long id) {
+      return placementService.downloadofferletter(id);
+    }
+
     @GetMapping("/search")
     public Page<PlacementDTO> searchPlacements(@RequestParam("q") String keyword, Pageable pageable) {
         return placementService.searchAll(keyword, pageable);

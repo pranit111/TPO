@@ -2,6 +2,8 @@ package com.example.TPO.Student.StudentService;
 
 import com.example.TPO.DBMS.Applications.JobApplication;
 import com.example.TPO.DBMS.Filters.JobApplicationFilter;
+import com.example.TPO.DBMS.Tpo.TPOUser;
+import com.example.TPO.DBMS.Tpo.TPO_Role;
 import com.example.TPO.DBMS.stud.Student;
 import com.example.TPO.JobApplication.JobApplicationDTO.JobApplicationDTO;
 import com.example.TPO.JobApplication.JobApplicationDTO.JobApplicationMapper;
@@ -11,6 +13,7 @@ import com.example.TPO.Student.StudentDTO.StudentBasicMapper;
 import com.example.TPO.Student.StudentDTO.StudentDTO;
 import com.example.TPO.Student.StudentDTO.StudentMapper;
 import com.example.TPO.Student.StudentRepository.StudentRepository;
+import com.example.TPO.Tpo.TpoRepository.TpoRepository;
 import com.example.TPO.UserManagement.Service.JWTService;
 import com.example.TPO.UserManagement.UserDTO.UserDTO;
 import com.example.TPO.UserManagement.UserRepo.UserRepo;
@@ -45,6 +48,8 @@ public class StudentService {
     JWTService jwtService;
     @Autowired
     LogsService logsService;
+    @Autowired
+    TpoRepository tpoRepository;
     public void createstudent(Student student, String authtoken, MultipartFile prof_img, MultipartFile resume, MultipartFile ssc_result, MultipartFile hsc_result, MultipartFile diploma_result) throws IOException {
         Long userId = jwtService.extractUserId(authtoken);
         Optional<User> userOptional = userRepo.findById(userId);
@@ -410,7 +415,27 @@ public class StudentService {
         }
     }
 
-        // Prepare response with Excel file
+    public ResponseEntity<?> getstudprofiletpo(String token,long id) {
+        Optional<TPOUser> user=tpoRepository.findById(jwtService.extractUserId(token));
+        if(user.isEmpty()){
+            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("No TPO User ");
+        }
+//        if(user.get().getRole){
+//            return  ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("A ");
+//        }
+        Optional<Student> studentoptional = studentRepository.findById(id);
+
+        if (studentoptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Student Found with ID: " + id);
+        }
+
+        Student student = studentoptional.get();
+        StudentDTO StudentDTO = StudentMapper.toStudentDTO(student);
+
+        return ResponseEntity.ok(StudentDTO);
+    }
+
+    // Prepare response with Excel file
 
 
 

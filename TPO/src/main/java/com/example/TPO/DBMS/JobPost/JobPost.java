@@ -340,6 +340,7 @@ public class JobPost {
         // Auto-update based on timeline
         if (today.isBefore(applicationStartDate)) {
             this.Status = JobPostStatus.UPCOMING;
+
         } else if ((today.isEqual(applicationStartDate) || today.isAfter(applicationStartDate)) &&
                 (today.isBefore(applicationEndDate) || today.isEqual(applicationEndDate))) {
             this.Status = JobPostStatus.OPEN;

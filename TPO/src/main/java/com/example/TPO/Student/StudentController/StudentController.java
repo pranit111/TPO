@@ -47,7 +47,18 @@ public class StudentController {
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR OCCURRED");
     }
+    @GetMapping("/tpo/Student/profile/{stud_id}")
+    public ResponseEntity<?> getprofilefortpo(@RequestHeader("Authorization") String authHeader,@PathVariable long stud_id){
+        Map<String, Object> response = new HashMap<>();
+        if(authHeader.isEmpty()){
+            response.put("error","User Not Logged In");
+            new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);}
+        String token = authHeader.substring(7);
 
+
+        return studentService.getstudprofiletpo(token,stud_id);
+
+    }
     @GetMapping("/Student/profile")
     public ResponseEntity<?> getprofile(@RequestHeader("Authorization") String authHeader){
         Map<String, Object> response = new HashMap<>();

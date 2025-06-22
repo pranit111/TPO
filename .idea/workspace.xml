@@ -6,28 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="92d2fda3-dbe2-47a3-a8e1-c6fb5107c4d1" name="Changes" comment="&quot;placements halfway done&quot;">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Companies/CompaniesDTO/CompanyDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Companies/CompaniesDTO/CompanyDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Companies/CompaniesService/CompaniesService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Companies/CompaniesService/CompaniesService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/Applications/JobApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/Applications/JobApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/Company/Company.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/Company/Company.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPost.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPost.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPostStatus.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPostStatus.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/stud/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/stud/Student.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationDTO/JobApplicationDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationDTO/JobApplicationDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationDTO/JobApplicationMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationDTO/JobApplicationMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationService/JobApplicationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationService/JobApplicationService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostController/JobPostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostController/JobPostController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostDTO/JobPostDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostDTO/JobPostDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostDTO/JobPostMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostDTO/JobPostMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostService/JobPostService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostService/JobPostService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Placements/PlacementContoller/PlacementController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Placements/PlacementContoller/PlacementController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Placements/PlacementService/PlacementService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Placements/PlacementService/PlacementService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentController/StudentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentController/StudentController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentDTO/StudentBasicDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentDTO/StudentBasicDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentDTO/StudentBasicMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentDTO/StudentBasicMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentDTO/StudentDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentDTO/StudentDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentDTO/StudentMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentDTO/StudentMapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentService/StudentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentService/StudentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/TpoController/TpoController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/TpoController/TpoController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardData.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TPO/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -75,23 +60,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.TPO.executor&quot;: &quot;Run&quot;,
-    &quot;Application.Unnamed.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/ASUS/OneDrive/Desktop/TPO_2.0/TPO&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.maven.repository.indices&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.TPO.executor": "Run",
+    "Application.Unnamed.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/ASUS/OneDrive/Desktop/TPO_2.0/TPO",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "reference.settings.project.maven.repository.indices"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.example.TPO.Users.stud" />
@@ -146,6 +131,55 @@
           <properties class="org.hibernate.tool.schema.spi.CommandAcceptanceException" package="org.hibernate.tool.schema.spi" />
           <option name="timeStamp" value="2" />
         </breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostService/JobPostService.java</url>
+          <line>92</line>
+          <properties class="com.example.TPO.JobPost.JobPostService.JobPostService" method="updateJobPost">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostService/JobPostService.java</url>
+          <line>114</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostService/JobPostService.java</url>
+          <line>115</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostService/JobPostService.java</url>
+          <line>173</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPost.java</url>
+          <line>340</line>
+          <option name="timeStamp" value="22" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPost.java</url>
+          <line>343</line>
+          <option name="timeStamp" value="23" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPost.java</url>
+          <line>346</line>
+          <option name="timeStamp" value="24" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPost.java</url>
+          <line>349</line>
+          <option name="timeStamp" value="25" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPost.java</url>
+          <line>352</line>
+          <option name="timeStamp" value="26" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
