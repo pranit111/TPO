@@ -10,26 +10,19 @@ import com.example.TPO.JobApplication.JobApplicationRepository.JobApplicationRep
 import com.example.TPO.JobPost.JobPostRepository.JobPostRepository;
 import com.example.TPO.JobPost.JobPostService.JobPostService;
 import com.example.TPO.Logs.LogsService.LogsService;
-import com.example.TPO.Student.StudentDTO.StudentBasicDTO;
-import com.example.TPO.Student.StudentDTO.StudentBasicMapper;
 import com.example.TPO.Student.StudentRepository.StudentRepository;
 import com.example.TPO.UserManagement.Service.JWTService;
 import com.example.TPO.UserManagement.UserRepo.UserRepo;
 import com.example.TPO.UserManagement.entity.User;
 import com.example.TPO.JobApplication.JobApplicationDTO.JobApplicationDTO;
-import com.example.TPO.UserManagement.UserDTO.UserDTO;
-import com.example.TPO.Student.StudentDTO.StudentDTO;
-import com.example.TPO.Student.StudentDTO.StudentMapper;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 
@@ -262,33 +255,36 @@ public class JobApplicationService {
         }
     }
 
-    public Page<JobApplicationDTO> searchApplicaion(ApplicationStatus status,
+    public Page<JobApplicationDTO> searchApplication(ApplicationStatus status,
                                                  String location,
                                                Long minSalary,
                                                 Long maxSalary,
-                                                    String studentName,
+                                                    String student,
                                             String department,
                                              String jobType,
-                                        String jobDesignation,
-                                                LocalDate fromdate,LocalDate toDate,
+                                        String designation,
+                                                LocalDate fromDate,LocalDate toDate,
+                                                    String searchTerm,
                                                 int page,
                                                 int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<JobApplication> jobApplicationspage = jobApplicationRepository.searchJobApplications(status,location,minSalary,maxSalary,studentName,department,jobType,jobDesignation,fromdate,toDate,pageable);
+        Page<JobApplication> jobApplicationspage = jobApplicationRepository.searchJobApplications(status,location,minSalary,maxSalary,student,department,jobType,designation,fromDate,toDate,searchTerm,pageable);
 
         return jobApplicationspage.map(JobApplicationMapper::toJobApplicationDTO);
     }
-    public ResponseEntity<byte[]> SearchdownloadExcel(ApplicationStatus status,
+    public ResponseEntity<byte[]> searchDownloadExcel(ApplicationStatus status,
                                                       String location,
                                                       Long minSalary,
                                                       Long maxSalary,
-                                                      String studentName,
+                                                      String student,
                                                       String department,
                                                       String jobType,
-                                                      String jobDesignation,
-                                                      LocalDate fromdate,LocalDate toDate, int page,
+                                                      String designation,
+                                                      LocalDate fromDate,LocalDate toDate,
+                                                      String searchTerm,
+                                                      int page,
                                                       int size) {
-        Page<JobApplicationDTO> response = searchApplicaion(status,location,minSalary,maxSalary,studentName,department,jobType,jobDesignation,fromdate,toDate,page,size);
+        Page<JobApplicationDTO> response = searchApplication(status,location,minSalary,maxSalary,student,department,jobType,designation,fromDate,toDate,searchTerm,page,size);
 
         List<JobApplicationDTO> filteredApplications = response.getContent();
         if (filteredApplications == null || filteredApplications.isEmpty()) {
