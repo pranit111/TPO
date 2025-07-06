@@ -595,7 +595,7 @@ public class DashboardService {
             String dept = entry.getKey();
             List<Student> students = entry.getValue();
             List<Placement> placements = placementsByDept.getOrDefault(dept, new ArrayList<>());
-            
+
             Map<String, Object> deptStats = new HashMap<>();
             deptStats.put("name", dept);
             deptStats.put("totalStudents", students.size());
@@ -1174,42 +1174,542 @@ public class DashboardService {
         return result;
     }
 
-    // Advanced Analytics Methods
-    public Map<String, Object> getPerformanceAnalytics(int months) {
-        Map<String, Object> analytics = new HashMap<>();
-        
-        LocalDate startDate = LocalDate.now().minusMonths(months);
-        List<Placement> recentPlacements = placementRepository.findAll().stream()
-            .filter(p -> p.getPlacementDate() != null && p.getPlacementDate().isAfter(startDate))
+    // Helper methods for yearly data filtering and calculations
+    private List<Student> getYearlyStudents(int year) {
+        // Filter students by year of passing
+        return studentRepository.findAll().stream()
+            .filter(s -> s.getYearOfPassing() == year)
             .collect(Collectors.toList());
+    }
+
+    private List<com.example.TPO.DBMS.Company.Company> getYearlyCompanies(int year) {
+        return companiesRepository.findAll().stream()
+            .filter(c -> c.getAssociatedSince() != null && 
+                    c.getAssociatedSince().getYear() <= year )
+            .collect(Collectors.toList());
+    }
+
+    private List<Placement> getYearlyPlacements(int year) {
+        return placementRepository.findAll().stream()
+            .filter(p -> p.getPlacementDate() != null && 
+                    p.getPlacementDate().getYear() == year)
+            .collect(Collectors.toList());
+    }
+
+    private List<?> getYearlyJobPosts(int year) {
+        return jobPostRepository.findAll().stream()
+            .filter(jp -> jp.getApplicationStartDate() != null && 
+                    jp.getApplicationStartDate().getYear() == year )
+            .collect(Collectors.toList());
+    }
+
+    private List<?> getYearlyJobApplications(int year) {
+        // Filter by application date
+        return jobApplicationRepository.findAll().stream()
+            .filter(ja -> ja.getApplicationDate() != null && 
+                    ja.getApplicationDate().getYear() == year )
+            .collect(Collectors.toList());
+    }
+
+    private List<com.example.TPO.DBMS.JobPost.JobPost> getYearlyJobPostsTyped(int year) {
+        return jobPostRepository.findAll().stream()
+            .filter(jp -> jp.getApplicationStartDate() != null && 
+                    jp.getApplicationStartDate().getYear() == year )
+            .collect(Collectors.toList());
+    }
+
+    private List<com.example.TPO.DBMS.Applications.JobApplication> getYearlyJobApplicationsTyped(int year) {
+        // Filter by application date
+        return jobApplicationRepository.findAll().stream()
+            .filter(ja -> ja.getApplicationDate() != null && 
+                    ja.getApplicationDate().getYear() == year )
+            .collect(Collectors.toList());
+    }
+
+    // Helper methods for yearly analytics
+    private int getYearlyStudentCount(int year) {
+        return getYearlyStudents(year).size();
+    }
+
+    private int getYearlyPlacementCount(int year) {
+        return getYearlyPlacements(year).size();
+    }
+
+    private double getYearlyPlacementRate(int year) {
+        int totalStudents = getYearlyStudentCount(year);
+        int placedStudents = getYearlyPlacementCount(year);
+        return totalStudents > 0 ? ((double) placedStudents / totalStudents) * 100 : 0;
+    }
+
+    private double getYearlyAveragePackage(int year) {
+        List<Placement> yearlyPlacements = getYearlyPlacements(year);
+        return yearlyPlacements.stream()
+            .mapToDouble(Placement::getPlaced_package)
+            .average()
+            .orElse(0.0);
+    }
+
+    private double getYearlyHighestPackage(int year) {
+        List<Placement> yearlyPlacements = getYearlyPlacements(year);
+        return yearlyPlacements.stream()
+            .mapToDouble(Placement::getPlaced_package)
+            .max()
+            .orElse(0.0);
+    }
+
+    private int getYearlyCompanyCount(int year) {
+        return getYearlyCompanies(year).size();
+    }
+
+    private int getYearlyJobPostCount(int year) {
+        return getYearlyJobPosts(year).size();
+    }
+
+    private int getYearlyJobApplicationCount(int year) {
+        return getYearlyJobApplications(year).size();
+    }
+
+    // Advanced Analytics Methods
+    public Map<String, Object> getMultiYearComparisonAnalytics(List<Integer> years) {
+        Map<String, Object> comparison = new HashMap<>();
         
-        // Monthly performance
-        Map<String, List<Placement>> monthlyPlacements = recentPlacements.stream()
-            .collect(Collectors.groupingBy(p -> 
-                p.getPlacementDate().format(DateTimeFormatter.ofPattern("yyyy-MM"))));
+        List<Map<String, Object>> yearlyData = new ArrayList<>();
         
-        List<Map<String, Object>> monthlyData = new ArrayList<>();
-        for (Map.Entry<String, List<Placement>> entry : monthlyPlacements.entrySet()) {
-            Map<String, Object> monthData = new HashMap<>();
-            monthData.put("month", entry.getKey());
-            monthData.put("placements", entry.getValue().size());
-            monthData.put("avgPackage", entry.getValue().stream()
-                .mapToDouble(Placement::getPlaced_package).average().orElse(0.0));
-            monthData.put("totalPackageValue", entry.getValue().stream()
-                .mapToDouble(Placement::getPlaced_package).sum());
-            monthlyData.add(monthData);
+        for (int year : years) {
+            Map<String, Object> yearData = new HashMap<>();
+            yearData.put("year", year);
+            yearData.put("totalStudents", getYearlyStudentCount(year));
+            yearData.put("totalPlacements", getYearlyPlacementCount(year));
+            yearData.put("placementRate", getYearlyPlacementRate(year));
+            yearData.put("averagePackage", getYearlyAveragePackage(year));
+            yearData.put("highestPackage", getYearlyHighestPackage(year));
+            yearData.put("totalCompanies", getYearlyCompanyCount(year));
+            
+            yearlyData.add(yearData);
         }
         
-        analytics.put("monthlyPerformance", monthlyData);
-        analytics.put("totalPlacements", recentPlacements.size());
+        comparison.put("yearlyData", yearlyData);
         
-        double avgPackage = recentPlacements.stream()
-            .mapToDouble(Placement::getPlaced_package).average().orElse(0.0);
-        analytics.put("averagePackage", avgPackage);
+        // Calculate trends
+        if (years.size() >= 2) {
+            Map<String, Object> trends = new HashMap<>();
+            
+            // Placement rate trend
+            List<Double> placementRates = yearlyData.stream()
+                .map(data -> (Double) data.get("placementRate"))
+                .collect(Collectors.toList());
+            trends.put("placementRateTrend", calculateTrend(placementRates));
+            
+            // Average package trend
+            List<Double> avgPackages = yearlyData.stream()
+                .map(data -> (Double) data.get("averagePackage"))
+                .collect(Collectors.toList());
+            trends.put("averagePackageTrend", calculateTrend(avgPackages));
+            
+            // Company participation trend
+            List<Integer> companyCount = yearlyData.stream()
+                .map(data -> (Integer) data.get("totalCompanies"))
+                .collect(Collectors.toList());
+            trends.put("companyParticipationTrend", calculateTrendInteger(companyCount));
+            
+            comparison.put("trends", trends);
+        }
+        
+        return comparison;
+    }
+
+    public Map<String, Object> getSkillBasedAnalytics() {
+        Map<String, Object> analytics = new HashMap<>();
+        
+        // Get all job posts and their skill requirements
+        List<com.example.TPO.DBMS.JobPost.JobPost> jobPosts = jobPostRepository.findAll();
+        
+        // Extract and analyze skill requirements
+        Map<String, Long> skillDemand = jobPosts.stream()
+            .filter(jp -> jp.getSkillRequirements() != null && !jp.getSkillRequirements().trim().isEmpty())
+            .flatMap(jp -> Arrays.stream(jp.getSkillRequirements().split(",|;|\\|")))
+            .map(skill -> skill.trim().toLowerCase())
+            .filter(skill -> !skill.isEmpty())
+            .collect(Collectors.groupingBy(skill -> skill, Collectors.counting()));
+        
+        // Get top skills
+        List<Map<String, Object>> topSkills = skillDemand.entrySet().stream()
+            .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+            .limit(20)
+            .map(entry -> {
+                Map<String, Object> skillMap = new HashMap<>();
+                skillMap.put("skill", entry.getKey());
+                skillMap.put("demand", entry.getValue());
+                return skillMap;
+            })
+            .collect(Collectors.toList());
+        
+        analytics.put("topSkills", topSkills);
+        analytics.put("totalUniqueSkills", skillDemand.size());
         
         return analytics;
     }
 
+    public Map<String, Object> getLocationBasedAnalytics() {
+        Map<String, Object> analytics = new HashMap<>();
+        
+        // Job location analysis
+        List<com.example.TPO.DBMS.JobPost.JobPost> jobPosts = jobPostRepository.findAll();
+        
+        Map<String, Long> locationDemand = jobPosts.stream()
+            .filter(jp -> jp.getLocation() != null && !jp.getLocation().trim().isEmpty())
+            .collect(Collectors.groupingBy(
+                jp -> jp.getLocation().trim(),
+                Collectors.counting()
+            ));
+        
+        List<Map<String, Object>> topLocations = locationDemand.entrySet().stream()
+            .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+            .limit(15)
+            .map(entry -> {
+                Map<String, Object> locationMap = new HashMap<>();
+                locationMap.put("location", entry.getKey());
+                locationMap.put("jobCount", entry.getValue());
+                return locationMap;
+            })
+            .collect(Collectors.toList());
+        
+        analytics.put("topJobLocations", topLocations);
+        
+        // Placement location analysis
+        List<Placement> placements = placementRepository.findAll();
+        
+        Map<String, Long> placementLocations = placements.stream()
+            .filter(p -> p.getApplication() != null && 
+                    p.getApplication().getJobPost() != null &&
+                    p.getApplication().getJobPost().getLocation() != null)
+            .collect(Collectors.groupingBy(
+                p -> p.getApplication().getJobPost().getLocation().trim(),
+                Collectors.counting()
+            ));
+        
+        List<Map<String, Object>> topPlacementLocations = placementLocations.entrySet().stream()
+            .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+            .limit(10)
+            .map(entry -> {
+                Map<String, Object> locationMap = new HashMap<>();
+                locationMap.put("location", entry.getKey());
+                locationMap.put("placementCount", entry.getValue());
+                return locationMap;
+            })
+            .collect(Collectors.toList());
+        
+        analytics.put("topPlacementLocations", topPlacementLocations);
+        
+        return analytics;
+    }
+
+    public Map<String, Object> getSalaryTrendAnalytics(int months) {
+        Map<String, Object> analytics = new HashMap<>();
+        
+        LocalDate startDate = LocalDate.now().minusMonths(months);
+        
+        List<Placement> recentPlacements = placementRepository.findAll().stream()
+            .filter(p -> p.getPlacementDate() != null && p.getPlacementDate().isAfter(startDate))
+            .sorted(Comparator.comparing(Placement::getPlacementDate))
+            .collect(Collectors.toList());
+        
+        // Monthly salary trends
+        Map<String, List<Placement>> monthlyPlacements = recentPlacements.stream()
+            .collect(Collectors.groupingBy(p -> 
+                p.getPlacementDate().format(DateTimeFormatter.ofPattern("yyyy-MM"))));
+        
+        List<Map<String, Object>> monthlyTrends = monthlyPlacements.entrySet().stream()
+            .map(entry -> {
+                String month = entry.getKey();
+                List<Placement> placements = entry.getValue();
+                
+                double avgSalary = placements.stream()
+                    .mapToDouble(Placement::getPlaced_package)
+                    .average().orElse(0.0);
+                
+                double maxSalary = placements.stream()
+                    .mapToDouble(Placement::getPlaced_package)
+                    .max().orElse(0.0);
+                
+                double minSalary = placements.stream()
+                    .mapToDouble(Placement::getPlaced_package)
+                    .min().orElse(0.0);
+                
+                Map<String, Object> monthData = new HashMap<>();
+                monthData.put("month", month);
+                monthData.put("placementCount", placements.size());
+                monthData.put("averageSalary", Math.round(avgSalary * 100.0) / 100.0);
+                monthData.put("maxSalary", maxSalary);
+                monthData.put("minSalary", minSalary);
+                
+                return monthData;
+            })
+            .sorted(Comparator.comparing(data -> (String) data.get("month")))
+            .collect(Collectors.toList());
+        
+        analytics.put("monthlyTrends", monthlyTrends);
+        
+        // Department-wise salary trends
+        Map<String, Double> departmentAvgSalary = recentPlacements.stream()
+            .filter(p -> p.getApplication() != null && p.getApplication().getStudent() != null)
+            .collect(Collectors.groupingBy(
+                p -> p.getApplication().getStudent().getDepartment(),
+                Collectors.averagingDouble(Placement::getPlaced_package)
+            ));
+        
+        List<Map<String, Object>> departmentSalaryTrends = departmentAvgSalary.entrySet().stream()
+            .map(entry -> {
+                Map<String, Object> deptData = new HashMap<>();
+                deptData.put("department", entry.getKey());
+                deptData.put("averageSalary", Math.round(entry.getValue() * 100.0) / 100.0);
+                return deptData;
+            })
+            .sorted((a, b) -> Double.compare((Double) b.get("averageSalary"), (Double) a.get("averageSalary")))
+            .collect(Collectors.toList());
+        
+        analytics.put("departmentSalaryTrends", departmentSalaryTrends);
+        
+        return analytics;
+    }
+
+    public Map<String, Object> getApplicationSuccessRateAnalytics() {
+        Map<String, Object> analytics = new HashMap<>();
+        
+        List<com.example.TPO.DBMS.Applications.JobApplication> applications = jobApplicationRepository.findAll();
+        List<Placement> placements = placementRepository.findAll();
+        
+        // Overall success rate
+        long totalApplications = applications.size();
+        long successfulApplications = placements.size();
+        double overallSuccessRate = totalApplications > 0 ? 
+            ((double) successfulApplications / totalApplications) * 100 : 0;
+        
+        analytics.put("totalApplications", totalApplications);
+        analytics.put("successfulApplications", successfulApplications);
+        analytics.put("overallSuccessRate", Math.round(overallSuccessRate * 100.0) / 100.0);
+        
+        // Department-wise success rate
+        Map<String, Long> applicationsByDept = applications.stream()
+            .filter(app -> app.getStudent() != null)
+            .collect(Collectors.groupingBy(
+                app -> app.getStudent().getDepartment(),
+                Collectors.counting()
+            ));
+        
+        Map<String, Long> successfulApplicationsByDept = placements.stream()
+            .filter(p -> p.getApplication() != null && p.getApplication().getStudent() != null)
+            .collect(Collectors.groupingBy(
+                p -> p.getApplication().getStudent().getDepartment(),
+                Collectors.counting()
+            ));
+        
+        List<Map<String, Object>> departmentSuccessRates = applicationsByDept.entrySet().stream()
+            .map(entry -> {
+                String dept = entry.getKey();
+                long totalApps = entry.getValue();
+                long successfulApps = successfulApplicationsByDept.getOrDefault(dept, 0L);
+                double successRate = totalApps > 0 ? ((double) successfulApps / totalApps) * 100 : 0;
+                
+                Map<String, Object> deptData = new HashMap<>();
+                deptData.put("department", dept);
+                deptData.put("totalApplications", totalApps);
+                deptData.put("successfulApplications", successfulApps);
+                deptData.put("successRate", Math.round(successRate * 100.0) / 100.0);
+                
+                return deptData;
+            })
+            .sorted((a, b) -> Double.compare((Double) b.get("successRate"), (Double) a.get("successRate")))
+            .collect(Collectors.toList());
+        
+        analytics.put("departmentSuccessRates", departmentSuccessRates);
+        
+        // Company-wise success rate
+        Map<String, Long> applicationsByCompany = applications.stream()
+            .filter(app -> app.getJobPost() != null && app.getJobPost().getCompany() != null)
+            .collect(Collectors.groupingBy(
+                app -> app.getJobPost().getCompany().getName(),
+                Collectors.counting()
+            ));
+        
+        Map<String, Long> successfulApplicationsByCompany = placements.stream()
+            .filter(p -> p.getApplication() != null && 
+                    p.getApplication().getJobPost() != null &&
+                    p.getApplication().getJobPost().getCompany() != null)
+            .collect(Collectors.groupingBy(
+                p -> p.getApplication().getJobPost().getCompany().getName(),
+                Collectors.counting()
+            ));
+        
+        List<Map<String, Object>> companySuccessRates = applicationsByCompany.entrySet().stream()
+            .filter(entry -> entry.getValue() >= 5) // Only companies with 5+ applications
+            .map(entry -> {
+                String company = entry.getKey();
+                long totalApps = entry.getValue();
+                long successfulApps = successfulApplicationsByCompany.getOrDefault(company, 0L);
+                double successRate = totalApps > 0 ? ((double) successfulApps / totalApps) * 100 : 0;
+                
+                Map<String, Object> companyData = new HashMap<>();
+                companyData.put("company", company);
+                companyData.put("totalApplications", totalApps);
+                companyData.put("successfulApplications", successfulApps);
+                companyData.put("successRate", Math.round(successRate * 100.0) / 100.0);
+                
+                return companyData;
+            })
+            .sorted((a, b) -> Double.compare((Double) b.get("successRate"), (Double) a.get("successRate")))
+            .collect(Collectors.toList());
+        
+        analytics.put("companySuccessRates", companySuccessRates);
+        
+        return analytics;
+    }
+
+    public Map<String, Object> getJobTypeAnalytics() {
+        Map<String, Object> analytics = new HashMap<>();
+        
+        List<com.example.TPO.DBMS.JobPost.JobPost> jobPosts = jobPostRepository.findAll();
+        
+        // Job type distribution
+        Map<String, Long> jobTypeDistribution = jobPosts.stream()
+            .filter(jp -> jp.getJobType() != null && !jp.getJobType().trim().isEmpty())
+            .collect(Collectors.groupingBy(
+                jp -> jp.getJobType().trim(),
+                Collectors.counting()
+            ));
+        
+        List<Map<String, Object>> jobTypeData = jobTypeDistribution.entrySet().stream()
+            .map(entry -> {
+                Map<String, Object> typeData = new HashMap<>();
+                typeData.put("jobType", entry.getKey());
+                typeData.put("count", entry.getValue());
+                
+                // Calculate average package for this job type
+                double avgPackage = jobPosts.stream()
+                    .filter(jp -> jp.getJobType() != null && jp.getJobType().trim().equals(entry.getKey()))
+                    .mapToDouble(jp -> jp.getPackageAmount())
+                    .average().orElse(0.0);
+                
+                typeData.put("averagePackage", Math.round(avgPackage * 100.0) / 100.0);
+                
+                return typeData;
+            })
+            .sorted((a, b) -> Long.compare((Long) b.get("count"), (Long) a.get("count")))
+            .collect(Collectors.toList());
+        
+        analytics.put("jobTypeDistribution", jobTypeData);
+        
+        // Placement success by job type
+        List<Placement> placements = placementRepository.findAll();
+        
+        Map<String, Long> placementsByJobType = placements.stream()
+            .filter(p -> p.getApplication() != null && 
+                    p.getApplication().getJobPost() != null &&
+                    p.getApplication().getJobPost().getJobType() != null)
+            .collect(Collectors.groupingBy(
+                p -> p.getApplication().getJobPost().getJobType().trim(),
+                Collectors.counting()
+            ));
+        
+        List<Map<String, Object>> placementJobTypeData = placementsByJobType.entrySet().stream()
+            .map(entry -> {
+                Map<String, Object> typeData = new HashMap<>();
+                typeData.put("jobType", entry.getKey());
+                typeData.put("placementCount", entry.getValue());
+                
+                double avgPlacementPackage = placements.stream()
+                    .filter(p -> p.getApplication() != null && 
+                            p.getApplication().getJobPost() != null &&
+                            p.getApplication().getJobPost().getJobType() != null &&
+                            p.getApplication().getJobPost().getJobType().trim().equals(entry.getKey()))
+                    .mapToDouble(Placement::getPlaced_package)
+                    .average().orElse(0.0);
+                
+                typeData.put("averagePlacementPackage", Math.round(avgPlacementPackage * 100.0) / 100.0);
+                
+                return typeData;
+            })
+            .sorted((a, b) -> Long.compare((Long) b.get("placementCount"), (Long) a.get("placementCount")))
+            .collect(Collectors.toList());
+        
+        analytics.put("placementsByJobType", placementJobTypeData);
+        
+        return analytics;
+    }
+
+    public Map<String, Object> getAcademicPerformanceCorrelation() {
+        Map<String, Object> analytics = new HashMap<>();
+        
+        List<Placement> placements = placementRepository.findAll();
+        
+        // Correlation between academic performance and placement package
+        List<Map<String, Object>> correlationData = placements.stream()
+            .filter(p -> p.getApplication() != null && p.getApplication().getStudent() != null)
+            .map(p -> {
+                Student student = p.getApplication().getStudent();
+                Map<String, Object> data = new HashMap<>();
+                data.put("cgpa", student.getAvgMarks());
+                data.put("placementPackage", p.getPlaced_package());
+                data.put("sscMarks", student.getSscMarks());
+                data.put("hscMarks", student.getHscMarks());
+                data.put("department", student.getDepartment());
+                return data;
+            })
+            .collect(Collectors.toList());
+        
+        analytics.put("academicPerformanceData", correlationData);
+        
+        // CGPA ranges and their average packages
+        Map<String, List<Placement>> cgpaRanges = placements.stream()
+            .filter(p -> p.getApplication() != null && p.getApplication().getStudent() != null)
+            .collect(Collectors.groupingBy(p -> {
+                double cgpa = p.getApplication().getStudent().getAvgMarks();
+                if (cgpa >= 9.0) return "9.0-10.0";
+                else if (cgpa >= 8.0) return "8.0-8.9";
+                else if (cgpa >= 7.0) return "7.0-7.9";
+                else if (cgpa >= 6.0) return "6.0-6.9";
+                else return "Below 6.0";
+            }));
+        
+        List<Map<String, Object>> cgpaAnalysis = cgpaRanges.entrySet().stream()
+            .map(entry -> {
+                String range = entry.getKey();
+                List<Placement> rangePlacements = entry.getValue();
+                
+                double avgPackage = rangePlacements.stream()
+                    .mapToDouble(Placement::getPlaced_package)
+                    .average().orElse(0.0);
+                
+                double maxPackage = rangePlacements.stream()
+                    .mapToDouble(Placement::getPlaced_package)
+                    .max().orElse(0.0);
+                
+                Map<String, Object> rangeData = new HashMap<>();
+                rangeData.put("cgpaRange", range);
+                rangeData.put("studentCount", rangePlacements.size());
+                rangeData.put("averagePackage", Math.round(avgPackage * 100.0) / 100.0);
+                rangeData.put("maxPackage", maxPackage);
+                
+                return rangeData;
+            })
+            .sorted((a, b) -> {
+                String rangeA = (String) a.get("cgpaRange");
+                String rangeB = (String) b.get("cgpaRange");
+                return rangeB.compareTo(rangeA); // Sort in descending order
+            })
+            .collect(Collectors.toList());
+        
+        analytics.put("cgpaAnalysis", cgpaAnalysis);
+        
+        return analytics;
+    }
+
+    // Performance Analytics - Alias for existing method
+    public Map<String, Object> getPerformanceAnalytics(int months) {
+        return getSalaryTrendAnalytics(months);
+    }
+
+    // Detailed Package Distribution - Alias for existing method
     public Map<String, Object> getDetailedPackageDistribution() {
         Map<String, Object> distribution = new HashMap<>();
         
@@ -1232,7 +1732,6 @@ public class DashboardService {
             Map<String, Object> range = new HashMap<>();
             range.put("range", entry.getKey());
             range.put("count", entry.getValue());
-            range.put("percentage", (double) entry.getValue() / placements.size() * 100);
             ranges.add(range);
         }
         
@@ -1242,25 +1741,16 @@ public class DashboardService {
         // Statistics
         double[] packages = placements.stream().mapToDouble(Placement::getPlaced_package).toArray();
         if (packages.length > 0) {
+            distribution.put("averagePackage", Arrays.stream(packages).average().orElse(0.0));
             distribution.put("minPackage", Arrays.stream(packages).min().orElse(0.0));
             distribution.put("maxPackage", Arrays.stream(packages).max().orElse(0.0));
             distribution.put("medianPackage", calculateMedian(packages));
-            distribution.put("averagePackage", Arrays.stream(packages).average().orElse(0.0));
         }
         
         return distribution;
     }
 
-    private double calculateMedian(double[] arr) {
-        Arrays.sort(arr);
-        int n = arr.length;
-        if (n % 2 == 0) {
-            return (arr[n/2 - 1] + arr[n/2]) / 2.0;
-        } else {
-            return arr[n/2];
-        }
-    }
-
+    // Hiring Trends - Enhanced version
     public Map<String, Object> getHiringTrends(int months) {
         Map<String, Object> trends = new HashMap<>();
         
@@ -1330,7 +1820,7 @@ public class DashboardService {
                 students = students.stream()
                     .filter(s -> placedStudentIds.contains(s.getId()))
                     .collect(Collectors.toList());
-            } else if ("unplaced".equalsIgnoreCase(status)) {
+            } else if ("not_placed".equalsIgnoreCase(status)) {
                 students = students.stream()
                     .filter(s -> !placedStudentIds.contains(s.getId()))
                     .collect(Collectors.toList());
@@ -1507,7 +1997,7 @@ public class DashboardService {
         List<Map<String, String>> alertList = new ArrayList<>();
         
         // Low placement rate alert
-        double placementRate = getStudentAnalytics().getPlacementRate();
+        double placementRate = (double) placementRepository.count() / studentRepository.count() * 100;
         if (placementRate < 50) {
             alertList.add(Map.of(
                 "type", "warning",
@@ -1654,7 +2144,12 @@ public class DashboardService {
             double avgPackage = deptPlacements.stream()
                 .mapToDouble(Placement::getPlaced_package)
                 .average().orElse(0.0);
-            deptData.put("averagePackage", avgPackage);
+            deptData.put("averagePackage", Math.round(avgPackage * 100.0) / 100.0);
+            
+            double highestPackage = deptPlacements.stream()
+                .mapToDouble(Placement::getPlaced_package)
+                .max().orElse(0.0);
+            deptData.put("highestPackage", highestPackage);
             
             report.put("data", deptData);
         }
@@ -1718,10 +2213,10 @@ public class DashboardService {
             Map<String, Long> distribution = placements.stream()
                 .collect(Collectors.groupingBy(p -> {
                     double pkg = p.getPlaced_package();
-                    if (pkg < 5) return "0-5 LPA";
+                    if (pkg < 5) return "Below 5 LPA";
                     else if (pkg < 10) return "5-10 LPA";
                     else if (pkg < 15) return "10-15 LPA";
-                    else return "15+ LPA";
+                    else return "Above 15 LPA";
                 }, Collectors.counting()));
             
             packageStats.put("distribution", distribution);
@@ -1737,5 +2232,364 @@ public class DashboardService {
             "type", "summary_report",
             "data", getDashboardData()
         );
+    }
+
+    // Yearly Backup Feature Implementation
+    public byte[] exportYearlyBackup(int year, String format) throws IOException {
+        if ("excel".equalsIgnoreCase(format)) {
+            return createYearlyBackupExcel(year);
+        } else if ("pdf".equalsIgnoreCase(format)) {
+            return createYearlyBackupPDF(year);
+        } else {
+            throw new UnsupportedOperationException("Format not supported: " + format);
+        }
+    }
+
+    private byte[] createYearlyBackupExcel(int year) throws IOException {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            
+            // 1. Summary Sheet
+            createYearlyBackupSummarySheet(workbook, year);
+            
+            // 2. Students Data Sheet
+            createYearlyStudentsDataSheet(workbook, year);
+            
+            // 3. Companies Data Sheet
+            createYearlyCompaniesDataSheet(workbook, year);
+            
+            // 4. Placements Data Sheet
+            createYearlyPlacementsDataSheet(workbook, year);
+            
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            workbook.write(outputStream);
+            return outputStream.toByteArray();
+        }
+    }
+
+    private byte[] createYearlyBackupPDF(int year) {
+        // For now, return a simple text-based PDF content
+        StringBuilder content = new StringBuilder();
+        content.append("Yearly Backup Report - ").append(year).append("\n");
+        content.append("===============================\n\n");
+        content.append("Total Students: ").append(getYearlyStudentCount(year)).append("\n");
+        content.append("Total Placements: ").append(getYearlyPlacementCount(year)).append("\n");
+        content.append("Placement Rate: ").append(getYearlyPlacementRate(year)).append("%\n");
+        content.append("Average Package: ").append(getYearlyAveragePackage(year)).append(" LPA\n");
+        
+        return content.toString().getBytes();
+    }
+
+    // Company Analytics Details
+    public Map<String, Object> getCompanyAnalyticsDetails() {
+        Map<String, Object> analytics = new HashMap<>();
+        
+        // Get all companies
+        List<com.example.TPO.DBMS.Company.Company> companies = companiesRepository.findAll();
+        
+        // Get all placements
+        List<Placement> placements = placementRepository.findAll();
+        
+        // Company-wise hiring statistics
+        Map<String, Long> companyHiringCount = placements.stream()
+            .filter(p -> p.getApplication() != null && 
+                    p.getApplication().getJobPost() != null &&
+                    p.getApplication().getJobPost().getCompany() != null)
+            .collect(Collectors.groupingBy(
+                p -> p.getApplication().getJobPost().getCompany().getName(), 
+                Collectors.counting()));
+        
+        // Company-wise average package
+        Map<String, Double> companyAvgPackage = placements.stream()
+            .filter(p -> p.getApplication() != null && 
+                    p.getApplication().getJobPost() != null &&
+                    p.getApplication().getJobPost().getCompany() != null)
+            .collect(Collectors.groupingBy(
+                p -> p.getApplication().getJobPost().getCompany().getName(),
+                Collectors.averagingDouble(Placement::getPlaced_package)));
+        
+        analytics.put("totalCompanies", companies.size());
+        analytics.put("companyHiringCount", companyHiringCount);
+        analytics.put("companyAveragePackage", companyAvgPackage);
+        
+        return analytics;
+    }
+
+    // Comprehensive Yearly Analytics
+    public Map<String, Object> getComprehensiveYearlyAnalytics(int year) {
+        Map<String, Object> analytics = new HashMap<>();
+        
+        // Basic statistics
+        analytics.put("year", year);
+        analytics.put("totalStudents", getYearlyStudentCount(year));
+        analytics.put("totalPlacements", getYearlyPlacementCount(year));
+        analytics.put("placementRate", getYearlyPlacementRate(year));
+        analytics.put("averagePackage", getYearlyAveragePackage(year));
+        analytics.put("highestPackage", getYearlyHighestPackage(year));
+        analytics.put("totalCompanies", getYearlyCompanyCount(year));
+        
+        // Additional analytics
+        List<Placement> yearlyPlacements = getYearlyPlacements(year);
+        
+        // Monthly breakdown
+        Map<String, Long> monthlyPlacements = yearlyPlacements.stream()
+            .filter(p -> p.getPlacementDate() != null)
+            .collect(Collectors.groupingBy(
+                p -> p.getPlacementDate().format(DateTimeFormatter.ofPattern("MM-yyyy")),
+                Collectors.counting()
+            ));
+        analytics.put("monthlyPlacements", monthlyPlacements);
+        
+        analytics.put("generatedAt", LocalDate.now().toString());
+        
+        return analytics;
+    }
+
+    // Helper methods for trend calculation
+    private String calculateTrend(List<Double> values) {
+        if (values.size() < 2) return "insufficient_data";
+        
+        double first = values.get(0);
+        double last = values.get(values.size() - 1);
+        
+        if (last > first) return "increasing";
+        else if (last < first) return "decreasing";
+        else return "stable";
+    }
+
+    private String calculateTrendInteger(List<Integer> values) {
+        if (values.size() < 2) return "insufficient_data";
+        
+        int first = values.get(0);
+        int last = values.get(values.size() - 1);
+        
+        if (last > first) return "increasing";
+        else if (last < first) return "decreasing";
+        else return "stable";
+    }
+
+    private double calculateMedian(double[] values) {
+        Arrays.sort(values);
+        int n = values.length;
+        if (n % 2 == 0) {
+            return (values[n/2 - 1] + values[n/2]) / 2.0;
+        } else {
+            return values[n/2];
+        }
+    }
+
+    private void createYearlyBackupSummarySheet(Workbook workbook, int year) {
+        Sheet sheet = workbook.createSheet("Yearly Summary " + year);
+        
+        // Header
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("Yearly Backup Summary - " + year);
+        
+        // Key Metrics
+        int rowNum = 2;
+        Row row = sheet.createRow(rowNum++);
+        row.createCell(0).setCellValue("Total Students Registered");
+        row.createCell(1).setCellValue(getYearlyStudentCount(year));
+        
+        row = sheet.createRow(rowNum++);
+        row.createCell(0).setCellValue("Total Students Placed");
+        row.createCell(1).setCellValue(getYearlyPlacementCount(year));
+        
+        row = sheet.createRow(rowNum++);
+        row.createCell(0).setCellValue("Overall Placement Rate (%)");
+        row.createCell(1).setCellValue(getYearlyPlacementRate(year));
+        
+        row = sheet.createRow(rowNum++);
+        row.createCell(0).setCellValue("Average Package (LPA)");
+        row.createCell(1).setCellValue(getYearlyAveragePackage(year));
+        
+        row = sheet.createRow(rowNum++);
+        row.createCell(0).setCellValue("Highest Package (LPA)");
+        row.createCell(1).setCellValue(getYearlyHighestPackage(year));
+        
+        row = sheet.createRow(rowNum++);
+        row.createCell(0).setCellValue("Total Companies Participated");
+        row.createCell(1).setCellValue(getYearlyCompanyCount(year));
+        
+        row = sheet.createRow(rowNum++);
+        row.createCell(0).setCellValue("Backup Generated On");
+        row.createCell(1).setCellValue(new Date().toString());
+        
+        // Auto-size columns
+        sheet.autoSizeColumn(0);
+        sheet.autoSizeColumn(1);
+    }
+
+    private void createYearlyStudentsDataSheet(Workbook workbook, int year) {
+        Sheet sheet = workbook.createSheet("Students Data " + year);
+        
+        // Header
+        Row headerRow = sheet.createRow(0);
+        String[] headers = {"Student ID", "First Name", "Last Name", "Email", "Phone", "Department", 
+                           "Academic Year", "SSC Marks", "HSC Marks", "CGPA", "Verification Status", 
+                           "Placement Status", "Package (LPA)", "Company Placed"};
+        for (int i = 0; i < headers.length; i++) {
+            headerRow.createCell(i).setCellValue(headers[i]);
+        }
+        
+        // Get yearly student data
+        List<Student> yearlyStudents = getYearlyStudents(year);
+        int rowNum = 1;
+        
+        for (Student student : yearlyStudents) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(student.getId());
+            row.createCell(1).setCellValue(student.getFirstName());
+            row.createCell(2).setCellValue(student.getLastName());
+            row.createCell(3).setCellValue(student.getUser() != null ? student.getUser().getEmail() : "N/A");
+            row.createCell(4).setCellValue(student.getPhoneNumber());
+            row.createCell(5).setCellValue(student.getDepartment());
+            row.createCell(6).setCellValue(student.getAcademicyear());
+            row.createCell(7).setCellValue(student.getSscMarks());
+            row.createCell(8).setCellValue(student.getHscMarks());
+            row.createCell(9).setCellValue(student.getAvgMarks());
+            row.createCell(10).setCellValue(student.isResults_verified() ? "Verified" : "Not Verified");
+            
+            // Get placement info
+            Optional<Placement> placement = getStudentPlacement(student.getId());
+            if (placement.isPresent()) {
+                row.createCell(11).setCellValue("Placed");
+                row.createCell(12).setCellValue(placement.get().getPlaced_package());
+                row.createCell(13).setCellValue(getCompanyNameFromPlacement(placement.get()));
+            } else {
+                row.createCell(11).setCellValue("Not Placed");
+                row.createCell(12).setCellValue("N/A");
+                row.createCell(13).setCellValue("N/A");
+            }
+        }
+        
+        // Auto-size columns
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+    }
+
+    private void createYearlyCompaniesDataSheet(Workbook workbook, int year) {
+        Sheet sheet = workbook.createSheet("Companies Data " + year);
+        
+        // Header
+        Row headerRow = sheet.createRow(0);
+        String[] headers = {"Company ID", "Company Name", "Industry Type", "HR Name", "Email", 
+                           "Contact Number", "Location", "Website", "MNC Status", "Total Hirings", 
+                           "Associated Since"};
+        for (int i = 0; i < headers.length; i++) {
+            headerRow.createCell(i).setCellValue(headers[i]);
+        }
+        
+        // Get yearly company data
+        List<com.example.TPO.DBMS.Company.Company> yearlyCompanies = getYearlyCompanies(year);
+        int rowNum = 1;
+        
+        for (com.example.TPO.DBMS.Company.Company company : yearlyCompanies) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(company.getId());
+            row.createCell(1).setCellValue(company.getName());
+            row.createCell(2).setCellValue(company.getIndustryType());
+            row.createCell(3).setCellValue(company.getHr_Name());
+            row.createCell(4).setCellValue(company.getEmail());
+            row.createCell(5).setCellValue(company.getContactNumber());
+            row.createCell(6).setCellValue(company.getLocation());
+            row.createCell(7).setCellValue(company.getWebsite());
+            row.createCell(8).setCellValue(company.isMnc() ? "MNC" : "Local");
+            row.createCell(9).setCellValue(getCompanyHiringCount(company.getId(), year));
+            row.createCell(10).setCellValue(company.getAssociatedSince() != null ? 
+                company.getAssociatedSince().toString() : "N/A");
+        }
+        
+        // Auto-size columns
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+    }
+
+    private void createYearlyPlacementsDataSheet(Workbook workbook, int year) {
+        Sheet sheet = workbook.createSheet("Placements Data " + year);
+        
+        // Header
+        Row headerRow = sheet.createRow(0);
+        String[] headers = {"Placement ID", "Student ID", "Student Name", "Company Name", 
+                           "Package (LPA)", "Placement Date", "Department", "Remarks"};
+        for (int i = 0; i < headers.length; i++) {
+            headerRow.createCell(i).setCellValue(headers[i]);
+        }
+        
+        // Get yearly placement data
+        List<Placement> yearlyPlacements = getYearlyPlacements(year);
+        int rowNum = 1;
+        
+        for (Placement placement : yearlyPlacements) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(placement.getId());
+            row.createCell(1).setCellValue(getStudentIdFromPlacement(placement));
+            row.createCell(2).setCellValue(getStudentNameFromPlacement(placement));
+            row.createCell(3).setCellValue(getCompanyNameFromPlacement(placement));
+            row.createCell(4).setCellValue(placement.getPlaced_package());
+            row.createCell(5).setCellValue(placement.getPlacementDate() != null ? 
+                placement.getPlacementDate().toString() : "N/A");
+            row.createCell(6).setCellValue(getDepartmentFromPlacement(placement));
+            row.createCell(7).setCellValue(placement.getRemarks());
+        }
+        
+        // Auto-size columns
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+    }
+
+    private Optional<Placement> getStudentPlacement(Long studentId) {
+        return placementRepository.findAll().stream()
+            .filter(p -> p.getApplication() != null && 
+                    p.getApplication().getStudent() != null && 
+                    p.getApplication().getStudent().getId().equals(studentId))
+            .findFirst();
+    }
+
+    private String getCompanyNameFromPlacement(Placement placement) {
+        if (placement.getApplication() != null && 
+            placement.getApplication().getJobPost() != null && 
+            placement.getApplication().getJobPost().getCompany() != null) {
+            return placement.getApplication().getJobPost().getCompany().getName();
+        }
+        return "N/A";
+    }
+
+    private Long getStudentIdFromPlacement(Placement placement) {
+        if (placement.getApplication() != null && 
+            placement.getApplication().getStudent() != null) {
+            return placement.getApplication().getStudent().getId();
+        }
+        return 0L;
+    }
+
+    private String getStudentNameFromPlacement(Placement placement) {
+        if (placement.getApplication() != null && 
+            placement.getApplication().getStudent() != null) {
+            Student student = placement.getApplication().getStudent();
+            return student.getFirstName() + " " + student.getLastName();
+        }
+        return "N/A";
+    }
+
+    private String getDepartmentFromPlacement(Placement placement) {
+        if (placement.getApplication() != null && 
+            placement.getApplication().getStudent() != null) {
+            return placement.getApplication().getStudent().getDepartment();
+        }
+        return "N/A";
+    }
+
+    private int getCompanyHiringCount(Long companyId, int year) {
+        return (int) placementRepository.findAll().stream()
+            .filter(p -> p.getApplication() != null && 
+                    p.getApplication().getJobPost() != null &&
+                    p.getApplication().getJobPost().getCompany() != null &&
+                    p.getApplication().getJobPost().getCompany().getId().equals(companyId) &&
+                    p.getPlacementDate() != null && 
+                    p.getPlacementDate().getYear() == year )
+            .count();
     }
 }

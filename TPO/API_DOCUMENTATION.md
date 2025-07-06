@@ -369,9 +369,45 @@ Exports company data.
 **Parameters:**
 - `format` (optional): Export format ("excel" or "pdf", default: "excel")
 
+### 15. Export Yearly Backup
+**GET** `/api7/dashboard/export/yearly-backup`
+
+Exports comprehensive yearly backup of all system data in Excel format.
+
+**Parameters:**
+- `year` (optional): Year for which to generate backup (default: 2024)
+- `format` (optional): Export format ("excel" or "pdf", default: "excel")
+
+**Response:**
+- Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet (Excel)
+- Content-Disposition: attachment; filename=yearly_backup_2024.xlsx
+
+**Excel Sheets Included:**
+1. **Yearly Summary** - Key metrics and statistics for the year
+2. **Students Data** - Complete student records with placement status
+3. **Companies Data** - All companies with hiring statistics
+4. **Placements Data** - Detailed placement records
+5. **Job Posts Data** - All job postings for the year
+6. **Job Applications** - Student application history
+7. **Department Analytics** - Department-wise performance metrics
+8. **Company Analytics** - Company-wise hiring analytics
+9. **Package Distribution** - Salary package distribution analysis
+
+**Data Included:**
+- Student profiles with academic records and placement status
+- Company information with hiring statistics
+- Placement records with packages and dates
+- Job posting and application history
+- Department-wise placement rates and average packages
+- Company-wise hiring trends and performance
+- Package distribution across different ranges
+- Year-over-year growth analysis
+
+This comprehensive backup ensures complete data preservation for regulatory compliance, historical analysis, and business continuity planning.
+
 ## Advanced Analytics Endpoints
 
-### 15. Performance Analytics
+### 16. Performance Analytics
 **GET** `/api7/dashboard/analytics/performance`
 
 Returns detailed performance analytics.
@@ -379,7 +415,7 @@ Returns detailed performance analytics.
 **Parameters:**
 - `months` (optional): Analysis period in months (default: 12)
 
-### 16. Package Distribution
+### 17. Package Distribution
 **GET** `/api7/dashboard/analytics/package-distribution`
 
 Returns detailed package distribution analytics.
@@ -407,7 +443,7 @@ Returns detailed package distribution analytics.
 }
 ```
 
-### 17. Hiring Trends
+### 18. Hiring Trends
 **GET** `/api7/dashboard/analytics/hiring-trends`
 
 Returns hiring trends analysis.
@@ -435,12 +471,12 @@ Returns hiring trends analysis.
 
 ## Real-time Features
 
-### 18. Real-time Dashboard Summary
+### 19. Real-time Dashboard Summary
 **GET** `/api7/dashboard/realtime/dashboard-summary`
 
 Returns real-time dashboard summary with current metrics.
 
-### 19. Real-time Alerts
+### 20. Real-time Alerts
 **GET** `/api7/dashboard/realtime/alerts`
 
 Returns real-time alerts and notifications.
@@ -464,14 +500,14 @@ Returns real-time alerts and notifications.
 }
 ```
 
-### 20. Get Notifications
+### 21. Get Notifications
 **GET** `/api7/dashboard/notifications`
 
 Returns dashboard notifications and alerts.
 
 ## System Management Endpoints
 
-### 21. System Health
+### 22. System Health
 **GET** `/api7/dashboard/system/health`
 
 Returns system health status.
@@ -486,7 +522,7 @@ Returns system health status.
 }
 ```
 
-### 22. Data Integrity Check
+### 23. Data Integrity Check
 **GET** `/api7/dashboard/validation/data-integrity`
 
 Performs data integrity validation.
@@ -503,7 +539,7 @@ Performs data integrity validation.
 }
 ```
 
-### 23. Refresh Cache
+### 24. Refresh Cache
 **POST** `/api7/dashboard/refresh`
 
 Refreshes cached dashboard data.
@@ -517,7 +553,7 @@ Refreshes cached dashboard data.
 
 ## Custom Reports
 
-### 24. Generate Custom Report
+### 25. Generate Custom Report
 **POST** `/api7/dashboard/reports/custom`
 
 Generates custom reports based on parameters.

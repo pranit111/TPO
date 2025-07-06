@@ -6,14 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="92d2fda3-dbe2-47a3-a8e1-c6fb5107c4d1" name="Changes" comment="&quot;placements halfway done&quot;">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPost.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPost.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Placements/PlacementContoller/PlacementController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Placements/PlacementContoller/PlacementController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Placements/PlacementService/PlacementService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Placements/PlacementService/PlacementService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentController/StudentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentController/StudentController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentService/StudentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Student/StudentService/StudentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardData.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/API_DOCUMENTATION.md" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/API_DOCUMENTATION.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -140,6 +135,15 @@
           </properties>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardService.java</url>
+          <line>1449</line>
+          <properties class="com.example.TPO.Tpo.DashBoard.DashboardService">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="28" />
+        </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostService/JobPostService.java</url>
           <line>114</line>
@@ -156,31 +160,31 @@
           <option name="timeStamp" value="7" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPost.java</url>
-          <line>340</line>
-          <option name="timeStamp" value="22" />
+          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationController/JobApplicationController.java</url>
+          <line>67</line>
+          <option name="timeStamp" value="27" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPost.java</url>
-          <line>343</line>
-          <option name="timeStamp" value="23" />
+          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardService.java</url>
+          <line>1449</line>
+          <option name="timeStamp" value="34" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPost.java</url>
-          <line>346</line>
-          <option name="timeStamp" value="24" />
+          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardService.java</url>
+          <line>1454</line>
+          <option name="timeStamp" value="36" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPost.java</url>
-          <line>349</line>
-          <option name="timeStamp" value="25" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPost.java</url>
-          <line>352</line>
-          <option name="timeStamp" value="26" />
+          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardService.java</url>
+          <line>1459</line>
+          <option name="timeStamp" value="40" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+    <pin-to-top-manager>
+      <pinned-members>
+        <PinnedItemInfo parentTag="com.example.TPO.DBMS.Applications.JobApplication$HibernateProxy$5RrerZzA" memberName="$$_hibernate_interceptor" />
+      </pinned-members>
+    </pin-to-top-manager>
   </component>
 </project>

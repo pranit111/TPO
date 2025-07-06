@@ -11,6 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -397,6 +401,81 @@ public class DashboardController {
         
         Map<String, Object> reportData = dashboardService.generateCustomReport(reportParams);
         return ResponseEntity.ok(reportData);
+    }
+
+    @GetMapping("/export/yearly-backup")
+    public ResponseEntity<byte[]> exportYearlyBackup(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestParam int year,
+            @RequestParam(defaultValue = "excel") String format) {
+        if (!isAuthorizedAdmin(authHeader)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        try {
+            byte[] exportData = dashboardService.exportYearlyBackup(year, format);
+            String filename = "yearly_backup_" + year + "." + (format.equals("pdf") ? "pdf" : "xlsx");
+            
+            return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=" + filename)
+                .header("Content-Type", format.equals("pdf") ? 
+                    "application/pdf" : "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                .body(exportData);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/analytics/company-details")
+    public ResponseEntity<Map<String, Object>> getCompanyAnalyticsDetails(
+            @RequestHeader("Authorization") String authHeader) {
+        if (!isAuthorizedAdmin(authHeader)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Unauthorized access"));
+        }
+        
+        Map<String, Object> analytics = dashboardService.getCompanyAnalyticsDetails();
+        return ResponseEntity.ok(analytics);
+    }
+
+    // Comprehensive Yearly Analytics Endpoint
+    @GetMapping("/analytics/yearly/{year}")
+    public ResponseEntity<Map<String, Object>> getYearlyAnalytics(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable int year) {
+        if (!isAuthorizedAdmin(authHeader)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Unauthorized access"));
+        }
+        
+        Map<String, Object> yearlyAnalytics = dashboardService.getComprehensiveYearlyAnalytics(year);
+        return ResponseEntity.ok(yearlyAnalytics);
+    }
+
+    // Multi-year Comparison Analytics
+    @GetMapping("/analytics/comparison")
+    public ResponseEntity<Map<String, Object>> getMultiYearComparison(
+            @RequestHeader("Authorization") String authHeader,
+            @RequestParam(defaultValue = "3") int years) {
+        if (!isAuthorizedAdmin(authHeader)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("error", "Unauthorized access"));
+        }
+        
+        Map<String, Object> comparison = new HashMap<>();
+        int currentYear = LocalDate.now().getYear();
+        
+        List<Map<String, Object>> yearlyData = new ArrayList<>();
+        for (int i = 0; i < years; i++) {
+            int year = currentYear - i;
+            Map<String, Object> yearData = dashboardService.getComprehensiveYearlyAnalytics(year);
+            yearlyData.add(yearData);
+        }
+        
+        comparison.put("yearlyData", yearlyData);
+        comparison.put("generatedAt", LocalDate.now().toString());
+        
+        return ResponseEntity.ok(comparison);
     }
 
     // Helper method for authorization check
