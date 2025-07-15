@@ -3,6 +3,7 @@ package com.example.TPO.JobPost.JobPostDTO;
 import com.example.TPO.DBMS.Applications.ApplicationStatus;
 import com.example.TPO.DBMS.Company.Company;
 import com.example.TPO.DBMS.JobPost.JobPostStatus;
+import com.example.TPO.DBMS.JobPost.StudentYear;
 
 import java.time.LocalDate;
 
@@ -48,6 +49,7 @@ public class JobPostDTO {
 
     private LocalDate aptitudeDate;
     private JobPostStatus status;
+    private StudentYear studentYear;
     private String skillRequirements;
     private String selectionRounds;
 
@@ -89,7 +91,7 @@ public class JobPostDTO {
                       String description, double packageAmount, double minPercentage, int backlogAllowance,
                       String preferredCourse, String skillRequirements, String selectionRounds,
                       String modeOfRecruitment, String testPlatform, LocalDate applicationStartDate,
-                      LocalDate applicationEndDate, LocalDate selectionStartDate, LocalDate selectionEndDate,LocalDate aptitudeDate,JobPostStatus status,boolean aptitude,String portalLink) {
+                      LocalDate applicationEndDate, LocalDate selectionStartDate, LocalDate selectionEndDate,LocalDate aptitudeDate,JobPostStatus status,StudentYear studentYear,boolean aptitude,String portalLink) {
         this.id = id;
         this.company = company;
         this.jobDesignation = jobDesignation;
@@ -111,6 +113,7 @@ public class JobPostDTO {
         this.aptitude=aptitude;
         this.aptitudeDate=aptitudeDate;
         this.status=status;
+        this.studentYear=studentYear;
         this.portalLink=portalLink;
     }
 
@@ -169,4 +172,7 @@ public class JobPostDTO {
 
     public LocalDate getSelectionEndDate() { return selectionEndDate; }
     public void setSelectionEndDate(LocalDate selectionEndDate) { this.selectionEndDate = selectionEndDate; }
+
+    public StudentYear getStudentYear() { return studentYear; }
+    public void setStudentYear(StudentYear studentYear) { this.studentYear = studentYear; }
 }

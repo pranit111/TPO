@@ -659,3 +659,113 @@ For existing implementations:
 5. Database schema remains unchanged
 
 This enhanced backend provides a robust, scalable, and feature-rich foundation for the TPO Admin Dashboard, supporting all modern requirements for placement management and analytics.
+
+## Recent Enhancement: Student Year Feature
+
+### New Feature: Student Year Level Targeting
+
+Job posts can now specify which year/level of students they are intended for:
+- **FE**: First Year (First Engineering)
+- **SE**: Second Year (Second Engineering)  
+- **TE**: Third Year (Third Engineering)
+- **BE**: Final Year (Bachelor of Engineering)
+
+### Enhanced Job Post Endpoints
+
+#### Get Job Posts by Student Year
+**GET** `/api3/Posts/by-year/{studentYear}`
+
+Returns job posts filtered by specific student year level.
+
+**Parameters:**
+- `studentYear` (path): Student year level (FE, SE, TE, BE)
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "company": {...},
+    "jobDesignation": "Software Developer",
+    "location": "Bangalore",
+    "studentYear": "BE",
+    "packageAmount": 12.5,
+    ...
+  }
+]
+```
+
+#### Get Available Student Years
+**GET** `/api3/student-years`
+
+Returns all available student year levels.
+
+**Response:**
+```json
+["FE", "SE", "TE", "BE"]
+```
+
+#### Enhanced Job Post Search
+**GET** `/api3/Post/Search`
+
+The search endpoint now includes student year filtering.
+
+**Parameters:**
+- `status` (optional): Job post status
+- `company` (optional): Company name
+- `position` (optional): Job position
+- `jobType` (optional): Type of job
+- `minSalary` (optional): Minimum salary
+- `maxSalary` (optional): Maximum salary
+- `studentYear` (optional): Student year level (FE, SE, TE, BE)
+- `page` (optional): Page number (default: 0)
+- `size` (optional): Page size (default: 10)
+
+### Data Model Updates
+
+#### JobPost Entity
+```json
+{
+  "id": 1,
+  "company": {...},
+  "jobDesignation": "Software Developer",
+  "location": "Bangalore",
+  "jobType": "Full-time",
+  "description": "Job description...",
+  "packageAmount": 12.5,
+  "minPercentage": 60.0,
+  "backlogAllowance": 0,
+  "preferredCourse": "Computer Science",
+  "skillRequirements": "Java, Spring Boot",
+  "studentYear": "BE",
+  "status": "OPEN",
+  "applicationStartDate": "2025-01-15",
+  "applicationEndDate": "2025-01-30",
+  ...
+}
+```
+
+### Eligibility Logic Enhancement
+
+The student eligibility logic has been enhanced to consider:
+1. Academic performance criteria (SSC, HSC/Diploma marks)
+2. Minimum percentage requirements
+3. Backlog allowance
+4. **Student year level matching** (NEW)
+
+Students will only see job posts that match their current academic year level, ensuring relevant opportunities are displayed.
+
+### Implementation Benefits
+
+1. **Targeted Recruitment**: Companies can specify exact year levels for internships vs full-time positions
+2. **Relevant Opportunities**: Students see only applicable job posts for their academic level
+3. **Better Organization**: TPO administrators can better manage placement activities by year
+4. **Enhanced Filtering**: Advanced search and filtering capabilities by student year
+5. **Future-Ready**: Scalable design for additional academic level requirements
+
+### Migration Notes
+
+- Existing job posts will need to have the `studentYear` field populated
+- Default value can be set to `BE` (Final Year) for backward compatibility
+- Frontend applications should be updated to include student year selection
+- Search and filter interfaces should include the new student year options

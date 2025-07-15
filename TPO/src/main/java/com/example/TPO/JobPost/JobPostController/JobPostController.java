@@ -1,6 +1,7 @@
 package com.example.TPO.JobPost.JobPostController;
 
 import com.example.TPO.DBMS.JobPost.JobPost;
+import com.example.TPO.DBMS.JobPost.StudentYear;
 import com.example.TPO.JobPost.JobPostDTO.JobPostDTO;
 import com.example.TPO.JobPost.JobPostService.JobPostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,12 +75,13 @@ public class JobPostController {
             @RequestParam(required = false) String jobType,
             @RequestParam(required = false) Double minSalary,
             @RequestParam(required = false) Double maxSalary,
+            @RequestParam(required = false) StudentYear studentYear,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        System.out.println("Searching Job Posts - Status: " + status + ", Company: " + company);
+        System.out.println("Searching Job Posts - Status: " + status + ", Company: " + company + ", Student Year: " + studentYear);
 
-        return jobPostService.searchPost(status, company, position, jobType, minSalary, maxSalary, page, size);
+        return jobPostService.searchPost(status, company, position, jobType, minSalary, maxSalary, studentYear, page, size);
     }
     @PostMapping("Post/Search/Download")
     public ResponseEntity<?> searchJobPostsDownload(
@@ -89,12 +91,23 @@ public class JobPostController {
             @RequestParam(required = false) String jobType,
             @RequestParam(required = false) Double minSalary,
             @RequestParam(required = false) Double maxSalary,
+            @RequestParam(required = false) StudentYear studentYear,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
+        return jobPostService.SearchdownloadExcel(status, company, position, jobType, minSalary, maxSalary, studentYear, page, size);
+    }
 
+    // New endpoint to get job posts by student year
+    @GetMapping("Posts/by-year/{studentYear}")
+    public ResponseEntity<List<JobPostDTO>> getJobPostsByStudentYear(@PathVariable StudentYear studentYear) {
+        return ResponseEntity.ok(jobPostService.getJobPostsByStudentYear(studentYear));
+    }
 
-        return jobPostService.SearchdownloadExcel(status, company, position, jobType, minSalary, maxSalary, page, size);
+    // Endpoint to get all available student years
+    @GetMapping("student-years")
+    public ResponseEntity<StudentYear[]> getAllStudentYears() {
+        return ResponseEntity.ok(StudentYear.values());
     }
 
 }

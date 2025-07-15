@@ -37,6 +37,8 @@ public class JobApplication {
     private LocalTime interviewTime;
     private String interviewLocation;
 
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String feedback;
 
     // Basic constructor

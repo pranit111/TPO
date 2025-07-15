@@ -6,6 +6,7 @@ import com.example.TPO.DBMS.Applications.JobApplication;
 import com.example.TPO.DBMS.Company.Company;
 import com.example.TPO.DBMS.JobPost.JobPost;
 import com.example.TPO.DBMS.JobPost.JobPostStatus;
+import com.example.TPO.DBMS.JobPost.StudentYear;
 import com.example.TPO.DBMS.Tpo.TPOUser;
 import com.example.TPO.DBMS.stud.Student;
 import com.example.TPO.JobApplication.JobApplicationDTO.JobApplicationDTO;
@@ -215,6 +216,13 @@ public class JobPostService {
         Double studentDiploma = student.getDiplomaMarks();
         Double studentMinAvg = student.getAvgMarks();
 
+        // Check if student's year level matches the job post requirement
+        StudentYear requiredStudentYear = jobPost.getStudentYear();
+        // For now, assume all students are BE (final year) unless we implement year tracking
+        // In future, you can add logic to determine student's current year based on academic year
+        StudentYear studentCurrentYear = StudentYear.BE; // Default to final year
+        boolean yearEligible = requiredStudentYear == null || requiredStudentYear == studentCurrentYear;
+
         // Ensure student meets all required criteria (SSC, HSC/Diploma, and Min Percentage)
         boolean sscEligible = requiredSsc == null || (studentSsc != null && studentSsc >= requiredSsc);
         boolean hscEligible = requiredHsc == null || (studentHsc != null && studentHsc >= requiredHsc);
@@ -222,8 +230,8 @@ public class JobPostService {
         boolean diplomaEligible = requiredDiploma == null || (studentDiploma != null && studentDiploma >= requiredDiploma);
         boolean avgEligible = requiredMinAvg == null || (studentMinAvg != null && studentMinAvg >= requiredMinAvg);
 
-        // Student must satisfy SSC & (HSC or Diploma) & Minimum Percentage
-        return sscEligible && (hscEligible || diplomaEligible) && avgEligible&& backlog;
+        // Student must satisfy SSC & (HSC or Diploma) & Minimum Percentage & Year Level
+        return sscEligible && (hscEligible || diplomaEligible) && avgEligible && backlog && yearEligible;
     }
     public ResponseEntity<?> getPostTpo(String authHeader, Long postId) {
 
@@ -267,11 +275,11 @@ public class JobPostService {
                                                     String jobType,
                                                     Double minSalary,
                                                     Double maxSalary,
-
+                                                    StudentYear studentYear,
                                                     int page,
                                                     int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<JobPost> jobPostPage = jobPostRepository.searchJobApplications(status,company,position,jobType,minSalary,maxSalary,pageable);
+        Page<JobPost> jobPostPage = jobPostRepository.searchJobApplications(status,company,position,jobType,minSalary,maxSalary,studentYear,pageable);
 
         return jobPostPage.map(JobPostMapper::toJobPostDTO);
     }
@@ -281,10 +289,10 @@ public class JobPostService {
                                                       String jobType,
                                                       Double minSalary,
                                                       Double maxSalary,
-
+                                                      StudentYear studentYear,
                                                       int page,
                                                       int size) {
-        Page<JobPostDTO> response = searchPost(status,company,position,jobType,minSalary,maxSalary,page,size);
+        Page<JobPostDTO> response = searchPost(status,company,position,jobType,minSalary,maxSalary,studentYear,page,size);
 
         List<JobPostDTO> filteredPost = response.getContent();
         if (filteredPost == null || filteredPost.isEmpty()) {
@@ -332,5 +340,11 @@ public class JobPostService {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    // New method to get job posts by student year
+    public List<JobPostDTO> getJobPostsByStudentYear(StudentYear studentYear) {
+        List<JobPost> jobPosts = jobPostRepository.findByStudentYear(studentYear);
+        return JobPostMapper.toJobPostDTOList(jobPosts);
     }
 }

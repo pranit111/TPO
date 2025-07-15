@@ -6,14 +6,19 @@
   <component name="ChangeListManager">
     <list default="true" id="92d2fda3-dbe2-47a3-a8e1-c6fb5107c4d1" name="Changes" comment="&quot;placements halfway done&quot;">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Logs/LogsController/LogsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Logs/LogsController/LogsController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Logs/LogsRepository/LogsRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Logs/LogsRepository/LogsRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Logs/LogsService/LogsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Logs/LogsService/LogsService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/MailConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/MailConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/test/java/com/example/TPO/Tpo/DashBoard/YearlyBackupTest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/test/java/com/example/TPO/TpoApplicationTests.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/odpaosdpoasdpoexit" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/API_DOCUMENTATION.md" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/API_DOCUMENTATION.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/Applications/JobApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/Applications/JobApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPost.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/JobPost/JobPost.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/stud/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/DBMS/stud/Student.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationDTO/JobApplicationMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationDTO/JobApplicationMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostController/JobPostController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostController/JobPostController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostDTO/JobPostDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostDTO/JobPostDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostDTO/JobPostMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostDTO/JobPostMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostRepository/JobPostRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostRepository/JobPostRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostService/JobPostService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostService/JobPostService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Placements/PlacementContoller/PlacementController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Placements/PlacementContoller/PlacementController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Placements/PlacementRepository/PlacementRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Placements/PlacementRepository/PlacementRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Placements/PlacementService/PlacementService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Placements/PlacementService/PlacementService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,7 +67,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Application.TPO.executor": "Debug",
+    "Application.TPO.executor": "Run",
     "Application.Unnamed.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -131,30 +136,6 @@
           <properties class="org.hibernate.tool.schema.spi.CommandAcceptanceException" package="org.hibernate.tool.schema.spi" />
           <option name="timeStamp" value="2" />
         </breakpoint>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostService/JobPostService.java</url>
-          <line>92</line>
-          <properties class="com.example.TPO.JobPost.JobPostService.JobPostService" method="updateJobPost">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostService/JobPostService.java</url>
-          <line>114</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostService/JobPostService.java</url>
-          <line>115</line>
-          <option name="timeStamp" value="6" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostService/JobPostService.java</url>
-          <line>173</line>
-          <option name="timeStamp" value="7" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobApplication/JobApplicationController/JobApplicationController.java</url>
           <line>67</line>
@@ -169,6 +150,11 @@
           <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardService.java</url>
           <line>1460</line>
           <option name="timeStamp" value="40" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostService/JobPostService.java</url>
+          <line>94</line>
+          <option name="timeStamp" value="42" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

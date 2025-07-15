@@ -312,6 +312,8 @@ public class Student {
         this.grNo = grNo;  // Corrected to update the instance variable
     }
 
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String address;
     private String department;
     @JsonProperty("academicYear")

@@ -61,6 +61,8 @@ public class JobApplicationMapper {
                 jobPost.getSelectionEndDate(),
                 jobPost.getAptitudedate(),
                 jobPost.getStatus(),
+                jobPost.getStudentYear(),
+
                 jobPost.getAptitude(),
                 jobPost.getPortalLink()
 

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Optional;
 @Component
 @Service
@@ -30,7 +31,8 @@ public class PlacementService {
     public PlacementDTO savePlacement(Placement placement, long applicationid, MultipartFile offerletter) throws IOException {
         placement.setOfferLetterUrl(offerletter.getBytes());
 //        Change the applications status
-        JobApplication jobApplication= jobApplicationRepository.getById(applicationid);
+        JobApplication jobApplication = jobApplicationRepository.findById(applicationid)
+                .orElseThrow(() -> new RuntimeException("Job Application not found with id: " + applicationid));
         jobApplication.setStatus(ApplicationStatus.HIRED);
         placement.setApplication(jobApplication);
 
@@ -48,6 +50,42 @@ public class PlacementService {
 
     public Page<PlacementDTO> searchAll(String keyword, Pageable pageable) {
         Page<Placement> result = placementRepository.searchAll(keyword, pageable);
+        return result.map(placementMapper::toDTO);
+    }
+
+    // Filter methods
+    public Page<PlacementDTO> filterByCompany(String companyName, Pageable pageable) {
+        Page<Placement> result = placementRepository.filterByCompany(companyName, pageable);
+        return result.map(placementMapper::toDTO);
+    }
+
+    public Page<PlacementDTO> filterByJobDesignation(String jobDesignation, Pageable pageable) {
+        Page<Placement> result = placementRepository.filterByJobDesignation(jobDesignation, pageable);
+        return result.map(placementMapper::toDTO);
+    }
+
+    public Page<PlacementDTO> filterByPackageRange(double minPackage, double maxPackage, Pageable pageable) {
+        Page<Placement> result = placementRepository.filterByPackageRange(minPackage, maxPackage, pageable);
+        return result.map(placementMapper::toDTO);
+    }
+
+    public Page<PlacementDTO> filterByDateRange(LocalDate fromDate, LocalDate toDate, Pageable pageable) {
+        Page<Placement> result = placementRepository.filterByDateRange(fromDate, toDate, pageable);
+        return result.map(placementMapper::toDTO);
+    }
+
+    public Page<PlacementDTO> filterByStudentName(String studentName, Pageable pageable) {
+        Page<Placement> result = placementRepository.filterByStudentName(studentName, pageable);
+        return result.map(placementMapper::toDTO);
+    }
+
+    public Page<PlacementDTO> filterByDepartment(String department, Pageable pageable) {
+        Page<Placement> result = placementRepository.filterByDepartment(department, pageable);
+        return result.map(placementMapper::toDTO);
+    }
+
+    public Page<PlacementDTO> filterByStudentYear(String studentYear, Pageable pageable) {
+        Page<Placement> result = placementRepository.filterByStudentYear(studentYear, pageable);
         return result.map(placementMapper::toDTO);
     }
 
