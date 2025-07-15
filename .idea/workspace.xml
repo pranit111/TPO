@@ -6,9 +6,14 @@
   <component name="ChangeListManager">
     <list default="true" id="92d2fda3-dbe2-47a3-a8e1-c6fb5107c4d1" name="Changes" comment="&quot;placements halfway done&quot;">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/API_DOCUMENTATION.md" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/API_DOCUMENTATION.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Logs/LogsController/LogsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Logs/LogsController/LogsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Logs/LogsRepository/LogsRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Logs/LogsRepository/LogsRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Logs/LogsService/LogsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Logs/LogsService/LogsService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/MailConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/MailConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/test/java/com/example/TPO/Tpo/DashBoard/YearlyBackupTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/test/java/com/example/TPO/TpoApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/odpaosdpoasdpoexit" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,7 +62,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Application.TPO.executor": "Run",
+    "Application.TPO.executor": "Debug",
     "Application.Unnamed.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -66,7 +71,7 @@
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/ASUS/OneDrive/Desktop/TPO_2.0/TPO",
-    "project.structure.last.edited": "Artifacts",
+    "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "reference.settings.project.maven.repository.indices"
@@ -135,15 +140,6 @@
           </properties>
           <option name="timeStamp" value="3" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-method">
-          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardService.java</url>
-          <line>1449</line>
-          <properties class="com.example.TPO.Tpo.DashBoard.DashboardService">
-            <option name="EMULATED" value="true" />
-            <option name="WATCH_EXIT" value="false" />
-          </properties>
-          <option name="timeStamp" value="28" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/JobPost/JobPostService/JobPostService.java</url>
           <line>114</line>
@@ -166,17 +162,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardService.java</url>
-          <line>1449</line>
-          <option name="timeStamp" value="34" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardService.java</url>
-          <line>1454</line>
+          <line>1455</line>
           <option name="timeStamp" value="36" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/Tpo/DashBoard/DashboardService.java</url>
-          <line>1459</line>
+          <line>1460</line>
           <option name="timeStamp" value="40" />
         </line-breakpoint>
       </breakpoints>

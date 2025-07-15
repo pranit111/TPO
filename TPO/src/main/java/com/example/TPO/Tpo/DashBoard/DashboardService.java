@@ -1,6 +1,7 @@
 package com.example.TPO.Tpo.DashBoard;
 
 import com.example.TPO.Companies.CompaniesRepository.CompaniesRepository;
+import com.example.TPO.DBMS.Company.Company;
 import com.example.TPO.Student.StudentRepository.StudentRepository;
 import com.example.TPO.Placements.PlacementRepository.PlacementRepository;
 import com.example.TPO.JobApplication.JobApplicationRepository.JobApplicationRepository;
@@ -97,7 +98,7 @@ public class DashboardService {
     }    private DashboardData.CompaniesData getCompaniesData() {
         DashboardData.CompaniesData companiesData = new DashboardData.CompaniesData();
         
-        long totalCompanies = companiesRepository.count();
+        long totalCompanies = companiesRepository.findAll().stream().filter(Company::getActive).count();
         long totalJobPosts = jobPostRepository.count();
         long activeJobPosts = jobApplicationRepository.findAll().stream()
             .filter(app -> app.getStatus() == ApplicationStatus.APPLIED || 
@@ -1185,7 +1186,7 @@ public class DashboardService {
     private List<com.example.TPO.DBMS.Company.Company> getYearlyCompanies(int year) {
         return companiesRepository.findAll().stream()
             .filter(c -> c.getAssociatedSince() != null && 
-                    c.getAssociatedSince().getYear() <= year )
+                    c.getAssociatedSince().getYear() <= year && c.getActive() )
             .collect(Collectors.toList());
     }
 
