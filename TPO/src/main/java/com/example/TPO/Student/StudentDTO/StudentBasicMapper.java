@@ -36,7 +36,8 @@ public class StudentBasicMapper {
                 student.isSem3KT(),
                 student.isSem4KT(),
                 student.isSem5KT(),
-                student.isSem6KT()
+                student.isSem6KT(),
+                student.isResults_verified()
 
 
         );

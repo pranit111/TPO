@@ -216,5 +216,93 @@ public class StudentController {
                 .body(pdfBytes);
     }
 
+    @PutMapping("/tpo/Student/verify-results/{studentId}")
+    public ResponseEntity<?> verifyStudentResults(
+            @PathVariable Long studentId,
+            @RequestHeader("Authorization") String authHeader,
+            @RequestParam boolean verified,
+            @RequestParam(required = false) String remarks) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            response.put("status", "error");
+            response.put("message", "Authorization header missing or invalid");
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
+        
+        String token = authHeader.substring(7);
+        
+        try {
+            String result = studentService.verifyStudentResults(studentId, token, verified, remarks);
+            
+            if (result.equals("Unauthorized")) {
+                response.put("status", "error");
+                response.put("message", "Only TPO users can verify student results");
+                return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            } else if (result.equals("Student not found")) {
+                response.put("status", "error");
+                response.put("message", "Student not found");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            } else if (result.equals("Invalid token")) {
+                response.put("status", "error");
+                response.put("message", "Invalid authorization token");
+                return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+            }
+            
+            response.put("status", "success");
+            response.put("message", verified ? "Student results verified successfully" : "Student results marked as unverified");
+            response.put("studentId", studentId);
+            response.put("verified", verified);
+            if (remarks != null && !remarks.trim().isEmpty()) {
+                response.put("remarks", remarks);
+            }
+            
+            return new ResponseEntity<>(response, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", "Error occurred while verifying student results: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/tpo/Student/verification-status/{studentId}")
+    public ResponseEntity<?> getStudentVerificationStatus(
+            @PathVariable Long studentId,
+            @RequestHeader("Authorization") String authHeader) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            response.put("status", "error");
+            response.put("message", "Authorization header missing or invalid");
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
+        
+        String token = authHeader.substring(7);
+        
+        try {
+            Map<String, Object> verificationStatus = studentService.getStudentVerificationStatus(studentId, token);
+            
+            if (verificationStatus.containsKey("error")) {
+                String error = (String) verificationStatus.get("error");
+                if (error.equals("Unauthorized")) {
+                    return new ResponseEntity<>(verificationStatus, HttpStatus.FORBIDDEN);
+                } else if (error.equals("Student not found")) {
+                    return new ResponseEntity<>(verificationStatus, HttpStatus.NOT_FOUND);
+                } else if (error.equals("Invalid token")) {
+                    return new ResponseEntity<>(verificationStatus, HttpStatus.UNAUTHORIZED);
+                }
+            }
+            
+            return new ResponseEntity<>(verificationStatus, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("message", "Error occurred while getting verification status: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

@@ -34,7 +34,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -260,7 +262,9 @@ public class StudentService {
                     ktChanges.toString()
             );
         }
-
+        if(marksUpdated||ktStatusUpdated){
+            existingStudent.setResults_verified(false);
+        }
         // Update other non-null fields
         if (student.getProfileimagedata() != null) existingStudent.setProfileimagedata(student.getProfileimagedata());
         if (student.getFirstName() != null) existingStudent.setFirstName(student.getFirstName());
@@ -416,13 +420,29 @@ public class StudentService {
     }
 
     public ResponseEntity<?> getstudprofiletpo(String token,long id) {
-        Optional<TPOUser> user=tpoRepository.findById(jwtService.extractUserId(token));
-        if(user.isEmpty()){
-            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("No TPO User ");
+        // Validate JWT token and get user
+        Long userId = jwtService.extractUserId(token);
+        Optional<User> userOptional = userRepo.findById(userId);
+        
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
         }
-//        if(user.get().getRole){
-//            return  ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("A ");
-//        }
+        
+        User user = userOptional.get();
+        
+        // Check if user is TPO user
+        Optional<TPOUser> tpoUserOptional = tpoRepository.findByUser(user);
+        if (tpoUserOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied - Only TPO users can access this endpoint");
+        }
+        
+        TPOUser tpoUser = tpoUserOptional.get();
+        
+        // Check if TPO user has appropriate role
+        if (tpoUser.getRole() != TPO_Role.ADMIN && tpoUser.getRole() != TPO_Role.TPO_USER && tpoUser.getRole() != TPO_Role.TPO_ASSISTANT) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Insufficient permissions");
+        }
+        
         Optional<Student> studentoptional = studentRepository.findById(id);
 
         if (studentoptional.isEmpty()) {
@@ -433,6 +453,123 @@ public class StudentService {
         StudentDTO StudentDTO = StudentMapper.toStudentDTO(student);
 
         return ResponseEntity.ok(StudentDTO);
+    }
+
+    // Student Results Verification Methods
+    public String verifyStudentResults(Long studentId, String token, boolean verified, String remarks) {
+        try {
+            // Validate JWT token
+            Long userId = jwtService.extractUserId(token);
+            Optional<User> userOptional = userRepo.findById(userId);
+            
+            if (userOptional.isEmpty()) {
+                return "Invalid token";
+            }
+            
+            User user = userOptional.get();
+            
+            // Check if user is TPO user
+            Optional<TPOUser> tpoUserOptional = tpoRepository.findByUser(user);
+            if (tpoUserOptional.isEmpty()) {
+                return "Unauthorized";
+            }
+            
+            TPOUser tpoUser = tpoUserOptional.get();
+            
+            // Check if TPO user has permission (ADMIN or TPO_USER role)
+            if (tpoUser.getRole() != TPO_Role.ADMIN && tpoUser.getRole() != TPO_Role.TPO_USER) {
+                return "Unauthorized";
+            }
+            
+            // Find student
+            Optional<Student> studentOptional = studentRepository.findById(studentId);
+            if (studentOptional.isEmpty()) {
+                return "Student not found";
+            }
+            
+            Student student = studentOptional.get();
+            
+            // Update verification status
+            student.setResults_verified(verified);
+            
+            // Save the student
+            studentRepository.save(student);
+            
+            // Log the verification action
+            String action = verified ? "verified" : "unverified";
+            String logMessage = String.format("TPO user %s %s results for student ID: %d", 
+                tpoUser.getUser().getUsername(), action, studentId);
+            
+            if (remarks != null && !remarks.trim().isEmpty()) {
+                logMessage += " - Remarks: " + remarks;
+            }
+            
+            logsService.saveLog("STUDENT_VERIFICATION", tpoUser.getUser().getUsername(), 
+                "Student", studentId.toString(), logMessage);
+            
+            return "Success";
+            
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
+    }
+    
+    public Map<String, Object> getStudentVerificationStatus(Long studentId, String token) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // Validate JWT token
+            Long userId = jwtService.extractUserId(token);
+            Optional<User> userOptional = userRepo.findById(userId);
+            
+            if (userOptional.isEmpty()) {
+                response.put("error", "Invalid token");
+                return response;
+            }
+            
+            User user = userOptional.get();
+            
+            // Check if user is TPO user
+            Optional<TPOUser> tpoUserOptional = tpoRepository.findByUser(user);
+            if (tpoUserOptional.isEmpty()) {
+                response.put("error", "Unauthorized");
+                return response;
+            }
+            
+            // Find student
+            Optional<Student> studentOptional = studentRepository.findById(studentId);
+            if (studentOptional.isEmpty()) {
+                response.put("error", "Student not found");
+                return response;
+            }
+            
+            Student student = studentOptional.get();
+            
+            // Prepare verification status response
+            response.put("status", "success");
+            response.put("studentId", studentId);
+            response.put("studentName", student.getFirstName() + " " + student.getLastName());
+            response.put("department", student.getDepartment());
+            response.put("academicYear", student.getAcademicyear());
+            response.put("verified", student.isResults_verified());
+            response.put("cgpa", student.getAvgMarks());
+            response.put("sscMarks", student.getSscMarks());
+            response.put("hscMarks", student.getHscMarks());
+            
+            // Add available documents info
+            Map<String, Boolean> documents = new HashMap<>();
+            documents.put("resume", student.getResume_file_data() != null);
+            documents.put("sscResult", student.getSsc_result() != null);
+            documents.put("hscResult", student.getHsc_result() != null);
+            documents.put("diplomaResult", student.getDiploma_result() != null);
+            response.put("documentsAvailable", documents);
+            
+            return response;
+            
+        } catch (Exception e) {
+            response.put("error", "Error: " + e.getMessage());
+            return response;
+        }
     }
 
     // Prepare response with Excel file

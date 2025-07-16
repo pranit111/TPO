@@ -19,9 +19,18 @@ public class StudentBasicDTO {
     private double sem2Marks;
     private double sem3Marks;
     private double sem4Marks;
+
+    public boolean isResultVerified() {
+        return resultVerified;
+    }
+
+    public void setResultVerified(boolean resultVerified) {
+        this.resultVerified = resultVerified;
+    }
+
     private double sem5Marks;
     private double sem6Marks;
-
+    private boolean resultVerified;
     public double getSem1Marks() {
         return sem1Marks;
     }
@@ -165,7 +174,7 @@ public class StudentBasicDTO {
     // Constructor
 
 
-    public StudentBasicDTO(long id, String firstName, String middleName, String lastName, String gender, LocalDate dateOfBirth, String grNo, double sscMarks, double hscMarks, double diplomaMarks, double avgMarks, String department, double sem1Marks, double sem2Marks, double sem3Marks, double sem4Marks, double sem5Marks, double sem6Marks, String academicYear, int noOfBacklogs, String email, String phoneNo, int yearOfpassing, boolean sem1KT, boolean sem2KT, boolean sem3KT, boolean sem4KT, boolean sem5KT, boolean sem6KT) {
+    public StudentBasicDTO(long id, String firstName, String middleName, String lastName, String gender, LocalDate dateOfBirth, String grNo, double sscMarks, double hscMarks, double diplomaMarks, double avgMarks, String department, double sem1Marks, double sem2Marks, double sem3Marks, double sem4Marks, double sem5Marks, double sem6Marks, String academicYear, int noOfBacklogs, String email, String phoneNo, int yearOfpassing, boolean sem1KT, boolean sem2KT, boolean sem3KT, boolean sem4KT, boolean sem5KT, boolean sem6KT,boolean resultVerified) {
         this.id = id;
         this.firstName = firstName;
         this.middleName = middleName;
@@ -195,6 +204,7 @@ public class StudentBasicDTO {
         this.sem4KT = sem4KT;
         this.sem5KT = sem5KT;
         this.sem6KT = sem6KT;
+        this.resultVerified=resultVerified;
     }
 
     // Getters & Setters
