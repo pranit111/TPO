@@ -101,6 +101,19 @@ public class PlacementController {
         return placementService.filterByStudentYear(studentYear, pageable);
     }
 
+    // Download endpoints
+    @GetMapping("/download/excel")
+    public ResponseEntity<byte[]> downloadPlacementsExcel() throws IOException {
+        return placementService.downloadPlacementsExcel();
+    }
+
+    @GetMapping("/download/excel/filtered")
+    public ResponseEntity<byte[]> downloadFilteredPlacementsExcel(
+            @RequestParam("filterType") String filterType,
+            @RequestParam("filterValue") String filterValue) throws IOException {
+        return placementService.downloadFilteredPlacementsExcel(filterType, filterValue);
+    }
+
     @DeleteMapping("/{id}")
     public void deletePlacement(@PathVariable Long id) {
         placementService.deletePlacement(id);

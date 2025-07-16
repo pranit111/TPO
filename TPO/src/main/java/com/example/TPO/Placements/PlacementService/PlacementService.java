@@ -3,6 +3,7 @@ package com.example.TPO.Placements.PlacementService;
 import com.example.TPO.DBMS.Applications.ApplicationStatus;
 import com.example.TPO.DBMS.Applications.JobApplication;
 import com.example.TPO.DBMS.Placements.Placement;
+import com.example.TPO.Downloads.Excel.ExcelService.ExcelService;
 import com.example.TPO.JobApplication.JobApplicationRepository.JobApplicationRepository;
 import com.example.TPO.Placements.PlacementRepository.PlacementRepository;
 import com.example.TPO.Placements.PlacementsDTO.PlacementDTO;
@@ -17,7 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+
 @Component
 @Service
 public class PlacementService {
@@ -27,6 +32,8 @@ public class PlacementService {
      PlacementRepository placementRepository;
     @Autowired
     PlacementMapper placementMapper;
+    @Autowired
+    ExcelService excelService;
 
     public PlacementDTO savePlacement(Placement placement, long applicationid, MultipartFile offerletter) throws IOException {
         placement.setOfferLetterUrl(offerletter.getBytes());
@@ -102,6 +109,114 @@ public class PlacementService {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(placement.get().getOfferLetterUrl());
-
     }
+
+    // Download placements data as Excel
+    public ResponseEntity<byte[]> downloadPlacementsExcel() throws IOException {
+        List<Placement> placements = placementRepository.findAll();
+        
+        // Define Excel headers
+        String[] headers = {
+            "Placement ID", "Student Name", "Company", "Job Designation", 
+            "Package (LPA)", "Placement Date", "Department", "Student Year", "Remarks"
+        };
+        
+        // Convert placement data to String arrays
+        List<String[]> data = new ArrayList<>();
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        
+        for (Placement placement : placements) {
+            String[] row = new String[9];
+            row[0] = placement.getId().toString();
+            row[1] = placement.getApplication().getStudent().getFirstName() + " " + 
+                     placement.getApplication().getStudent().getLastName();
+            row[2] = placement.getApplication().getJobPost().getCompany().getName();
+            row[3] = placement.getApplication().getJobPost().getJobDesignation();
+            row[4] = String.valueOf(placement.getPlaced_package());
+            row[5] = placement.getPlacementDate() != null ? placement.getPlacementDate().format(dateFormatter) : "";
+            row[6] = placement.getApplication().getStudent().getDepartment();
+            row[7] = placement.getApplication().getJobPost().getStudentYear().toString();
+            row[8] = placement.getRemarks() != null ? placement.getRemarks() : "";
+            
+            data.add(row);
+        }
+        
+        // Generate Excel file
+        byte[] excelData = excelService.generateExcel(data, headers);
+        
+        // Set response headers
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        responseHeaders.setContentDisposition(
+            ContentDisposition.attachment().filename("placements_" + LocalDate.now() + ".xlsx").build()
+        );
+        
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(excelData);
+    }
+
+    // Download filtered placements data as Excel
+    public ResponseEntity<byte[]> downloadFilteredPlacementsExcel(String filterType, String filterValue) throws IOException {
+        List<Placement> placements;
+        
+        // Apply filter based on type
+        switch (filterType.toLowerCase()) {
+            case "company":
+                placements = placementRepository.filterByCompany(filterValue, Pageable.unpaged()).getContent();
+                break;
+            case "department":
+                placements = placementRepository.filterByDepartment(filterValue, Pageable.unpaged()).getContent();
+                break;
+            case "studentyear":
+                placements = placementRepository.filterByStudentYear(filterValue, Pageable.unpaged()).getContent();
+                break;
+            case "jobdesignation":
+                placements = placementRepository.filterByJobDesignation(filterValue, Pageable.unpaged()).getContent();
+                break;
+            default:
+                placements = placementRepository.findAll();
+        }
+        
+        // Define Excel headers
+        String[] headers = {
+            "Placement ID", "Student Name", "Company", "Job Designation", 
+            "Package (LPA)", "Placement Date", "Department", "Student Year", "Remarks"
+        };
+        
+        // Convert placement data to String arrays
+        List<String[]> data = new ArrayList<>();
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        
+        for (Placement placement : placements) {
+            String[] row = new String[9];
+            row[0] = placement.getId().toString();
+            row[1] = placement.getApplication().getStudent().getFirstName() + " " + 
+                     placement.getApplication().getStudent().getLastName();
+            row[2] = placement.getApplication().getJobPost().getCompany().getName();
+            row[3] = placement.getApplication().getJobPost().getJobDesignation();
+            row[4] = String.valueOf(placement.getPlaced_package());
+            row[5] = placement.getPlacementDate() != null ? placement.getPlacementDate().format(dateFormatter) : "";
+            row[6] = placement.getApplication().getStudent().getDepartment();
+            row[7] = placement.getApplication().getJobPost().getStudentYear().toString();
+            row[8] = placement.getRemarks() != null ? placement.getRemarks() : "";
+            
+            data.add(row);
+        }
+        
+        // Generate Excel file
+        byte[] excelData = excelService.generateExcel(data, headers);
+        
+        // Set response headers
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        responseHeaders.setContentDisposition(
+            ContentDisposition.attachment().filename("placements_" + filterType + "_" + filterValue + "_" + LocalDate.now() + ".xlsx").build()
+        );
+        
+        return ResponseEntity.ok()
+                .headers(responseHeaders)
+                .body(excelData);
+    }
+
 }
