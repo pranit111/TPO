@@ -40,7 +40,7 @@ public class EmailService {
     }
 
     private String generateHTMLEmail(String otp, String purpose) {
-        return "<div style=\"font-family: Arial, sans-serif; text-align: center; padding: 20px; background: url('https://i.ibb.co/mWCcyVy/Main-bg.png') no-repeat center center / cover; color: white;\">"
+        return "<div style=\"font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #031e27; color: white;\">"
                 + "<div style='max-width: 500px; margin: auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1);'>"
                 + "<img src='https://engineering.saraswatikharghar.edu.in/wp-content/uploads/2023/05/thumbnail_Saraswati-Logo-square-final-1-1024x612.jpg.webp' alt='Logo' style='width: 120px; margin-bottom: 15px;'>"
                 + "<h2 style='color: #1b263b;'>Hello,</h2>"
@@ -54,5 +54,6 @@ public class EmailService {
                 + "</div>"
                 + "</div>";
     }
+
 
 }
