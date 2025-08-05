@@ -6,7 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="92d2fda3-dbe2-47a3-a8e1-c6fb5107c4d1" name="Changes" comment="&quot;placements halfway done&quot;">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/Service/EmailService.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/Service/EmailService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/CorsConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/CorsConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/MailConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/TPO/src/main/java/com/example/TPO/UserManagement/MailConfig.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
