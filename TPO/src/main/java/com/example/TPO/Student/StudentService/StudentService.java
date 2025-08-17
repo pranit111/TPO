@@ -267,6 +267,7 @@ public class StudentService {
         }
         // Update other non-null fields
         if (student.getProfileimagedata() != null) existingStudent.setProfileimagedata(student.getProfileimagedata());
+        if (student.getResume_file_data() != null) existingStudent.setResume_file_data(student.getResume_file_data());
         if (student.getFirstName() != null) existingStudent.setFirstName(student.getFirstName());
         if (student.getGrNo() != null) existingStudent.setGrNo(student.getGrNo());
         if (student.getAcademicyear() != null) existingStudent.setAcademicyear(student.getAcademicyear());
