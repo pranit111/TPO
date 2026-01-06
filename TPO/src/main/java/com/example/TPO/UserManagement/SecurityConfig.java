@@ -56,6 +56,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v3/appointments/filter").hasRole("ADMIN")
                         .requestMatchers("/api/v2/**").hasRole("ADMIN")
                         .requestMatchers("/api1/pdf/**","/pdf/results/**").permitAll()
+                        .requestMatchers("/health").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception
