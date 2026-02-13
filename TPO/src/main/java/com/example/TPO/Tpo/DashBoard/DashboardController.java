@@ -4,8 +4,10 @@ import com.example.TPO.DBMS.Tpo.TPOUser;
 import com.example.TPO.DBMS.Tpo.TPO_Role;
 import com.example.TPO.Tpo.TpoRepository.TpoRepository;
 import com.example.TPO.UserManagement.Service.JWTService;
+import com.example.TPO.UserManagement.Service.TokenExtractor;
 import com.example.TPO.UserManagement.UserRepo.UserRepo;
 import com.example.TPO.UserManagement.entity.User;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +29,8 @@ public class DashboardController {
     UserRepo userRepo;
     @Autowired
     JWTService jwtService;
+    @Autowired
+    TokenExtractor tokenExtractor;
     private final DashboardService dashboardService;
 
     public DashboardController(DashboardService dashboardService) {
@@ -34,24 +38,26 @@ public class DashboardController {
     }
 
     @GetMapping
-    public DashboardData getDashboardData(@RequestHeader("Authorization") String authheader) {
-        String authToken="";
-        if (authheader  != null && authheader.startsWith("Bearer ")) {
-            authToken = authheader.substring(7);}
-        User dbUser=userRepo.findById(jwtService.extractUserId(authToken)).get();
-        Optional<TPOUser> tpoUser=tpoRepository.findByUser(dbUser);
-        TPOUser tpoUser1=tpoUser.get();
-        if(tpoUser1.getRole()== TPO_Role.ADMIN){
-        return dashboardService.getDashboardData();}
-        DashboardData dash= new  DashboardData();
+    public DashboardData getDashboardData(HttpServletRequest request) {
+        String authToken = tokenExtractor.extractToken(request);
+        if (authToken == null) {
+            return new DashboardData();
+        }
+        User dbUser = userRepo.findById(jwtService.extractUserId(authToken)).get();
+        Optional<TPOUser> tpoUser = tpoRepository.findByUser(dbUser);
+        TPOUser tpoUser1 = tpoUser.get();
+        if (tpoUser1.getRole() == TPO_Role.ADMIN) {
+            return dashboardService.getDashboardData();
+        }
+        DashboardData dash = new DashboardData();
         return dash;
     }
 
     // Enhanced endpoints for real-time dashboard functionality
     
     @GetMapping("/stats/real-time")
-    public ResponseEntity<Map<String, Object>> getRealTimeStats(@RequestHeader("Authorization") String authHeader) {
-        if (!isAuthorizedAdmin(authHeader)) {
+    public ResponseEntity<Map<String, Object>> getRealTimeStats(HttpServletRequest request) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -62,9 +68,9 @@ public class DashboardController {
 
     @GetMapping("/analytics/growth")
     public ResponseEntity<Map<String, Object>> getGrowthAnalytics(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam(defaultValue = "6") int months) {
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -75,9 +81,9 @@ public class DashboardController {
 
     @GetMapping("/activities/recent")
     public ResponseEntity<DashboardData.RecentActivities> getRecentActivities(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam(defaultValue = "10") int limit) {
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         
@@ -86,8 +92,8 @@ public class DashboardController {
     }
 
     @GetMapping("/metrics/process")
-    public ResponseEntity<DashboardData.ProcessMetrics> getProcessMetrics(@RequestHeader("Authorization") String authHeader) {
-        if (!isAuthorizedAdmin(authHeader)) {
+    public ResponseEntity<DashboardData.ProcessMetrics> getProcessMetrics(HttpServletRequest request) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         
@@ -96,8 +102,8 @@ public class DashboardController {
     }
 
     @GetMapping("/analytics/departments")
-    public ResponseEntity<Map<String, Object>> getDepartmentAnalytics(@RequestHeader("Authorization") String authHeader) {
-        if (!isAuthorizedAdmin(authHeader)) {
+    public ResponseEntity<Map<String, Object>> getDepartmentAnalytics(HttpServletRequest request) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -107,8 +113,8 @@ public class DashboardController {
     }
 
     @GetMapping("/analytics/companies")
-    public ResponseEntity<DashboardData.CompanyAnalytics> getCompanyAnalytics(@RequestHeader("Authorization") String authHeader) {
-        if (!isAuthorizedAdmin(authHeader)) {
+    public ResponseEntity<DashboardData.CompanyAnalytics> getCompanyAnalytics(HttpServletRequest request) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         
@@ -118,9 +124,9 @@ public class DashboardController {
 
     @GetMapping("/trends/placement")
     public ResponseEntity<DashboardData.PlacementTrends> getPlacementTrends(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam(defaultValue = "12") int months) {
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         
@@ -130,9 +136,9 @@ public class DashboardController {
 
     @GetMapping("/export/dashboard-data")
     public ResponseEntity<byte[]> exportDashboardData(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam(defaultValue = "excel") String format) {
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         
@@ -151,8 +157,8 @@ public class DashboardController {
     }
 
     @GetMapping("/notifications")
-    public ResponseEntity<Map<String, Object>> getDashboardNotifications(@RequestHeader("Authorization") String authHeader) {
-        if (!isAuthorizedAdmin(authHeader)) {
+    public ResponseEntity<Map<String, Object>> getDashboardNotifications(HttpServletRequest request) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -162,8 +168,8 @@ public class DashboardController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<Map<String, String>> refreshDashboardData(@RequestHeader("Authorization") String authHeader) {
-        if (!isAuthorizedAdmin(authHeader)) {
+    public ResponseEntity<Map<String, String>> refreshDashboardData(HttpServletRequest request) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -175,13 +181,13 @@ public class DashboardController {
     // Student Management Endpoints
     @GetMapping("/students")
     public ResponseEntity<Map<String, Object>> getAllStudents(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "") String search,
             @RequestParam(defaultValue = "") String department,
             @RequestParam(defaultValue = "") String status) {
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -192,9 +198,9 @@ public class DashboardController {
 
     @GetMapping("/students/{id}")
     public ResponseEntity<Map<String, Object>> getStudentById(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @PathVariable Long id) {
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -206,12 +212,12 @@ public class DashboardController {
     // Company Management Endpoints
     @GetMapping("/companies")
     public ResponseEntity<Map<String, Object>> getAllCompanies(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "") String search,
             @RequestParam(defaultValue = "") String industry) {
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -222,9 +228,9 @@ public class DashboardController {
 
     @GetMapping("/companies/{id}")
     public ResponseEntity<Map<String, Object>> getCompanyById(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @PathVariable Long id) {
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -236,14 +242,14 @@ public class DashboardController {
     // Activity Logs Management
     @GetMapping("/logs")
     public ResponseEntity<Map<String, Object>> getActivityLogs(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "") String action,
             @RequestParam(defaultValue = "") String entity,
             @RequestParam(defaultValue = "") String dateFrom,
             @RequestParam(defaultValue = "") String dateTo) {
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -255,9 +261,9 @@ public class DashboardController {
     // Advanced Analytics Endpoints
     @GetMapping("/analytics/performance")
     public ResponseEntity<Map<String, Object>> getPerformanceAnalytics(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam(defaultValue = "12") int months) {
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -268,8 +274,8 @@ public class DashboardController {
 
     @GetMapping("/analytics/package-distribution")
     public ResponseEntity<Map<String, Object>> getPackageDistribution(
-            @RequestHeader("Authorization") String authHeader) {
-        if (!isAuthorizedAdmin(authHeader)) {
+            HttpServletRequest request) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -280,9 +286,9 @@ public class DashboardController {
 
     @GetMapping("/analytics/hiring-trends")
     public ResponseEntity<Map<String, Object>> getHiringTrends(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam(defaultValue = "12") int months) {
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -294,11 +300,11 @@ public class DashboardController {
     // Data Export Endpoints
     @GetMapping("/export/students")
     public ResponseEntity<byte[]> exportStudentData(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam(defaultValue = "excel") String format,
             @RequestParam(defaultValue = "") String department,
             @RequestParam(defaultValue = "") String status) {
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         
@@ -318,9 +324,9 @@ public class DashboardController {
 
     @GetMapping("/export/companies")
     public ResponseEntity<byte[]> exportCompanyData(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam(defaultValue = "excel") String format) {
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         
@@ -341,8 +347,8 @@ public class DashboardController {
     // Real-time Data Endpoints
     @GetMapping("/realtime/dashboard-summary")
     public ResponseEntity<Map<String, Object>> getRealTimeDashboardSummary(
-            @RequestHeader("Authorization") String authHeader) {
-        if (!isAuthorizedAdmin(authHeader)) {
+            HttpServletRequest request) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -353,8 +359,8 @@ public class DashboardController {
 
     @GetMapping("/realtime/alerts")
     public ResponseEntity<Map<String, Object>> getRealTimeAlerts(
-            @RequestHeader("Authorization") String authHeader) {
-        if (!isAuthorizedAdmin(authHeader)) {
+            HttpServletRequest request) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -366,8 +372,8 @@ public class DashboardController {
     // System Status and Health
     @GetMapping("/system/health")
     public ResponseEntity<Map<String, Object>> getSystemHealth(
-            @RequestHeader("Authorization") String authHeader) {
-        if (!isAuthorizedAdmin(authHeader)) {
+            HttpServletRequest request) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -379,8 +385,8 @@ public class DashboardController {
     // Data Validation and Integrity
     @GetMapping("/validation/data-integrity")
     public ResponseEntity<Map<String, Object>> checkDataIntegrity(
-            @RequestHeader("Authorization") String authHeader) {
-        if (!isAuthorizedAdmin(authHeader)) {
+            HttpServletRequest request) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -392,9 +398,9 @@ public class DashboardController {
     // Custom Reports
     @PostMapping("/reports/custom")
     public ResponseEntity<Map<String, Object>> generateCustomReport(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestBody Map<String, Object> reportParams) {
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -405,10 +411,10 @@ public class DashboardController {
 
     @GetMapping("/export/yearly-backup")
     public ResponseEntity<byte[]> exportYearlyBackup(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam int year,
             @RequestParam(defaultValue = "excel") String format) {
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         
@@ -428,8 +434,8 @@ public class DashboardController {
 
     @GetMapping("/analytics/company-details")
     public ResponseEntity<Map<String, Object>> getCompanyAnalyticsDetails(
-            @RequestHeader("Authorization") String authHeader) {
-        if (!isAuthorizedAdmin(authHeader)) {
+            HttpServletRequest request) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -441,9 +447,9 @@ public class DashboardController {
     // Comprehensive Yearly Analytics Endpoint
     @GetMapping("/analytics/yearly/{year}")
     public ResponseEntity<Map<String, Object>> getYearlyAnalytics(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @PathVariable int year) {
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -455,9 +461,9 @@ public class DashboardController {
     // Multi-year Comparison Analytics
     @GetMapping("/analytics/comparison")
     public ResponseEntity<Map<String, Object>> getMultiYearComparison(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam(defaultValue = "3") int years) {
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -479,14 +485,14 @@ public class DashboardController {
     }
 
     // Helper method for authorization check
-    private boolean isAuthorizedAdmin(String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return false;
-        }
-        
+    private boolean isAuthorizedAdmin(HttpServletRequest request) {
         try {
-            String authToken = authHeader.substring(7);
-            User dbUser = userRepo.findById(jwtService.extractUserId(authToken)).orElse(null);
+            String token = tokenExtractor.extractToken(request);
+            if (token == null) {
+                return false;
+            }
+
+            User dbUser = userRepo.findById(jwtService.extractUserId(token)).orElse(null);
             if (dbUser == null) return false;
             
             Optional<TPOUser> tpoUser = tpoRepository.findByUser(dbUser);

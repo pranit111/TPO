@@ -110,18 +110,15 @@ public class JobApplicationService {
         return ResponseEntity.ok(JobApplicationMapper.toJobApplicationDTOList(optionalJobApplication));
 
     }
-    public ResponseEntity<?> updateApplication(long applicationId, JobApplicationDTO updatedJobApplicationDTO, String authheader) {
+    public ResponseEntity<?> updateApplication(long applicationId, JobApplicationDTO updatedJobApplicationDTO, String token) {
         Optional<JobApplication> jobApplicationOptional = jobApplicationRepository.findById(applicationId);
-        String authToken="";
-        if (authheader  != null && authheader.startsWith("Bearer ")) {
-            authToken = authheader.substring(7);}
 
         if (jobApplicationOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Application Found with ID: " + applicationId);
         }
 
         JobApplication jobApplication = jobApplicationOptional.get();
-        Optional<User> userOptional = userRepo.findById(jwtService.extractUserId(authToken));
+        Optional<User> userOptional = userRepo.findById(jwtService.extractUserId(token));
 
         if (userOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found.");

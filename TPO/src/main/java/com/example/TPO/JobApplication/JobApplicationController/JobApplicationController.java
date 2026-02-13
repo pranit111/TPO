@@ -4,6 +4,8 @@ import com.example.TPO.DBMS.Applications.ApplicationStatus;
 import com.example.TPO.DBMS.Filters.JobApplicationFilter;
 import com.example.TPO.JobApplication.JobApplicationDTO.JobApplicationDTO;
 import com.example.TPO.JobApplication.JobApplicationService.JobApplicationService;
+import com.example.TPO.UserManagement.Service.TokenExtractor;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -21,19 +23,21 @@ import java.util.Map;
 public class JobApplicationController {
 @Autowired
 JobApplicationService jobApplicationService;
+@Autowired
+TokenExtractor tokenExtractor;
 @PostMapping("/Application")
-public ResponseEntity<Map<String,String >> createapplication(@RequestParam long postid, @RequestHeader("Authorization") String authHeader){
-    String token = authHeader.substring(7);
+public ResponseEntity<Map<String,String >> createapplication(@RequestParam long postid, HttpServletRequest request){
+    String token = tokenExtractor.extractToken(request);
 
     return jobApplicationService.createApplication(postid,token);
 
 }
 @GetMapping("/Applications")
-   public ResponseEntity<?> getApplications(@RequestHeader("Authorization") String authHeader){
+   public ResponseEntity<?> getApplications(HttpServletRequest request){
 
-    if (authHeader != null && authHeader.startsWith("Bearer ")) {
-        authHeader = authHeader.substring(7);
-        return jobApplicationService.getApplications(authHeader);}
+    String token = tokenExtractor.extractToken(request);
+    if (token != null) {
+        return jobApplicationService.getApplications(token);}
     Map<String, String> response = new HashMap<>();
     response.put("error", "No Applications Found");
    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
@@ -46,8 +50,9 @@ public ResponseEntity<Map<String,String >> createapplication(@RequestParam long 
 
 }
 @PutMapping("/Application")
-    public ResponseEntity<?> updateapplication(@RequestParam long application_id,@RequestBody JobApplicationDTO jobApplicationDTO,@RequestHeader("Authorization") String authHeader){
-    return jobApplicationService.updateApplication(application_id,jobApplicationDTO,authHeader);
+    public ResponseEntity<?> updateapplication(@RequestParam long application_id,@RequestBody JobApplicationDTO jobApplicationDTO, HttpServletRequest request){
+    String token = tokenExtractor.extractToken(request);
+    return jobApplicationService.updateApplication(application_id,jobApplicationDTO,token);
 }
 @PostMapping("filter/Applications")
     public ResponseEntity<?> filterapplications(@RequestBody JobApplicationFilter jobApplicationFilter){

@@ -4,6 +4,8 @@ import com.example.TPO.DBMS.JobPost.JobPost;
 import com.example.TPO.DBMS.JobPost.StudentYear;
 import com.example.TPO.JobPost.JobPostDTO.JobPostDTO;
 import com.example.TPO.JobPost.JobPostService.JobPostService;
+import com.example.TPO.UserManagement.Service.TokenExtractor;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -18,19 +20,21 @@ import java.util.Map;
 public class JobPostController {
     @Autowired
     JobPostService jobPostService;
+    @Autowired
+    TokenExtractor tokenExtractor;
     @PostMapping("Post")
     public ResponseEntity<Map<String, String>> createPost(
             @RequestBody JobPost jobPost,
-            @RequestHeader("Authorization") String authHeader) {
+            HttpServletRequest request) {
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        String token = tokenExtractor.extractToken(request);
+        if (token == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
                     "status", "error",
-                    "message", "Missing or invalid Authorization header"
+                    "message", "Missing or invalid Authorization"
             ));
         }
 
-        String token = authHeader.substring(7);
         return jobPostService.createPost(jobPost, token);
     }
 
@@ -44,26 +48,24 @@ public class JobPostController {
         return ResponseEntity.ok(jobPostService.getAllJobPosts());
     }
     @GetMapping("/posts/student")
-    public ResponseEntity<List<JobPostDTO>> getElegiblePosts(@RequestHeader("Authorization") String authHeader){
-        String token = authHeader.substring(7);
+    public ResponseEntity<List<JobPostDTO>> getElegiblePosts(HttpServletRequest request){
+        String token = tokenExtractor.extractToken(request);
 
         return ResponseEntity.ok(jobPostService.getEligiblePosts(token));
     }
     @GetMapping("/get/post")
     public ResponseEntity<?> getPostByBody(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam Long post_id
     ) {
-        String token = "";
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-             token = authHeader.substring(7);}
+        String token = tokenExtractor.extractToken(request);
 
         return jobPostService.getEligiblePost(token, post_id); // Reuse existing logic
     }
     @GetMapping("Post/tpo")
-    public ResponseEntity<?> getpostpo( @RequestHeader("Authorization") String authHeader,
+    public ResponseEntity<?> getpostpo(HttpServletRequest request,
                                         @RequestParam Long post_id){
-        String token = authHeader.substring(7);
+        String token = tokenExtractor.extractToken(request);
         return jobPostService.getPostTpo(token,post_id);
     }
 

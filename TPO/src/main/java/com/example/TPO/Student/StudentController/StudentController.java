@@ -4,6 +4,7 @@ import com.example.TPO.DBMS.Filters.JobApplicationFilter;
 import com.example.TPO.Student.StudentDTO.StudentBasicDTO;
 import com.example.TPO.Student.StudentService.StudentService;
 import com.example.TPO.UserManagement.Service.JWTService;
+import com.example.TPO.UserManagement.Service.TokenExtractor;
 import com.example.TPO.UserManagement.UserRepo.UserRepo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import com.example.TPO.Student.StudentRepository.StudentRepository;
 import com.example.TPO.DBMS.stud.Student;
 import org.springframework.web.multipart.MultipartFile;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -33,6 +36,8 @@ public class StudentController {
     StudentService studentService;
     @Autowired
     StudentRepository studentRepository;
+    @Autowired
+    TokenExtractor tokenExtractor;
     @GetMapping("/Student/{id}")
     public ResponseEntity<?> getstud(@PathVariable long id ){
 
@@ -40,33 +45,33 @@ public class StudentController {
     return studentService.getStudent(id);
     }
     @GetMapping("/Students/")
-    public ResponseEntity<?> getstuds(@RequestHeader("Authorization") String authHeader) {
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
+    public ResponseEntity<?> getstuds(HttpServletRequest request) {
+        String token = tokenExtractor.extractToken(request);
+        if (token != null) {
             return studentService.getStudents(token);
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("ERROR OCCURRED");
     }
     @GetMapping("/tpo/Student/profile/{stud_id}")
-    public ResponseEntity<?> getprofilefortpo(@RequestHeader("Authorization") String authHeader,@PathVariable long stud_id){
+    public ResponseEntity<?> getprofilefortpo(HttpServletRequest request, @PathVariable long stud_id){
         Map<String, Object> response = new HashMap<>();
-        if(authHeader.isEmpty()){
+        String token = tokenExtractor.extractToken(request);
+        if(token == null){
             response.put("error","User Not Logged In");
-            new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);}
-        String token = authHeader.substring(7);
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
 
-
-        return studentService.getstudprofiletpo(token,stud_id);
+        return studentService.getstudprofiletpo(token, stud_id);
 
     }
     @GetMapping("/Student/profile")
-    public ResponseEntity<?> getprofile(@RequestHeader("Authorization") String authHeader){
+    public ResponseEntity<?> getprofile(HttpServletRequest request){
         Map<String, Object> response = new HashMap<>();
-        if(authHeader.isEmpty()){
+        String token = tokenExtractor.extractToken(request);
+        if(token == null){
             response.put("error","User Not Logged In");
-            new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);}
-        String token = authHeader.substring(7);
-
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        }
 
         return studentService.getstudprofile(token);
 
@@ -80,7 +85,7 @@ public class StudentController {
     @PostMapping("/Student")
     public ResponseEntity<?> createstud(
             @RequestPart(value = "student") String studentData,
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestPart MultipartFile prof_img,
             @RequestPart MultipartFile resume,
             @RequestPart MultipartFile ssc_result,
@@ -92,8 +97,8 @@ public class StudentController {
 
         Map<String, Object> response = new HashMap<>();
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7); // Remove "Bearer " prefix
+        String token = tokenExtractor.extractToken(request);
+        if (token != null) {
 
             // Convert studentData from JSON string to Student object
             Student student = objectMapper.readValue(studentData, Student.class);
@@ -113,18 +118,18 @@ public class StudentController {
     @PutMapping("/Student")
     public ResponseEntity<?> updateStudent(
             @RequestPart Student student,
-            @RequestHeader("Authorization") String authHeader,@RequestPart( required = false) MultipartFile profile_img,@RequestPart( required = false) MultipartFile resume) throws IOException {
+            HttpServletRequest request, @RequestPart( required = false) MultipartFile profile_img,@RequestPart( required = false) MultipartFile resume) throws IOException {
 
         Map<String, Object> response = new HashMap<>();
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        String token = tokenExtractor.extractToken(request);
+        if (token == null) {
             response.put("status", "error");
             response.put("message", "Authorization header missing or invalid");
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
 
-        String token = authHeader.substring(7);
-        String updateResponse = studentService.updateStudent(student, token,profile_img,resume);
+        String updateResponse = studentService.updateStudent(student, token, profile_img, resume);
 
         if (updateResponse.equals("Student not found.")) {
             response.put("status", "error");
@@ -219,19 +224,18 @@ public class StudentController {
     @PutMapping("/tpo/Student/verify-results/{studentId}")
     public ResponseEntity<?> verifyStudentResults(
             @PathVariable Long studentId,
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam boolean verified,
             @RequestParam(required = false) String remarks) {
         
         Map<String, Object> response = new HashMap<>();
         
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        String token = tokenExtractor.extractToken(request);
+        if (token == null) {
             response.put("status", "error");
             response.put("message", "Authorization header missing or invalid");
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
-        
-        String token = authHeader.substring(7);
         
         try {
             String result = studentService.verifyStudentResults(studentId, token, verified, remarks);
@@ -270,17 +274,16 @@ public class StudentController {
     @GetMapping("/tpo/Student/verification-status/{studentId}")
     public ResponseEntity<?> getStudentVerificationStatus(
             @PathVariable Long studentId,
-            @RequestHeader("Authorization") String authHeader) {
+            HttpServletRequest request) {
         
         Map<String, Object> response = new HashMap<>();
         
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        String token = tokenExtractor.extractToken(request);
+        if (token == null) {
             response.put("status", "error");
             response.put("message", "Authorization header missing or invalid");
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
-        
-        String token = authHeader.substring(7);
         
         try {
             Map<String, Object> verificationStatus = studentService.getStudentVerificationStatus(studentId, token);

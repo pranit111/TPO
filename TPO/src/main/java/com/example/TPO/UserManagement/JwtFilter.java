@@ -1,6 +1,7 @@
 package com.example.TPO.UserManagement;
 
 import com.example.TPO.UserManagement.Service.JWTService;
+import com.example.TPO.UserManagement.Service.TokenExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,32 +23,39 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    private TokenExtractor tokenExtractor;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
-
-        String token = null;
+        // Extract token from cookie or Authorization header
+        String token = tokenExtractor.extractToken(request);
         String username = null;
 
-        // Extract token from Authorization header
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-
-
-            token = authHeader.substring(7);
-            System.err.println(token);
-            username = jwtService.extractUser(token);
-            System.err.println(username);// Extract username from token
+        // Extract username from token — catch invalid/expired/mismatched signatures gracefully
+        if (token != null) {
+            try {
+                username = jwtService.extractUser(token);
+            } catch (Exception e) {
+                // Token is invalid (e.g. server restarted with new signing key, token expired, tampered).
+                // Proceed as unauthenticated — do not block the request.
+                username = null;
+            }
         }
 
         // Validate token and set authentication context
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            try {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            if (jwtService.validateToken(token, userDetails)) {
-                // Set authentication in security context
-                jwtService.setAuthenticationContext(token, userDetails);
+                if (jwtService.validateToken(token, userDetails)) {
+                    // Set authentication in security context
+                    jwtService.setAuthenticationContext(token, userDetails);
+                }
+            } catch (Exception e) {
+                // Validation failed — proceed as unauthenticated
             }
         }
 

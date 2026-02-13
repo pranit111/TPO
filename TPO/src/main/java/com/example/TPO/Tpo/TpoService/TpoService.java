@@ -10,7 +10,6 @@ import com.example.TPO.UserManagement.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.Collections;
 import java.util.Map;
@@ -26,7 +25,7 @@ public class TpoService{
     JWTService jwtService;
     @Autowired
     private PasswordEncoder encoder;
-    public String  createTpoUser(String role , @RequestHeader("Authorization") String authHeader){
+    public String  createTpoUser(String role, String authHeader){
         {   System.err.println(authHeader);
             TPOUser tpoUser=new TPOUser();
             Long userId = jwtService.extractUserId(authHeader);

@@ -6,11 +6,17 @@ import com.example.TPO.UserManagement.Service.EmailService;
 import com.example.TPO.UserManagement.Service.JWTService;
 import com.example.TPO.UserManagement.Service.OTPService;
 import com.example.TPO.UserManagement.Service.Service;
+import com.example.TPO.UserManagement.Service.TokenExtractor;
 import com.example.TPO.UserManagement.UserRepo.UserRepo;
 import com.example.TPO.UserManagement.entity.User;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,6 +47,8 @@ public class UserController {
     AuthenticationManager manager;
     @Autowired
     private  PasswordEncoder encoder;
+    @Autowired
+    private TokenExtractor tokenExtractor;
 
     @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/register/user")
@@ -109,14 +117,60 @@ public class UserController {
     }
 
     @PostMapping("/stud/login")
-    public ResponseEntity<Map<String, Object>> studLogin(@RequestBody User user) {
-
-        return service.verify(user);
+    public ResponseEntity<Map<String, Object>> studLogin(@RequestBody User user, HttpServletResponse httpResponse) {
+        ResponseEntity<Map<String, Object>> response = service.verify(user);
+        // Set JWT as HttpOnly cookie on successful login
+        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+            String token = (String) response.getBody().get("token");
+            if (token != null && token.startsWith("Bearer ")) {
+                token = token.substring(7); // Remove "Bearer " prefix
+            }
+            addJwtCookie(httpResponse, token);
+            response.getBody().remove("token"); // Don't send token in body anymore
+        }
+        return response;
     }
+
     @PostMapping("/tpo/login")
-    public ResponseEntity<Map<String, Object>> tpoLogin(@RequestBody User user) {
-        // Get the response from the authentication service
-        return service.verify_tpo(user);
+    public ResponseEntity<Map<String, Object>> tpoLogin(@RequestBody User user, HttpServletResponse httpResponse) {
+        ResponseEntity<Map<String, Object>> response = service.verify_tpo(user);
+        // Set JWT as HttpOnly cookie on successful login
+        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+            String token = (String) response.getBody().get("token");
+            if (token != null && token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+            addJwtCookie(httpResponse, token);
+            response.getBody().remove("token"); // Don't send token in body anymore
+        }
+        return response;
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, String>> logout(HttpServletResponse httpResponse) {
+        // Clear the JWT cookie by setting maxAge to 0
+        ResponseCookie cookie = ResponseCookie.from("jwt_token", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Lax")
+                .build();
+        httpResponse.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
+    }
+
+    private void addJwtCookie(HttpServletResponse response, String token) {
+        // 7 days in seconds, matching JWT expiry
+        long maxAgeSeconds = 7 * 24 * 60 * 60;
+        ResponseCookie cookie = ResponseCookie.from("jwt_token", token)
+                .httpOnly(true)       // Not accessible via JavaScript
+                .secure(true)         // Only sent over HTTPS (set to false for local HTTP dev)
+                .path("/")            // Available to all endpoints
+                .maxAge(maxAgeSeconds)
+                .sameSite("Lax")      // CSRF protection
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
     // Helper method to generate TPO verification token
@@ -192,14 +246,11 @@ public class UserController {
     }
 
         @GetMapping("/getuser")
-        public Map<String, String> userdata(@RequestHeader("Authorization") String header) {
+        public Map<String, String> userdata(HttpServletRequest request) {
+            String token = tokenExtractor.extractToken(request);
 
-
-            if (header != null && header.startsWith("Bearer ")) {
-                String token = header.substring(7).trim();
+            if (token != null) {
                 String username = jwtService.extractUser(token);
-
-                // Return JSON instead of plain text
                 return Map.of("username", username);
             }
 

@@ -3,6 +3,7 @@ package com.example.TPO.Logs.LogsController;
 import com.example.TPO.DBMS.Logs.Logs;
 import com.example.TPO.Logs.LogsService.LogsService;
 import com.example.TPO.UserManagement.Service.JWTService;
+import com.example.TPO.UserManagement.Service.TokenExtractor;
 import com.example.TPO.UserManagement.UserRepo.UserRepo;
 import com.example.TPO.UserManagement.entity.User;
 import com.example.TPO.DBMS.Tpo.TPOUser;
@@ -13,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,13 +41,16 @@ public class LogsController {
     @Autowired
     TpoRepository tpoRepository;
 
+    @Autowired
+    TokenExtractor tokenExtractor;
+
     // Helper method to check if user is authorized (TPO Admin only)
-    private boolean isAuthorizedAdmin(String authHeader) {
+    private boolean isAuthorizedAdmin(HttpServletRequest request) {
         try {
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            String token = tokenExtractor.extractToken(request);
+            if (token == null) {
                 return false;
             }
-            String token = authHeader.substring(7);
             User dbUser = userRepo.findById(jwtService.extractUserId(token)).orElse(null);
             if (dbUser == null) return false;
             
@@ -58,13 +64,13 @@ public class LogsController {
     // Get all logs (with pagination and authorization)
     @GetMapping
     public ResponseEntity<?> getAllLogs(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "timestamp") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDirection) {
         
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access - TPO Admin required"));
         }
@@ -91,7 +97,7 @@ public class LogsController {
     // Advanced search with multiple filters and pagination
     @GetMapping("/search")
     public ResponseEntity<?> searchLogs(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam(required = false) String action,
             @RequestParam(required = false) String performedBy,
             @RequestParam(required = false) String entityName,
@@ -104,7 +110,7 @@ public class LogsController {
             @RequestParam(defaultValue = "timestamp") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDirection) {
         
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access - TPO Admin required"));
         }
@@ -155,12 +161,12 @@ public class LogsController {
     // Filter logs by action type
     @GetMapping("/filter/action")
     public ResponseEntity<?> filterByAction(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam String action,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -177,12 +183,12 @@ public class LogsController {
     // Filter logs by entity type
     @GetMapping("/filter/entity")
     public ResponseEntity<?> filterByEntity(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam String entityName,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -199,12 +205,12 @@ public class LogsController {
     // Filter logs by user
     @GetMapping("/filter/user")
     public ResponseEntity<?> filterByUser(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam String performedBy,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -221,13 +227,13 @@ public class LogsController {
     // Filter logs by date range
     @GetMapping("/filter/daterange")
     public ResponseEntity<?> filterByDateRange(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam String startDate,
             @RequestParam String endDate,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -247,12 +253,12 @@ public class LogsController {
     // Get recent logs (last 24 hours, 7 days, etc.)
     @GetMapping("/recent")
     public ResponseEntity<?> getRecentLogs(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam(defaultValue = "24") int hours,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -275,10 +281,10 @@ public class LogsController {
     // Get logs statistics
     @GetMapping("/stats")
     public ResponseEntity<?> getLogsStatistics(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam(defaultValue = "30") int days) {
         
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -295,14 +301,14 @@ public class LogsController {
     // Export logs to Excel
     @GetMapping("/export/excel")
     public ResponseEntity<byte[]> exportLogsToExcel(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestParam(required = false) String action,
             @RequestParam(required = false) String performedBy,
             @RequestParam(required = false) String entityName,
             @RequestParam(required = false) String dateFrom,
             @RequestParam(required = false) String dateTo) {
         
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         
@@ -331,10 +337,10 @@ public class LogsController {
     // Save a log manually (For testing) - Enhanced with validation
     @PostMapping("/save")
     public ResponseEntity<?> saveLog(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @RequestBody Logs log) {
         
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -365,10 +371,10 @@ public class LogsController {
     // Get log by ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getLogById(
-            @RequestHeader("Authorization") String authHeader,
+            HttpServletRequest request,
             @PathVariable Long id) {
         
-        if (!isAuthorizedAdmin(authHeader)) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -388,8 +394,8 @@ public class LogsController {
 
     // Get all unique actions for filtering dropdown
     @GetMapping("/actions/unique")
-    public ResponseEntity<?> getUniqueActions(@RequestHeader("Authorization") String authHeader) {
-        if (!isAuthorizedAdmin(authHeader)) {
+    public ResponseEntity<?> getUniqueActions(HttpServletRequest request) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -405,8 +411,8 @@ public class LogsController {
 
     // Get all unique entity names for filtering dropdown
     @GetMapping("/entities/unique")
-    public ResponseEntity<?> getUniqueEntities(@RequestHeader("Authorization") String authHeader) {
-        if (!isAuthorizedAdmin(authHeader)) {
+    public ResponseEntity<?> getUniqueEntities(HttpServletRequest request) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }
@@ -422,8 +428,8 @@ public class LogsController {
 
     // Get all unique users for filtering dropdown
     @GetMapping("/users/unique")
-    public ResponseEntity<?> getUniqueUsers(@RequestHeader("Authorization") String authHeader) {
-        if (!isAuthorizedAdmin(authHeader)) {
+    public ResponseEntity<?> getUniqueUsers(HttpServletRequest request) {
+        if (!isAuthorizedAdmin(request)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("error", "Unauthorized access"));
         }

@@ -8,6 +8,7 @@ import com.example.TPO.Tpo.TpoRepository.TpoRepository;
 import com.example.TPO.Tpo.TpoService.TpoService;
 import com.example.TPO.UserManagement.Service.JWTService;
 import com.example.TPO.UserManagement.Service.Service;
+import com.example.TPO.UserManagement.Service.TokenExtractor;
 import com.example.TPO.UserManagement.UserController.UserController;
 import com.example.TPO.UserManagement.UserRepo.UserRepo;
 import com.example.TPO.UserManagement.entity.User;
@@ -16,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 
 import java.util.*;
@@ -40,12 +43,14 @@ TPOUserMapper tpoUserMapper;
     PasswordEncoder encoder;
     @Autowired
     UserController userController;
+    @Autowired
+    TokenExtractor tokenExtractor;
     @PostMapping("register/TPO_USER")
-    public ResponseEntity<Map<String,String>> Create_Tpo_user_(@RequestParam String role, @RequestBody User user, @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<Map<String,String>> Create_Tpo_user_(@RequestParam String role, @RequestBody User user, HttpServletRequest request) {
         Map<String, String> response = new HashMap<>();
         System.err.println(role);
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7); // Remove "Bearer " prefix
+        String token = tokenExtractor.extractToken(request);
+        if (token != null) {
 
             // Verify that the requesting user is a TPO admin
 //            TPOUser admin = tpoRepository.findByUser(userRepo.findByUsername(jwtService.extractUser(token)).get()).get();

@@ -16,6 +16,7 @@ public class CorsConfig {
         config.setAllowedOrigins(List.of("http://localhost:4200","http://localhost","https://scoe.initcore.tech/"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setExposedHeaders(List.of("Set-Cookie"));
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

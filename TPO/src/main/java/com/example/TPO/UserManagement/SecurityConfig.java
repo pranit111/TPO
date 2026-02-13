@@ -51,7 +51,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("api3/**", "api4/**", "/api0/auth/**", "http://localhost:8080/api4/filter/Applications", "verify/otp", "/swagger-ui/index.html","api2/create-admin").permitAll()
+                        .requestMatchers("api3/**", "api4/**", "/api0/auth/**", "http://localhost:8080/api4/filter/Applications", "verify/otp", "/swagger-ui/index.html","api2/create-admin", "/api0/auth/logout").permitAll()
                         .requestMatchers("/api/v1/**", "/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/v3/appointments/filter").hasRole("ADMIN")
                         .requestMatchers("/api/v2/**").hasRole("ADMIN")
