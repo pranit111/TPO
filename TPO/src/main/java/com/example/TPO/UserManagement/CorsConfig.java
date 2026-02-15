@@ -13,7 +13,7 @@ public class CorsConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200","http://localhost","https://scoe.initcore.tech/"));
+        config.setAllowedOrigins(List.of("http://localhost:4200/","https://tpo.sce.edu.in/"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setExposedHeaders(List.of("Set-Cookie"));

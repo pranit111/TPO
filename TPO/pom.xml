@@ -11,6 +11,8 @@
 	<groupId>com.example</groupId>
 	<artifactId>TPO</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
+
 	<name>TPO</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
